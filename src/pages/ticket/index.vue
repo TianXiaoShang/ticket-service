@@ -51,10 +51,8 @@
 	</view>
 </template>
 
-<script lang="ts">
-import Vue from 'vue';
-
-export default Vue.extend({
+<script>
+export default {
 	data() {
 		return {
 			title: 'ticket',
@@ -64,7 +62,7 @@ export default Vue.extend({
 	},
 	methods: {
 	}
-});
+};
 </script>
 
 <style lang="less" scoped>

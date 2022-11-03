@@ -1,30 +1,40 @@
 <template>
-    <div class="vue-loading" v-show="loadings.length || loadingStatus">
+    <div class="vue-loading" v-show="showLoading">
         <div class="filter" v-show="full"></div>
         <div class="loader-wrap">
             <div class="loader"></div>
-            <div class="hint">{{ tipText }}</div>
+            <div class="hint">{{ text }}</div>
         </div>
     </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
-    name:'Loading',
-    props:{
-        loadingStatus: Boolean,
-        loadingText: String
+    name: 'Loading',
+    props: {
+        forcedHide: Boolean   // 强制隐藏
     },
-    data(){
-        return {
-            loadings: [],         
-            text: '正在加载...', 
-            full: true,           //是否展示蒙层
+    computed: {
+        ...mapGetters(["globalLoadingText", 'globalLoadings']),  
+    },
+    watch: {
+        globalLoadings: {
+            handler(val) {
+                this.showLoading = !!val.length;
+            },
+            deep: true
+        },
+        globalLoadingText(val){
+            this.text = val;
         }
     },
-    computed:{
-        tipText(){
-            return this.loadingText || this.text
+    data() {
+        return {
+            showLoading: false,
+            text: '',
+            full: true,    //是否展示蒙层
         }
     },
 }
@@ -39,10 +49,18 @@ export default {
     width: 100%;
     z-index: 999;
 
+    &.isShow {
+        display: block !important;
+    }
+
     .filter {
         background: rgba(255, 255, 255, 0.5);
         height: 100vh;
         width: 100vw;
+
+        &.isShow {
+            display: block !important;
+        }
     }
 
     .loader-wrap {

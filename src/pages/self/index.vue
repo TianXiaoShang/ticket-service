@@ -4,57 +4,55 @@
 		<view>
 			<text class="bg-red-400 text-gray-900 text-3xl">{{ title }}</text>
 		</view>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		end<br/>
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		aaa<br />
+		end<br />
 	</view>
 </template>
 
-<script lang="ts">
-import Vue from 'vue';
-
-export default Vue.extend({
+<script>
+export default {
 	data() {
 		return {
 			title: 'self',
@@ -64,7 +62,7 @@ export default Vue.extend({
 	},
 	methods: {
 	}
-});
+};
 </script>
 
 <style lang="less" scoped>

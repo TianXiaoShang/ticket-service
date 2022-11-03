@@ -2,12 +2,13 @@ const tokenKey = "TOKEN";
 
 const getToken = function () {
   const token = uni.getStorageSync(tokenKey);
-  return token ? token : false;
+  return token ? token : "";
 };
 
-const setToken = function (token: string) {
+const setToken = function (token) {
   uni.setStorageSync(tokenKey, token);
 };
+
 const clearToken = function () {
   uni.removeStorageSync(tokenKey);
 };

@@ -1,38 +1,23 @@
 import { BASE_URL } from "@/services/environment.service";
-import { getToken } from "@/util/index";
-// import app from "@/main";
+import { getToken } from "@/util";
+import store from "@/store";
 
-type Method =
-  | "POST"
-  | "OPTIONS"
-  | "GET"
-  | "HEAD"
-  | "PUT"
-  | "DELETE"
-  | "TRACE"
-  | "CONNECT"
-  | undefined;
-
-const request = function (
-  path: string,
-  data: any,
-  method: Method = "GET",
-  noDirect: boolean = true
-) {
+const request = function (path, data = {}, method = "GET", noDirect = true) {
   return new Promise((resolve, reject) => {
-    let token = getToken() || "";
-    let url = BASE_URL + `${path}`;
-    // (app as any).$Loading.show();
+    const token = getToken() || "";
+    data.token = token;
+    store.commit("SHOW_LOADING", "");
     uni.request({
-      url,
+      url: BASE_URL + `${path}`,
       method,
       data,
       header: {
-        cookie: token,
+        "content-type":
+          method === "GET"
+            ? "application/json"
+            : "application/x-www-form-urlencoded",
       },
-      success: (response) => {
-        const res = response as any;
-        console.log(res, "rrrrrrrr");
+      success: (res) => {
         if (res.statusCode == 200) {
           if (res.data.errno === -1) {
             uni.showModal({
@@ -72,10 +57,10 @@ const request = function (
             });
             uni.showToast({ title: "请求错误" });
           } else {
-            resolve(res.data);
+            resolve(res.data.data);
           }
         } else {
-          reject(res);
+          reject(res.data);
         }
       },
       fail: (err) => {
@@ -83,7 +68,7 @@ const request = function (
         reject(err);
       },
       complete: () => {
-        // (app as any).$Loading.hidden();
+        store.commit("HIDE_LOADING");
       },
     });
   });

@@ -1,27 +1,32 @@
 import request from "@/services/request.service";
-// import { mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 import { BASE_URL } from "@/services/environment.service";
-import { getToken } from "@/util/index";
+import store from "@/store";
 
 export default {
-  install(Vue: any) {
+  install(Vue) {
     Vue.mixin({
       data() {
         return {
           BASE_URL,
-          getToken,
           request,
           triggered: true,
           currentPage: 0,
           pageSize: 20,
           totalCount: 0,
-          loadDataLoading: false,
-          loading: false,
+          loading: {
+            show(text) {
+              store.commit("SHOW_LOADING", text);
+            },
+            hide() {
+              store.commit("HIDE_LOADING");
+            },
+          },
         };
       },
-    //   computed: {
-    //     ...mapGetters(["userInfo"]),
-    //   },
+      computed: {
+        ...mapGetters(["userInfo"]),
+      },
       methods: {
         goHome(delay = 800) {
           setTimeout(() => {
@@ -29,7 +34,7 @@ export default {
           }, delay);
         },
         onRestore() {
-          (this as any).triggered = true; // 需要重置
+          this.triggered = true; // 需要重置
         },
         back(lazy = 0) {
           setTimeout(() => {
