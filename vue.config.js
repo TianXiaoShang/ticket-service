@@ -1,12 +1,13 @@
-const path = require('path')
-const WindiCSSWebpackPlugin = require('windicss-webpack-plugin')
-const MiniProgramTailwindWebpackPlugin = require("@dcasia/mini-program-tailwind-webpack-plugin")
+const path = require("path");
+const WindiCSSWebpackPlugin = require("windicss-webpack-plugin");
+const MiniProgramTailwindWebpackPlugin = require("@dcasia/mini-program-tailwind-webpack-plugin");
 
 module.exports = {
-	configureWebpack: {
-		plugins: [
-			new WindiCSSWebpackPlugin(),
-			new MiniProgramTailwindWebpackPlugin({enableRpx: false}),
-		]
-	}
-}
+  transpileDependencies: ['uview-ui'],
+  configureWebpack: {
+    plugins: [
+      new WindiCSSWebpackPlugin(),
+      new MiniProgramTailwindWebpackPlugin({ enableRpx: false }),
+    ],
+  },
+};

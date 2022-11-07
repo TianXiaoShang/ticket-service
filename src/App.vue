@@ -1,3 +1,4 @@
+
 <script>
 import request from "@/services/request.service";
 import { getLocationPos } from '@/util/location';
@@ -18,8 +19,8 @@ export default {
 		request('cinema').then((res) => {
 			store.commit('SET_CINEMA', res.cinema);
 			// 尝试使用户提前授权，在使用位置信息的页面也会通过getLocationPos ｜ getDistance做检查唤起
-			getLocationPos().then(res => {
-			}, err => { });
+			// getLocationPos().then(res => {
+			// }, err => { });
 		});
 	},
 	onShow: function () {
@@ -31,6 +32,7 @@ export default {
 }
 </script>
 
-<style>
-/*每个页面公共css */
+<style lang="scss">
+	/* 注意要写在第一行，同时给style标签加入lang="scss"属性 */
+	@import "uview-ui/index.scss";
 </style>

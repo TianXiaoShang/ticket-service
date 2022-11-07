@@ -14,7 +14,7 @@ export default {
           currentPage: 0,
           pageSize: 20,
           totalCount: 0,
-          loading: {
+          _loading: {
             show(text) {
               store.commit("SHOW_LOADING", text);
             },

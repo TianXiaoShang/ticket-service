@@ -17,7 +17,7 @@ export default {
         forcedHide: Boolean   // 强制隐藏
     },
     computed: {
-        ...mapGetters(["globalLoadingText", 'globalLoadings']),  
+        ...mapGetters(["globalLoadingText", 'globalLoadings']),
     },
     watch: {
         globalLoadings: {
@@ -26,7 +26,7 @@ export default {
             },
             deep: true
         },
-        globalLoadingText(val){
+        globalLoadingText(val) {
             this.text = val;
         }
     },
@@ -40,7 +40,7 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .vue-loading {
     height: 100%;
     left: 0;
