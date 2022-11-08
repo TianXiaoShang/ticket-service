@@ -1,5 +1,5 @@
 <template>
-    <div class="vue-loading" v-show="showLoading">
+    <div class="vue-loading" v-show="showLoading || !loginStatus">
         <div class="filter" v-show="full"></div>
         <div class="loader-wrap">
             <div class="loader"></div>
@@ -17,7 +17,7 @@ export default {
         forcedHide: Boolean   // 强制隐藏
     },
     computed: {
-        ...mapGetters(["globalLoadingText", 'globalLoadings']),
+        ...mapGetters(["globalLoadingText", 'globalLoadings', 'loginStatus']),
     },
     watch: {
         globalLoadings: {

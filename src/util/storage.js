@@ -1,16 +1,14 @@
-const tokenKey = "TOKEN";
-
-const getToken = function () {
-  const token = uni.getStorageSync(tokenKey);
-  return token ? token : "";
+const getStorage = function (storageKey) {
+  const value = uni.getStorageSync(storageKey);
+  return value || "";
 };
 
-const setToken = function (token) {
-  uni.setStorageSync(tokenKey, token);
+const setStorage = function (storageKey, value) {
+  uni.setStorageSync(storageKey, value);
 };
 
-const clearToken = function () {
-  uni.removeStorageSync(tokenKey);
+const removeStorage = function (storageKey) {
+  uni.removeStorageSync(storageKey);
 };
 
-export { getToken, setToken, clearToken };
+export { getStorage, setStorage, removeStorage };

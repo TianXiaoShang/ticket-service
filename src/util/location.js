@@ -1,4 +1,4 @@
-import store from "../store";
+import store from "@/store";
 
 const savePos = (result) => {
   store.commit("SET_POS", result);
@@ -29,6 +29,7 @@ const handlerLocationFail = () => {
                 });
               }
               // #endif
+              
               // #ifdef MP-WEIXIN
               if (!result.authSetting["scope.userFuzzyLocation"]) {
                 uni.showToast({
@@ -130,12 +131,12 @@ const distance = (la1, lo1, la2, lo2) => {
 // 获取距离的所有流程
 const getDistance = () => {
   return new Promise((resolve, reject) => {
-    if (store.state.pos) {
+    if (store.state.userLocation) {
       const dis = distance(
         store.state.cinema.lat,
         store.state.cinema.lng,
-        store.state.pos.latitude,
-        store.state.pos.longitude
+        store.state.userLocation.latitude,
+        store.state.userLocation.longitude
       );
       resolve(dis);
     } else {

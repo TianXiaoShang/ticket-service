@@ -6,13 +6,13 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     loginStatus: false, // 获取登陆状态
-    token: null,
+    token: null,   // token
     userInfo: {}, // 储存来自weixin授权的用户信息（头像信息等）
-    globalLoadings: [],
-    globalLoadingText: "",
+    globalLoadings: [],   // loading组件控制
+    globalLoadingText: "",   // loading组件文本
     cinema: null, // 影院信息
     setting: null, // 影院配置信息
-    pos: null, // 用户位置坐标信息
+    userLocation: null, // 用户位置坐标信息
   },
   getters: {
     loginStatus: (state) => state.loginStatus,
@@ -22,7 +22,7 @@ const store = new Vuex.Store({
     globalLoadings: (state) => state.globalLoadings,
     cinema: (state) => state.cinema,
     setting: (state) => state.setting,
-    pos: (state) => state.pos,
+    userLocation: (state) => state.userLocation,
   },
   mutations: {
     SHOW_LOADING(state, value) {
@@ -41,10 +41,12 @@ const store = new Vuex.Store({
       state.setting = val;
     },
     SET_POS(state, val) {
-      state.pos = val;
+      state.userLocation = val;
     },
     // 登陆，更新状态
     LOGIN(state, value) {
+      // 触发全局登陆完成事件
+      uni.$emit("onLogin", value);
       state.loginStatus = value;
     },
     // 登出

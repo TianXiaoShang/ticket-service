@@ -1,91 +1,48 @@
 <template>
-	<view class="content">
-		<image class="logo" src="../../static/logo.png"></image>
-		<view>
-			<text class="bg-red-400 text-gray-900 text-3xl">{{ title }}</text>
-		</view>
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		aaa<br />
-		end<br />
+	<view class="page-box">
+		<loading />
+		<nav-bar v-if="showNav" :title="'个人中心'" :backgroundColor="'transparent'"></nav-bar>
+
+		<div class="absolute left-0 top-0">
+			<image src="http://mallsaasphoto.djlcom.com/images/1/sonCinema/id_4/ggZ9GEaQ4kddVWeCW5jW5GoAJvdGGJ.jpg" />
+		</div>
+		<div class="mt-30px">aaaaaaaaaaa</div>
 	</view>
 </template>
 
 <script>
+import NavBar from '@/components/nav-bar';
 export default {
 	data() {
 		return {
-			title: 'self',
+			showNav: false,
 		}
 	},
+	components: { NavBar },
+	onShow() { },
 	onLoad() {
+		this.waitLogin().then(() => {
+			// 没有授权用户信息则跳转登录页
+			if (!this.checkAuth()) {
+				uni.navigateTo({
+					url: '/pages/auth/index?noLogin=true'
+				})
+			}
+		})
+
+		// 微信小程序实现顶部透明
+		// #ifdef MP-WEIXIN
+		this.showNav = true;
+		// #endif
 	},
 	methods: {
+		toSearch() {
+			console.log('toSearch')
+		}
 	}
 };
 </script>
 
 <style lang="scss" scoped>
-.content {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
 
-	.logo {
-		height: 200rpx;
-		width: 200rpx;
-		margin: 200rpx auto 50rpx auto;
-	}
-
-	.text-area {
-		display: flex;
-		justify-content: center;
-	}
-
-	.title {
-		font-size: 36rpx;
-		color: #8f8f94;
-	}
-}
 </style>

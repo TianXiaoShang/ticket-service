@@ -25,7 +25,7 @@ export default {
         };
       },
       computed: {
-        ...mapGetters(["userInfo"]),
+        ...mapGetters(["userInfo", "loginStatus"]),
       },
       methods: {
         goHome(delay = 800) {
@@ -41,6 +41,29 @@ export default {
             uni.navigateBack();
           }, lazy);
         },
+        // 其实只是检测有没有授权用户信息。小程序初始化时已经直接静默登陆了
+        checkAuth() {
+          return !!this.userInfo.nickname;
+        },
+        // 等待登陆完成，一般来说登陆一定会成功，除非接口挂了
+        waitLogin() {
+          return new Promise((resolve, reject) => {
+            if (this.loginStatus) {
+              resolve();
+            }
+            uni.$on("onLogin", (value) => {
+              if (value) {
+                resolve();
+              } else {
+                reject();
+              }
+            });
+          });
+        },
+      },
+      // 如果使用了waitLogin则需要解除监听，防止重复监听，本质上使用waitLogin方式只是为了等登陆完成，不需要重复执行回调
+      onHide() {
+        uni.$off("onLogin");
       },
     });
   },

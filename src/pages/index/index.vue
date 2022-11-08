@@ -110,7 +110,6 @@ export default {
 			const hotListApi = this.setting.is_pattern === '1' ? 'drama.film.recommend' : 'recommend';
 			this.request(hotListApi).then(res => {
 				this.hotList = res.films.sort((a, b) => Number(b.sort) - Number(a.sort));
-				console.log(this.hotList, 'hhhhhhhhhhh')
 			})
 		},
 		toSearch() {
