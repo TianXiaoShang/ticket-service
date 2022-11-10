@@ -22,7 +22,7 @@
 				indicatorActiveColor="#FF545C">
 				<view class="scroll-list-item" v-for="(item, index) in kindList" :key="index">
 					<div class="scroll-list-item flex flex-col justify-center items-center">
-						<image mode="aspectFit" :src="item.icon" class="w-12vw h-12vw" />
+						<image mode="aspectFit" :src="item.icon" class="w-12vw h-12vw rounded" />
 						<span class="mt-5px text-gray-999 text-12">{{ item.title }}</span>
 					</div>
 				</view>
@@ -33,15 +33,14 @@
 
 		<more-title :title="'更多推荐'"></more-title>
 		<div class="list">
-			<movie-item :detail="item" v-for="(item, index) in hotList" :key="index"></movie-item>
+			<film-item :detail="item" v-for="(item, index) in hotList" :key="index"></film-item>
 		</div>
 	</view>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 import MoreTitle from './components/more-title';
-import MovieItem from '@/components/movie-item';
+import FilmItem from '@/components/film-item';
 export default {
 	data() {
 		return {
@@ -50,39 +49,29 @@ export default {
 			kindList: [],
 			hotList: [],
 			indicator: false,
+			getDataFlag: false,
 		}
 	},
-	components: { MoreTitle, MovieItem },
-	computed: {
-		...mapGetters(["setting"]),
-	},
-	watch: {
-		'$store.state.cinema': {
-			handler(val) {
-				if (!val) return;
-				uni.setNavigationBarTitle({
-					title: val.title || '首页'
-				});
-			},
-			deep: true,
-			immediate: true
-		},
-		'$store.state.setting': {
-			handler() {
-				this.getData();
-			},
-			deep: true,
-			immediate: true
-		},
-	},
+	components: { MoreTitle, FilmItem },
 	onShow() {
 		// 轮播图
 		this.request('slideshow').then(res => {
 			this.bannerList = res.slideshow;
 		});
-		this.getData();
+		// waitInitConfig完成后才onShow更新数据
+		if (this.getDataFlag) {
+			this.getData();
+		}
 	},
 	onLoad() {
+		// 确保基础配置加载完成再获取数据
+		this.waitInitConfig().then(() => {
+			this.getDataFlag = true;
+			uni.setNavigationBarTitle({
+				title: this.cinema.title || '首页'
+			});
+			this.getData();
+		})
 	},
 	methods: {
 		toDetail(item) {
@@ -93,10 +82,8 @@ export default {
 				url: item.route,
 			});
 		},
+		// 获取首页数据，依赖基础配置也就是waitInitConfig
 		getData() {
-			if (!this.setting) {
-				return;
-			}
 			// 剧院模式 1 / 影院模式 0
 			// 分类
 			const typesApi = this.setting.is_pattern == 1 ? 'drama.film.types' : 'types';
@@ -126,7 +113,7 @@ export default {
 	height: calc((100vw - 40px) * 0.298);
 }
 
-.scroll-list {
+.page-box::v-deep .u-scroll-list {
 	padding-bottom: 0 !important;
 }
 

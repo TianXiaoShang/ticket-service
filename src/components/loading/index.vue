@@ -17,7 +17,7 @@ export default {
         forcedHide: Boolean   // 强制隐藏
     },
     computed: {
-        ...mapGetters(["globalLoadingText", 'globalLoadings', 'loginStatus']),
+        ...mapGetters(["globalLoadingText", 'globalLoadings']),
     },
     watch: {
         globalLoadings: {

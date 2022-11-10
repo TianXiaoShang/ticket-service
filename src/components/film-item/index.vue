@@ -1,5 +1,5 @@
 <template>
-    <view class="flex h-102px mt-16px justify-between items-center">
+    <view class="flex h-102px mt-16px justify-between items-center" @click="toFilmDetail">
         <!-- 左侧封面 -->
         <div class="w-76px min-w-76px h-full mr-10px rounded overflow-hidden">
             <image class="w-76px h-full" :src="detail.logo"></image>
@@ -54,7 +54,8 @@
         <!-- 购票按钮 -->
         <div v-if="viewMode === 'Movie'" class="height-full min-w-52px flex items-center ml-10px">
             <u-button class="h-26px min-w-52px" shape="circle" size="small"
-                color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="购票"></u-button>
+                color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="购票" @click.native.stop="toSelectFilm">
+            </u-button>
         </div>
     </view>
 </template>
@@ -70,22 +71,23 @@ export default {
             viewMode: 'Movie', // Theater 剧院模式 is_pattern == 1   /    Movie 影院模式 is_pattern == 0
         }
     },
-    watch: {
-        '$store.state.setting': {
-            handler(val) {
-                if (val.is_pattern == 1) {
-                    this.viewMode = 'Theater';
-                } else {
-                    this.viewMode = 'Movie';
-                }
-            },
-            deep: true,
-            immediate: true
-        },
+    created() {
+        this.waitInitConfig().then(() => {
+            if (this.setting.is_pattern == 1) {
+                this.viewMode = 'Theater';
+            } else {
+                this.viewMode = 'Movie';
+            }
+        })
     },
     methods: {
-        toDetail() {
-            console.log('toDetail')
+        toFilmDetail() {
+            uni.navigateTo({
+                url: '/film-detail/detail/index?id=' + this.detail.id
+            })
+        },
+        toSelectFilm() {
+            console.log('toSelectFilm');
         }
     }
 };

@@ -47,6 +47,7 @@ export default defineConfig({
           777: "#777",
           888: "#888",
           999: "#999",
+          bg: "#F9F9F9",
         },
         red: {
           DEFAULT: "#FF545C",

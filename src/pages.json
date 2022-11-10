@@ -31,6 +31,19 @@
       }
     }
   ],
+  "subPackages": [
+    {
+      "root": "film-detail",
+      "pages": [
+        {
+          "path": "detail/index",
+          "style": {
+            "navigationBarTitleText": "详情"
+          }
+        }
+      ]
+    }
+  ],
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "购票小程序",

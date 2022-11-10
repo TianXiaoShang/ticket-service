@@ -2,6 +2,8 @@ import request from "@/services/request.service";
 import { mapGetters } from "vuex";
 import { BASE_URL } from "@/services/environment.service";
 import store from "@/store";
+import { getMember } from "@/api/common.js";
+import { setUserInfo } from "@/util";
 
 export default {
   install(Vue) {
@@ -25,7 +27,7 @@ export default {
         };
       },
       computed: {
-        ...mapGetters(["userInfo", "loginStatus"]),
+        ...mapGetters(["userInfo", "loginStatus", "setting", "cinema"]),
       },
       methods: {
         goHome(delay = 800) {
@@ -36,10 +38,10 @@ export default {
         onRestore() {
           this.triggered = true; // 需要重置
         },
-        back(lazy = 0) {
+        back(delay = 0) {
           setTimeout(() => {
             uni.navigateBack();
-          }, lazy);
+          }, delay);
         },
         // 其实只是检测有没有授权用户信息。小程序初始化时已经直接静默登陆了
         checkAuth() {
@@ -50,20 +52,52 @@ export default {
           return new Promise((resolve, reject) => {
             if (this.loginStatus) {
               resolve();
+            } else {
+              uni.$on("onLogin", (value) => {
+                if (value) {
+                  resolve();
+                } else {
+                  reject();
+                }
+              });
             }
-            uni.$on("onLogin", (value) => {
-              if (value) {
-                resolve();
-              } else {
-                reject();
-              }
-            });
+          });
+        },
+        // 等待影院基础配置完成
+        waitInitConfig() {
+          return new Promise((resolve, reject) => {
+            if (this.setting && this.cinema) {
+              resolve();
+            } else {
+              uni.$on("onInitCinemaSetting", (value) => {
+                if (value) {
+                  resolve();
+                } else {
+                  reject();
+                }
+              });
+            }
+          });
+        },
+        // 个人详细业务数据，因为要多次获取后进行更新storage和store的全局个人资料，所以封装了一层去调用setUserInfo
+        getMember(openid) {
+          return new Promise((resolve, reject) => {
+            getMember(openid).then(
+              (res) => {
+                // res.member与login接口返回的数据相同，都是个人基本资料
+                setUserInfo(res.member);
+                resolve(res);
+              },
+              () => reject()
+            );
           });
         },
       },
-      // 如果使用了waitLogin则需要解除监听，防止重复监听，本质上使用waitLogin方式只是为了等登陆完成，不需要重复执行回调
+      // 不管是否使用了waitLogin都进行解除监听，防止重复监听onLogin
+      // 本质上使用waitLogin方式只是为了等登陆完成，不需要重复执行回调，尽管promise状态不会再次改变
       onHide() {
         uni.$off("onLogin");
+        uni.$off("onInitCinemaSetting");
       },
     });
   },

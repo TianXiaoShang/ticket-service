@@ -36,14 +36,9 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { setUserInfo, setToken } from '@/util'
-import { login } from '@/util/login';
+import { login, getUserProfile } from '@/util/base';
 
 export default {
-    computed: {
-        ...mapGetters(["cinema"]),
-    },
     data() {
         return {
             read: false
@@ -64,31 +59,17 @@ export default {
             this.read = !this.read;
         },
         getuserInfo() {
-            // #ifdef MP-TOUTIAO
-            console.log('getuserInfo-toutiao')
-            // #endif
+            if (this.read) {
+                getUserProfile().then(res => {
+                    this.back();
+                })
+            } else {
+                uni.showToast({
+                    title: "请先阅读并同意《用户协议》",
+                    icon: 'none'
+                })
+            }
 
-            // #ifdef MP-WEIXIN
-            wx.getUserProfile({
-                desc: "用于完善会员资料",
-                success: (result) => {
-                    this.request('member.update', result.userInfo).then(res => {
-                        if (res.member) {
-                            setUserInfo(res.member);
-                            setToken(res.member.token);
-                        }
-                        this.back();
-                    })
-                },
-                fail: err => {
-                    console.log(err, 'getUserProfile-fail')
-                    uni.showToast({
-                        title: "用户拒绝授权",  // 用户油盐不进，实在没办法
-                        icon: "none",
-                    });
-                }
-            })
-            // #endif
         },
     }
 };
