@@ -6,6 +6,7 @@
 			<input placeholder="请输入搜索关键词" disabled placeholder-style="font-size: 13px; color: #999" type="text"
 				confirm-type="search" />
 		</div>
+		<!-- banner -->
 		<view class="w-full mt-18px rounded overflow-hidden" v-if="bannerList.length">
 			<swiper class="w-full rounded swiper" circular :indicator-dots="true" :autoplay="true" :interval="2000"
 				:duration="500">
@@ -17,6 +18,7 @@
 				</swiper-item>
 			</swiper>
 		</view>
+		<!-- 分类 -->
 		<div class="mt-14px">
 			<u-scroll-list class="scroll-list" :indicator="indicator" indicatorColor="#fff0f0"
 				indicatorActiveColor="#FF545C">
@@ -32,8 +34,11 @@
 		<more-title :title="'热门'"></more-title>
 
 		<more-title :title="'更多推荐'"></more-title>
+		<!-- 推荐列表 -->
 		<div class="list">
-			<film-item :detail="item" v-for="(item, index) in hotList" :key="index"></film-item>
+			<div class="mt-16px" v-for="(item, index) in hotList" :key="index">
+				<film-item :detail="item"></film-item>
+			</div>
 		</div>
 	</view>
 </template>
@@ -94,6 +99,7 @@ export default {
 				}
 			})
 			// 推荐
+			// TAG-接口要更换，有添加分页， 推荐影片接口为film.recommend，全部影片接口为film.all
 			const hotListApi = this.setting.is_pattern === '1' ? 'drama.film.recommend' : 'recommend';
 			this.request(hotListApi).then(res => {
 				this.hotList = res.films.sort((a, b) => Number(b.sort) - Number(a.sort));

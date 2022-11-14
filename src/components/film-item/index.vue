@@ -1,63 +1,69 @@
 <template>
-    <view class="flex h-102px mt-16px justify-between items-center" @click="toFilmDetail">
-        <!-- 左侧封面 -->
-        <div class="w-76px min-w-76px h-full mr-10px rounded overflow-hidden">
-            <image class="w-76px h-full" :src="detail.logo"></image>
-        </div>
-        <!-- 影院模式 -->
-        <div :key="'Movie'" v-if="viewMode === 'Movie'"
-            class="movie flex-1 text-gray-666 text-12 h-full flex flex-col justify-between">
-            <div class="text-14  truncate w-full font-semibold text-gray-333">
-                {{ detail.title }}
+    <div class="wrap">
+        <view v-if="detail && detail.id" class="flex h-102px justify-between items-center" @click="toFilmDetail">
+            <!-- 左侧封面 -->
+            <div class="w-76px min-w-76px h-full mr-10px rounded overflow-hidden">
+                <image class="w-76px h-full" :src="detail.logo"></image>
             </div>
-            <div class="truncate">
-                <span>价格：</span>
-                <span class="text-red text-16 font-semibold">¥68</span>
-            </div>
-            <div class="truncate w-full">
-                导演：{{ detail.director }}
-            </div>
-            <div class="truncate w-full">
-                主演：{{ detail.author }}
-            </div>
-            <div class="tags h-16px overflow-x-auto text-0px" style="white-space: nowrap">
-                <div class="inline-block mr-4px">
-                    <u-tag text="标签" plain shape="circle" size="mini" type="warning"></u-tag>
-                </div>
-            </div>
-        </div>
-        <!-- 剧院模式 -->
-        <div :key="'Theater'" v-if="viewMode === 'Theater'"
-            class="theater flex-1 text-12 h-full flex flex-col justify-between">
-            <div>
-                <div class="text-14 line-2-ellipsis w-full font-semibold text-gray-333">
+            <!-- 影院模式 -->
+            <div :key="'Movie'" v-if="viewMode === 'Movie'"
+                class="movie flex-1 text-gray-666 text-12 h-full flex flex-col justify-between">
+                <div class="text-14  truncate w-full font-semibold text-gray-333">
                     {{ detail.title }}
                 </div>
-                <div class="tags mt-4px h-16px overflow-x-auto text-0px" style="white-space: nowrap">
+                <div class="truncate">
+                    <span v-if="showPrice">价格：</span>
+                    <span v-if="showPrice" class="text-red text-16 font-semibold">¥68</span>
+                </div>
+                <div class="truncate w-full h-17px">
+                    <span v-if="detail.director">导演：{{ detail.director }}</span>
+                </div>
+                <div class="truncate w-full h-17px">
+                    <span v-if="detail.author">主演：{{ detail.author }}</span>
+                </div>
+                <div class="tags h-16px overflow-x-auto text-0px" v-if="detail.type_name" style="white-space: nowrap">
                     <div class="inline-block mr-4px">
-                        <u-tag text="标签" borderColor="#999" color="#333" plain shape="circle" size="mini"></u-tag>
+                        <u-tag :text="detail.type_name" plain shape="circle" size="mini" type="warning"></u-tag>
                     </div>
                 </div>
             </div>
-            <div class="text-12 text-gray-666">
-                <div class="truncate w-full">
-                    2022.10.10-2022.12.12
-                </div>
-                <div class="w-full flex items-center justify-between">
-                    <div class="truncate flex-1">
-                        地址啊大家快更好大家快更好的撒娇开个会将卡合适的就更好尬哭很快见到过很快就会大师过
+            <!-- 剧院模式 -->
+            <div :key="'Theater'" v-if="viewMode === 'Theater'"
+                class="theater flex-1 text-12 h-full flex flex-col justify-between">
+                <div>
+                    <div class="text-14 line-2-ellipsis w-full font-semibold text-gray-333">
+                        {{ detail.title }}
                     </div>
-                    <span class="text-red text-16 font-semibold ml-10px">¥68</span>
+                    <div class="tags mt-4px h-16px overflow-x-auto text-0px" style="white-space: nowrap">
+                        <div class="inline-block mr-4px">
+                            <u-tag v-if="detail.type_name" :text="detail.type_name" borderColor="#999" color="#333"
+                                plain shape="circle" size="mini"></u-tag>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-12 text-gray-666 w-full flex justify-between items-end">
+                    <div class="flex-1 truncate">
+                        <div class="truncate">
+                            <!-- TAG-待补充时间段字段 -->
+                            2022.10.10-2022.12.12
+                        </div>
+                        <div class="truncate" v-if="showAddress">
+                            {{ detail.address }}
+                        </div>
+                    </div>
+                    <span v-if="showPrice" class="text-red text-16 font-semibold ml-10px">¥68</span>
                 </div>
             </div>
-        </div>
-        <!-- 购票按钮 -->
-        <div v-if="viewMode === 'Movie'" class="height-full min-w-52px flex items-center ml-10px">
-            <u-button class="h-26px min-w-52px" shape="circle" size="small"
-                color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="购票" @click.native.stop="toSelectFilm">
-            </u-button>
-        </div>
-    </view>
+            <!-- 购票按钮 -->
+            <div v-if="viewMode === 'Movie' && showBuy" class="height-full min-w-52px flex items-center ml-10px">
+                <u-button class="h-26px min-w-52px" shape="circle" size="small"
+                    color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="购票"
+                    @click.native.stop="toSelectFilm">
+                </u-button>
+            </div>
+        </view>
+        <u-skeleton avatarShape="square" avatarSize="102" rows="3" title v-else avatar loading></u-skeleton>
+    </div>
 </template>
 
 <script>
@@ -65,6 +71,18 @@ export default {
     name: 'Title',
     props: {
         detail: Object,
+        showAddress: {
+            type: Boolean,
+            default: true
+        },
+        showBuy: {
+            type: Boolean,
+            default: true
+        },
+        showPrice: {
+            type: Boolean,
+            default: true
+        },
     },
     data() {
         return {
