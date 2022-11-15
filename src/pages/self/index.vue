@@ -2,7 +2,7 @@
 	<view class="page-box bg-gray-bg py-20px box-border">
 		<loading />
 		<!-- 自定义导航 -->
-		<nav-bar v-if="showNav" :title="'个人中心'" :backgroundColor="'transparent'"></nav-bar>
+		<nav-bar v-if="isWx" :title="'个人中心'" :backgroundColor="'transparent'"></nav-bar>
 		<!-- 背景 -->
 		<div class="fixed h-100vh overflow-hidden left-0 top-0 w-100vw">
 			<image src="@/static/self/colorbg@2x.png" mode="widthFix" class="w-full" />
@@ -13,16 +13,28 @@
 			<!-- 基本资料 -->
 			<div class="flex justify-between items-center px-20px">
 				<div class="flex items-center">
-					<div
+					<!-- 头像 -->
+					<div v-if="isWx"
+						class="relative rounded-full border-solid shadow-lg border-2 border-white box-border overflow-hidden w-60px h-60px">
+						<!-- TAG-需添加默认头像 -->
+						<image :src="userInfo.avatar" class="w-full h-full" />
+						<button class="absolute left-0 right-0 top-0 bottom-0 opacity-0" open-type="chooseAvatar"
+							@chooseavatar="chooseavatar"></button>
+					</div>
+					<!-- TAG-抖音暂时保留原来的授权方式，微信已经不支持getUserProfile方法 -->
+					<div v-else @click="getUserInfo"
 						class="rounded-full border-solid shadow-lg border-2 border-white box-border overflow-hidden w-60px h-60px">
+						<!-- TAG-需添加默认头像 -->
 						<image :src="userInfo.avatar" class="w-full h-full" />
 					</div>
+					<!-- 昵称 -->
 					<div class="ml-10px">
 						<div @click="getUserInfo" class="text-333 font-semibold text-20">{{ userInfo.nickname || '未登陆'
 						}}</div>
+						<!-- 手机号 -->
 						<div class="text-666 text-12 mt-5px">
 							<span class="relative">
-								{{ '点击授权手机号' || userInfo.mobile || '点击授权手机号' }}
+								{{ userInfo.mobile || '点击授权手机号' }}
 								<button @getphonenumber="getMobile"
 									class="opacity-0 absolute left-0 right-0 top-0 bottom-0" openType="getPhoneNumber">
 								</button>
@@ -140,7 +152,6 @@ import { getUserProfile, getPhoneNumber } from '@/util/base';
 export default {
 	data() {
 		return {
-			showNav: false,
 			member: {},
 			card: {},
 			global: 0,
@@ -168,11 +179,6 @@ export default {
 				this.loginFlag = true;
 			}
 		})
-
-		// 微信小程序实现顶部透明
-		// #ifdef MP-WEIXIN
-		this.showNav = true;
-		// #endif
 	},
 	methods: {
 		getAllData() {
@@ -224,6 +230,10 @@ export default {
 		},
 		getMobile(e) {
 			getPhoneNumber(e).then(res => { }, () => { })
+		},
+		// TAG-需要上传文件到服务器接口，返回真实url后updateUserInfo
+		chooseavatar(e) {
+			console.log(e, '--------');
 		}
 	}
 };

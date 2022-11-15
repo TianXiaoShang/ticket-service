@@ -141,6 +141,15 @@ const parseRichText = (str) => {
   return str;
 };
 
+const getSafeAreaInsets = () => {
+  const systemInfo = uni.getSystemInfoSync();
+  const safeAreaInsets =
+    systemInfo.platform === "ios" || systemInfo.platform === "devtools"
+      ? systemInfo.safeAreaInsets.bottom
+      : 0;
+  return safeAreaInsets;
+};
+
 export {
   setToken,
   clearToken,
@@ -153,4 +162,5 @@ export {
   sendCall,
   openMap,
   parseRichText,
+  getSafeAreaInsets,
 };

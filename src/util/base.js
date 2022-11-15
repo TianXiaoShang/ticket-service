@@ -42,6 +42,7 @@ const login = (mid) => {
     });
     // #endif
 
+    // TAG-抖音还没走登录
     // #ifdef MP-TOUTIAO
     resolve();
     store.commit("LOGIN", true);
@@ -51,6 +52,7 @@ const login = (mid) => {
 
 const getUserProfile = () => {
   return new Promise((resolve, reject) => {
+    // TAG-抖音还没实现获取个人资料
     // #ifdef MP-TOUTIAO
     console.log("getuserInfo-toutiao");
     resolve();

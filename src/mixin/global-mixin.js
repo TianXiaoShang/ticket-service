@@ -11,6 +11,7 @@ export default {
       data() {
         return {
           BASE_URL,
+          isWx: false, // 判断微信还是抖音
           request,
           triggered: true,
           currentPage: 0,
@@ -28,6 +29,15 @@ export default {
       },
       computed: {
         ...mapGetters(["userInfo", "loginStatus", "setting", "cinema"]),
+        isMovieMode() {
+          return this.setting ? this.setting.is_pattern == 0 : true; // 默认影院模式, 剧院模式 is_pattern == 1   /   影院模式 is_pattern == 0
+        },
+      },
+      created() {
+        // 微信小程序实现顶部透明
+        // #ifdef MP-WEIXIN
+        this.isWx = true;
+        // #endif
       },
       methods: {
         goHome(delay = 800) {
@@ -93,10 +103,11 @@ export default {
           });
         },
       },
-      // 不管是否使用了waitLogin都进行解除监听，防止重复监听onLogin
-      // 本质上使用waitLogin方式只是为了等登陆完成，不需要重复执行回调，尽管promise状态不会再次改变
       onHide() {
+        // 不管是否使用了waitLogin都进行解除监听，防止重复监听onLogin
+        // 本质上使用waitLogin方式只是为了等登陆完成，不需要重复执行回调，尽管promise状态不会再次改变
         uni.$off("onLogin");
+        // 同上理
         uni.$off("onInitCinemaSetting");
       },
     });

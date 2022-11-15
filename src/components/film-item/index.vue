@@ -2,11 +2,17 @@
     <div class="wrap">
         <view v-if="detail && detail.id" class="flex h-102px justify-between items-center" @click="toFilmDetail">
             <!-- 左侧封面 -->
-            <div class="w-76px min-w-76px h-full mr-10px rounded overflow-hidden">
+            <div class="w-76px min-w-76px h-full mr-10px rounded overflow-hidden relative">
                 <image class="w-76px h-full" :src="detail.logo"></image>
+                <div v-if="detail.video && showPlay" @click.stop="onPlay"
+                    class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 p-8px bg-gray-bg rounded-full opacity-70">
+                    <span style="position: relative; left: 1px;">
+                        <u-icon name="play-right-fill" size="18px" color="#999"></u-icon>
+                    </span>
+                </div>
             </div>
             <!-- 影院模式 -->
-            <div :key="'Movie'" v-if="viewMode === 'Movie'"
+            <div :key="'Movie'" v-if="isMovieMode"
                 class="movie flex-1 text-gray-666 text-12 h-full flex flex-col justify-between">
                 <div class="text-14  truncate w-full font-semibold text-gray-333">
                     {{ detail.title }}
@@ -28,7 +34,7 @@
                 </div>
             </div>
             <!-- 剧院模式 -->
-            <div :key="'Theater'" v-if="viewMode === 'Theater'"
+            <div :key="'Theater'" v-if="!isMovieMode"
                 class="theater flex-1 text-12 h-full flex flex-col justify-between">
                 <div>
                     <div class="text-14 line-2-ellipsis w-full font-semibold text-gray-333">
@@ -55,14 +61,14 @@
                 </div>
             </div>
             <!-- 购票按钮 -->
-            <div v-if="viewMode === 'Movie' && showBuy" class="height-full min-w-52px flex items-center ml-10px">
-                <u-button class="h-26px min-w-52px" shape="circle" size="small"
+            <div v-if="isMovieMode && showBuy" class="height-full min-w-52px flex items-center ml-10px">
+                <u-button class="min-w-52px" shape="circle" size="small"
                     color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="购票"
                     @click.native.stop="toSelectFilm">
                 </u-button>
             </div>
         </view>
-        <u-skeleton avatarShape="square" avatarSize="102" rows="3" title v-else avatar loading></u-skeleton>
+        <u-skeleton avatarShape="square" avatarSize="102" rows="2" title v-else avatar loading></u-skeleton>
     </div>
 </template>
 
@@ -83,23 +89,25 @@ export default {
             type: Boolean,
             default: true
         },
-    },
-    data() {
-        return {
-            viewMode: 'Movie', // Theater 剧院模式 is_pattern == 1   /    Movie 影院模式 is_pattern == 0
+        showPlay: {
+            type: Boolean,
+            default: true
+        },
+        canTap: {
+            type: Boolean,
+            default: true
         }
     },
-    created() {
-        this.waitInitConfig().then(() => {
-            if (this.setting.is_pattern == 1) {
-                this.viewMode = 'Theater';
-            } else {
-                this.viewMode = 'Movie';
-            }
-        })
+    data() {
+        return {}
     },
+    created() { },
     methods: {
+        onPlay() {
+            this.$emit('play', this.detail.video)
+        },
         toFilmDetail() {
+            if (!this.canTap) return;
             uni.navigateTo({
                 url: '/film-detail/detail/index?id=' + this.detail.id
             })

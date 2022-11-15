@@ -7,9 +7,9 @@
 				confirm-type="search" />
 		</div>
 		<!-- banner -->
-		<view class="w-full mt-18px rounded overflow-hidden" v-if="bannerList.length">
-			<swiper class="w-full rounded swiper" circular :indicator-dots="true" :autoplay="true" :interval="2000"
-				:duration="500">
+		<view class="w-full mt-18px rounded overflow-hidden">
+			<swiper class="w-full rounded swiper" v-if="bannerList.length" circular :indicator-dots="true"
+				:autoplay="true" :interval="2000" :duration="500">
 				<swiper-item class="swiper-item rounded h-0px w-full" v-for="(item, index) in bannerList" :key="index"
 					@click="toDetail(item)">
 					<view class="swiper-item h-full w-full font-0px">
@@ -17,10 +17,12 @@
 					</view>
 				</swiper-item>
 			</swiper>
+			<u-skeleton v-else rows="0" titleWidth="100%" titleHeight="100" title :title="true" loading></u-skeleton>
 		</view>
+
 		<!-- 分类 -->
 		<div class="mt-14px">
-			<u-scroll-list class="scroll-list" :indicator="indicator" indicatorColor="#fff0f0"
+			<u-scroll-list v-if="kindList.length" class="scroll-list" :indicator="indicator" indicatorColor="#fff0f0"
 				indicatorActiveColor="#FF545C">
 				<view class="scroll-list-item" v-for="(item, index) in kindList" :key="index">
 					<div class="scroll-list-item flex flex-col justify-center items-center">
@@ -29,6 +31,7 @@
 					</div>
 				</view>
 			</u-scroll-list>
+			<u-skeleton v-else rows="0" titleWidth="100%" titleHeight="67" title :title="true" loading></u-skeleton>
 		</div>
 
 		<more-title :title="'热门'"></more-title>
@@ -37,27 +40,32 @@
 		<!-- 推荐列表 -->
 		<div class="list">
 			<div class="mt-16px" v-for="(item, index) in hotList" :key="index">
-				<film-item :detail="item"></film-item>
+				<film-item :detail="item" @play="onPlay"></film-item>
 			</div>
 		</div>
+		<!-- 视频播放器 -->
+		<preview-video :src="playSrc" v-model="showPreviewVideo"></preview-video>
 	</view>
 </template>
 
 <script>
 import MoreTitle from './components/more-title';
 import FilmItem from '@/components/film-item';
+import PreviewVideo from '@/components/preview-video';
 export default {
 	data() {
 		return {
 			title: 'home',
 			bannerList: [],
 			kindList: [],
-			hotList: [],
+			hotList: [{}, {}, {}, {}, {}],   // 给5个控对象是为了渲染骨架图
 			indicator: false,
 			getDataFlag: false,
+			playSrc: '',
+			showPreviewVideo: false
 		}
 	},
-	components: { MoreTitle, FilmItem },
+	components: { MoreTitle, FilmItem, PreviewVideo },
 	onShow() {
 		// 轮播图
 		this.request('slideshow').then(res => {
@@ -67,6 +75,10 @@ export default {
 		if (this.getDataFlag) {
 			this.getData();
 		}
+	},
+	onHide() {
+		this.showPreviewVideo = false;
+		this.playSrc = '';
 	},
 	onLoad() {
 		// 确保基础配置加载完成再获取数据
@@ -79,6 +91,10 @@ export default {
 		})
 	},
 	methods: {
+		onPlay(e) {
+			this.showPreviewVideo = true;
+			this.playSrc = e;
+		},
 		toDetail(item) {
 			if (!item.route) {
 				return;
@@ -91,7 +107,7 @@ export default {
 		getData() {
 			// 剧院模式 1 / 影院模式 0
 			// 分类
-			const typesApi = this.setting.is_pattern == 1 ? 'drama.film.types' : 'types';
+			const typesApi = this.isMovieMode ? 'types' : 'drama.film.types';
 			this.request(typesApi).then(res => {
 				this.kindList = res.types;
 				if (this.kindList.length > 4) {
@@ -100,7 +116,7 @@ export default {
 			})
 			// 推荐
 			// TAG-接口要更换，有添加分页， 推荐影片接口为film.recommend，全部影片接口为film.all
-			const hotListApi = this.setting.is_pattern === '1' ? 'drama.film.recommend' : 'recommend';
+			const hotListApi = this.isMovieMode ? 'recommend' : 'drama.film.recommend';
 			this.request(hotListApi).then(res => {
 				this.hotList = res.films.sort((a, b) => Number(b.sort) - Number(a.sort));
 			})

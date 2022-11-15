@@ -108,7 +108,6 @@ const getLocationPos = () => {
 
 // 按照正球形计算两个位置坐标的直线距离
 const distance = (la1, lo1, la2, lo2) => {
-  console.log(la1, lo1, la2, lo2, "la1, lo1, la2, lo2la1, lo1, la2, lo2");
   var La1 = (la1 * Math.PI) / 180.0;
   var La2 = (la2 * Math.PI) / 180.0;
   var La3 = La1 - La2;

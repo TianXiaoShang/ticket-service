@@ -108,7 +108,7 @@ export default {
         position: fixed;
         top: 0;
         left: 0;
-        z-index: 99;
+        z-index: 9999;
         width: 100%;
 
         .content-wrap {

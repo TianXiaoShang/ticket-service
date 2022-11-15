@@ -6,10 +6,10 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     loginStatus: false, // 获取登陆状态
-    token: null,   // token
+    token: null, // token
     userInfo: {}, // 储存来自weixin授权的用户信息（头像信息等）
-    globalLoadings: [],   // loading组件控制
-    globalLoadingText: "",   // loading组件文本
+    globalLoadings: [], // loading组件控制
+    globalLoadingText: "", // loading组件文本
     cinema: null, // 影院信息
     setting: null, // 影院配置信息
     userLocation: null, // 用户位置坐标信息
