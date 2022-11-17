@@ -1,5 +1,5 @@
 <template>
-	<view class="page-box bg-gray-bg py-20px box-border">
+	<view class="page-box bg-gray-bg box-border">
 		<loading />
 		<!-- 自定义导航 -->
 		<nav-bar v-if="isWx" :title="'个人中心'" :backgroundColor="'transparent'"></nav-bar>
@@ -9,7 +9,7 @@
 		</div>
 
 		<!-- 内容区域 -->
-		<div class="relative z-99">
+		<div class="relative z-99 py-20px">
 			<!-- 基本资料 -->
 			<div class="flex justify-between items-center px-20px">
 				<div class="flex items-center">
@@ -157,7 +157,7 @@ export default {
 			global: 0,
 			neerTicket: {},
 			loginFlag: false,
-			agentUrl: '', // 分销不同状态跳转不同分销页面
+			agentUrl: '', // TAG-分销申请的不同状态跳转不同分销页面
 		}
 	},
 	components: { NavBar },
@@ -195,6 +195,7 @@ export default {
 			console.log('toVip');
 		},
 		toNeerTicket() {
+			// TAG-要对接路由跳转地址，跳转到订单详情页
 			const url = `/pages/ticket/detail/detail?id=${this.neerTicket.ticket.order_id}`;
 			console.log(url, 'toNeerTicket');
 		},
@@ -220,6 +221,7 @@ export default {
 			}
 			this.agentUrl = url;
 		},
+		// TAG-等授权页设计好，在微信端要进行跳转授权页面处理。原getUserProfile已不支持
 		getUserInfo() {
 			getUserProfile().then(res => {
 				uni.showToast({

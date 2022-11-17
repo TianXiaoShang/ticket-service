@@ -14,20 +14,26 @@
             <!-- 影院模式 -->
             <div :key="'Movie'" v-if="isMovieMode"
                 class="movie flex-1 text-gray-666 text-12 h-full flex flex-col justify-between">
-                <div class="text-14  truncate w-full font-semibold text-gray-333">
+                <div class="text-14 truncate w-full font-semibold text-gray-333">
                     {{ detail.title }}
                 </div>
+                <!-- 没有tag的时候，顶下空间没，保持title外全部靠下 -->
+                <div class="h-16px" v-if="!detail.type_name"></div>
+                <div class="h-17px" v-if="!detail.director"></div>
+                <div class="h-17px" v-if="!detail.author"></div>
                 <div class="truncate">
                     <span v-if="showPrice">价格：</span>
+                    <!-- TAG-价格字段待对接 -->
                     <span v-if="showPrice" class="text-red text-16 font-semibold">¥68</span>
                 </div>
-                <div class="truncate w-full h-17px">
-                    <span v-if="detail.director">导演：{{ detail.director }}</span>
+                <div class="truncate w-full h-17px" v-if="detail.director">
+                    <span>导演：{{ detail.director }}</span>
                 </div>
-                <div class="truncate w-full h-17px">
-                    <span v-if="detail.author">主演：{{ detail.author }}</span>
+                <div class="truncate w-full h-17px" v-if="detail.author">
+                    <span>主演：{{ detail.author }}</span>
                 </div>
                 <div class="tags h-16px overflow-x-auto text-0px" v-if="detail.type_name" style="white-space: nowrap">
+                    <!-- TAG-标签列表待对接，应该是数组不是type_name -->
                     <div class="inline-block mr-4px">
                         <u-tag :text="detail.type_name" plain shape="circle" size="mini" type="warning"></u-tag>
                     </div>
@@ -41,6 +47,7 @@
                         {{ detail.title }}
                     </div>
                     <div class="tags mt-4px h-16px overflow-x-auto text-0px" style="white-space: nowrap">
+                        <!-- TAG-标签列表待对接，应该是数组不是type_name -->
                         <div class="inline-block mr-4px">
                             <u-tag v-if="detail.type_name" :text="detail.type_name" borderColor="#999" color="#333"
                                 plain shape="circle" size="mini"></u-tag>
@@ -57,6 +64,7 @@
                             {{ detail.address }}
                         </div>
                     </div>
+                    <!-- TAG-价格字段待对接 -->
                     <span v-if="showPrice" class="text-red text-16 font-semibold ml-10px">¥68</span>
                 </div>
             </div>
@@ -101,7 +109,6 @@ export default {
     data() {
         return {}
     },
-    created() { },
     methods: {
         onPlay() {
             this.$emit('play', this.detail.video)
@@ -113,7 +120,9 @@ export default {
             })
         },
         toSelectFilm() {
-            console.log('toSelectFilm');
+            uni.navigateTo({
+                url: '/film-detail/choice-movie/index?id=' + this.detail.id
+            })
         }
     }
 };

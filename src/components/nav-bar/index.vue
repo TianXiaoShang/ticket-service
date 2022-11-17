@@ -8,12 +8,12 @@
                 <view class="navbar-content" :style="{ height: navBarHeight + 'px', width: contentWidth + 'px' }">
                     <!-- 返回按钮 -->
                     <view class="back-btn" v-if="showBack && backType == 'arrows'" @click="back">
-                        <u-icon v-if="theme === 'light'" name="arrow-left" size="22px" color="#000" />
-                        <u-icon v-if="theme === 'dark'" name="arrow-left" size="22px" color="#fff" />
+                        <u-icon v-if="theme === 'light'" name="arrow-left" size="21px" color="#000" />
+                        <u-icon v-if="theme === 'dark'" name="arrow-left" size="21px" color="#fff" />
                     </view>
                     <!-- 返回首页按钮 -->
                     <view class="back-btn" v-if="showBack && backType == 'home'" @click="backHome">
-                        <u-icon name="home-fill" size="22px" />
+                        <u-icon name="home-fill" size="21px" />
                     </view>
                     <!-- 中间内容区域 -->
                     <view class="content">
@@ -86,7 +86,6 @@ export default {
         this.statusBarHeight = statusBarHeight
         this.navBarHeight = navBarHeight
         this.contentWidth = contentWidth
-        console.log(statusBarHeight, navBarHeight, contentWidth, '-------------')
     },
     methods: {
         back() {

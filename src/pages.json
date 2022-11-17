@@ -41,6 +41,31 @@
           "style": {
             "navigationBarTitleText": "详情"
           }
+        },
+        {
+          "path": "choice-theater/index",
+          "style": {
+            "navigationBarTitleText": "选票",
+            "mp-weixin": {
+              "navigationStyle": "custom",
+              "backgroundColor": "#F9F9F9"
+            },
+            "mp-toutiao": {
+              "navigationStyle": "default"
+            }
+          }
+        },
+        {
+          "path": "choice-movie/index",
+          "style": {
+            "navigationBarTitleText": "场次"
+          }
+        },
+        {
+          "path": "choice-set/index",
+          "style": {
+            "navigationBarTitleText": "选择座位"
+          }
         }
       ]
     }

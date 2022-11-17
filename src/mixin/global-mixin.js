@@ -4,6 +4,7 @@ import { BASE_URL } from "@/services/environment.service";
 import store from "@/store";
 import { getMember } from "@/api/common.js";
 import { setUserInfo } from "@/util";
+import moment from "moment";
 
 export default {
   install(Vue) {
@@ -11,6 +12,7 @@ export default {
       data() {
         return {
           BASE_URL,
+          moment,
           isWx: false, // 判断微信还是抖音
           request,
           triggered: true,
@@ -101,6 +103,23 @@ export default {
               () => reject()
             );
           });
+        },
+        // 秒数转时分
+        getHourAndMinute(time) {
+          console.log(time, '----------')
+          if (!time) {
+            return "";
+          }
+          const num = Number(time) * 1000;
+          let h = this.moment(num).hour();
+          let m = this.moment(num).minute();
+          if (h < 10) {
+            h = "0" + h;
+          }
+          if (m < 10) {
+            m = "0" + m;
+          }
+          return h + ":" + m;
         },
       },
       onHide() {

@@ -90,7 +90,7 @@
             </div>
         </div>
         <!-- 选座按钮 -->
-        <div class="buy-btn fixed bottom-0 left-0 w-full p-20px box-border bg-white">
+        <div class="fixed bottom-0 left-0 w-full p-20px box-border bg-white">
             <u-button shape="circle" size="normal" :customStyle="{ height: '44px', width: '200px' }"
                 color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="选座预约"
                 @click.native.stop="toSelectFilm">
@@ -147,7 +147,15 @@ export default {
     },
     methods: {
         toSelectFilm() {
-            console.log('toSelectFilm')
+            if (this.isMovieMode) {
+                uni.navigateTo({
+                    url: '/film-detail/choice-movie/index?id=' + this.id
+                })
+            } else {
+                uni.navigateTo({
+                    url: '/film-detail/choice-theater/index?id=' + this.id
+                })
+            }
         },
         onPlay(e) {
             this.showPreviewVideo = true;
