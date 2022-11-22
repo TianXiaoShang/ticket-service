@@ -2,7 +2,7 @@
 	<div class="page-box bg-white box-border">
 		<loading />
 		<!-- 电影信息 -->
-		<div class=" bg-white pt-16px px-20px pb-10px flex justify-between items-center">
+		<div class=" bg-white pt-16px px-20px pb-10px flex justify-between items-center relative z-9999">
 			<div>
 				<div class="text-gray-333 text-14px font-semibold">{{ row.film_title }}</div>
 				<div class="text-gray-666 text-12px mt-8px">
@@ -17,7 +17,7 @@
 		</div>
 
 		<!-- 票档分类 -->
-		<div class="bg-white relative overflow-hidden px-20px pt-10px box-border w-full">
+		<div class="bg-white relative z-9999 overflow-hidden px-20px pt-10px box-border w-full">
 			<!-- 票档 -->
 			<div class="text-gray-999 h-62px overflow-y-auto">
 				<div v-for="(item, index) in dateList" :key="index"
@@ -31,28 +31,48 @@
 					</div>
 				</div>
 			</div>
-			<div class="filter absolute w-full left-0 bottom-0 h-15px"
+			<div class="absolute w-full left-0 bottom-0 h-15px"
 				style="background-image: linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 80%);">
 			</div>
 		</div>
 
 		<!-- 选座区域 -->
-		<div style="height: calc(100vh - 60px - 62px - 130px)" class="bg-gray-bg py-10px box-border">
+		<div style="height: calc(100vh - 60px - 62px - 10px - 122px)" class="bg-gray-bg box-border">
 			<!-- 选座组件 -->
-			<div class="box">
-				daaaaaassssssss
+			<div class="w-full h-full">
+				<set-area ref="SetArea" :mapData="map" :maxSelect="maxSelectSet" v-if="map && map.length"
+					@seatChange="seatChange">
+				</set-area>
+				<div v-else>
+					<u-empty mode="coupon" :text="!pageLoad ? 'loading...' : '暂无座位安排'"
+						icon="http://cdn.uviewui.com/uview/empty/comment.png">
+					</u-empty>
+				</div>
 			</div>
 		</div>
 
 		<!-- 底部已选展示，购买 -->
-		<div class="fixed bottom-0 h-130px left-0 w-full box-border bg-white"
+		<div class="fixed z-9999 bottom-0 h-122px left-0 w-full box-border bg-white"
 			style="box-shadow: 0px -2px 6px 0px rgba(51,51,51,0.05);">
 			<!-- 已选 -->
-			<div class="flex px-20px overflow-hidden justify-between items-center h-60px">
-				<div class="flex items-center">
-					<image class="w-22px h-22px" src="@/static/detail/reduce.png" />
-					<span class="text-gray-333">6排8座、6排10座</span>
-				</div>
+			<div class="overflow-hidden h-52px box-border overflow-x-auto pl-10px py-10px" style="white-space: nowrap;">
+				<template v-if="selectSeatDataList.length">
+					<div class="inline-flex mr-10px items-center bg-gray-bg px-10px py-4px border rounded-5px box-border border-solid border-gray-ddd"
+						v-for="(item, index) in selectSeatDataList" :key="index">
+						<div class="w-18px h-18px mr-5px" :style="{ background: item.color || 'green' }">
+							<image class="w-18px h-18px min-w-18px min-h-18px" src="../static/seat.png"
+								mode="aspectFit">
+							</image>
+						</div>
+						<span class="text-gray-333 leading-relaxed text-14px">{{ item.originData.name }}</span>
+						<image @click="deleteSeat(item)" class="w-18px h-18px min-w-18px min-h-18px ml-10px"
+							src="../static/close.png" mode="aspectFit"></image>
+					</div>
+					<div class="absolute w-20px right-0 top-0 h-full"
+						style="background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);">
+					</div>
+				</template>
+				<div class="h-full w-full flex items-center justify-center text-gray-999 text-14px" v-else>请选择观影座位</div>
 			</div>
 			<!-- 购买 -->
 			<div
@@ -60,7 +80,7 @@
 				<div class="flex">
 					<div class="text-red flex items-center">
 						<span class="text-12 ml-3px relative top-2px">¥</span>
-						<span class="text-18px font-semibold">168</span>
+						<span class="text-18px font-semibold">{{totalPrice}}</span>
 					</div>
 					<div class="text-333 text-12 flex items-center ml-5px" @click="showPopup = true">
 						<span>价格明细</span>
@@ -70,8 +90,7 @@
 					</div>
 				</div>
 				<u-button shape="circle" size="normal" :customStyle="{ height: '44px', width: '160px', margin: 0 }"
-					color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="去选座"
-					@click.native.stop="toSelectFilm">
+					color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="立即购买" @click="toPay">
 				</u-button>
 			</div>
 		</div>
@@ -84,7 +103,7 @@
 					<span> 费用明细 </span>
 					<u-icon name="close" size="18px" @click="showPopup = false"></u-icon>
 				</div>
-				<!-- TAG-服务条款内容待补充 -->
+				<!-- TAG-价格明细内容待补充 -->
 				<scroll-view scroll-y="true" class="text-gray-666 max-h-50vh px-15px box-border mt-15px">
 					<div class="mb-25px">
 						<div class="text-gray-333 text-14px font-semibold flex justify-between items-center">
@@ -112,29 +131,35 @@
 </template>
 
 <script>
+import SetArea from '../components/set-area.vue';
+
 export default {
 	data() {
 		return {
 			id: '',
-			isAuto: false,
-			// dateList: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
-			dateList: [{}, {}, {}],
+			dateList: [{}, {}, {}, {}, {}],   // TAG-票档接口待对接
 			showPopup: false,
 			global: {},
 			row: {},
-			map: {},
-			dayEnum: ['日', '一', '二', '三', '四', '五', '六']
+			map: [],
+			dayEnum: ['日', '一', '二', '三', '四', '五', '六'],
+			maxSelectSet: 0,
+			selectSeatDataList: [],
+			totalPrice: 0,
 		}
 	},
+	components: { SetArea },
 	onLoad(options) {
 		this.id = options.id;
-		this.isAuto = options.isAuto == 'true' ? true : false;
 		// 确保已经登陆完成
 		this.waitLogin().then(() => {
 			this.getData();
 		})
 	},
 	methods: {
+		deleteSeat(item) {
+			this.$refs.SetArea.deleteSeat(item);
+		},
 		getDetialTime(num) {
 			let moment = this.moment(Number(num) * 1000);
 			const date = moment.format('YYYY-MM-DD');
@@ -145,12 +170,60 @@ export default {
 		},
 		getData() {
 			this.request("seat", { row_id: this.id }).then(res => {
-				console.log(res, 'rrrrrrrrrrr');
 				this.global = res.global;
 				this.row = res.row;
-				this.map = res.map;
+				this.map = this.initMap(res.map.seat);
+				this.pageLoad = true;
+				this.maxSelectSet = (res.row.film_astrict || res.row.film_astrict == 0) ? Number(res.row.film_astrict) : 100000;
 			});
 		},
+		initMap(map) {
+			const arr = [];
+			for (const key in map) {
+				if (Object.hasOwnProperty.call(map, key)) {
+					const element = map[key];
+					const ele = {
+						YCoord: Number(element.row),
+						XCoord: Number(element.col),
+						SeatCode: element.mark,
+						Status: element.status,
+						color: element.color,
+						links: element.links,
+						originData: element,
+						RowNum: Number(element.row),
+						// ColumnNum  这个字段暂时没啥用，RowNum还能用来左侧行号的展示
+					}
+					arr.push(ele)
+				}
+			}
+			return arr;
+		},
+		seatChange(e) {
+			this.selectSeatDataList = e;
+			// TAG-变更后通过接口获取价格及优惠信息
+			this.totalPrice = this.selectSeatDataList.length * this.row.price;
+		},
+		toPay() {
+			if (!this.selectSeatDataList || !this.selectSeatDataList.length) {
+				uni.showToast({
+					title: "请先选择座位",
+					icon: 'none'
+				})
+				return;
+			}
+			const ids = this.selectSeatDataList.map(el => el.originData.mark);
+			console.log(ids.toString(), this.totalPrice, '========');
+			return;
+			// this.request("order", {
+			// 	row_id: this.id,
+			// 	seat: ids.toString(),
+			// 	price: this.totalPrice,
+			// }).then(res => {
+			// 	wx.redirectTo({
+			// 		url: '/pages/order/pay/pay?id=' + res.data.order_id,
+			// 	});
+			// })
+		}
 	}
 };
 </script>

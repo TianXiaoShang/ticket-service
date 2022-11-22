@@ -19,6 +19,7 @@ export default {
           currentPage: 0,
           pageSize: 20,
           totalCount: 0,
+          pageLoad: false,
           _loading: {
             show(text) {
               store.commit("SHOW_LOADING", text);
@@ -104,9 +105,8 @@ export default {
             );
           });
         },
-        // 秒数转时分
+        // 时间戳转时分
         getHourAndMinute(time) {
-          console.log(time, '----------')
           if (!time) {
             return "";
           }

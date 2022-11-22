@@ -86,8 +86,7 @@
 
 				</div>
 				<u-button shape="circle" size="normal" :customStyle="{ height: '44px', width: '160px', margin: 0 }"
-					color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="去选座"
-					@click.native.stop="toSelectFilm">
+					color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="去选座" @click="toSelectFilm">
 				</u-button>
 			</div>
 		</div>
@@ -100,7 +99,7 @@
 					<span> 费用明细 </span>
 					<u-icon name="close" size="18px" @click="showPopup = false"></u-icon>
 				</div>
-				<!-- TAG-服务条款内容待补充 -->
+				<!-- TAG-价格明细内容待补充 -->
 				<scroll-view scroll-y="true" class="text-gray-666 max-h-50vh px-15px box-border mt-15px">
 					<div class="mb-25px">
 						<div class="text-gray-333 text-14px font-semibold flex justify-between items-center">
@@ -149,6 +148,10 @@ export default {
 		})
 	},
 	methods: {
+		toSelectFilm() {
+			// TAG-这里要判断是哪种场景，以决定是否需要跳转选座，还有可能不需要选座直接跳转下单页
+			console.log('toSelectFilm')
+		},
 		getData() {
 			this.pageTitle = '电影迷概念车放大镜看了感觉的撒开的感觉';
 			this.pageTitle = this.pageTitle.length > 15 ? this.pageTitle.substring(0, 12) + '...' : this.pageTitle;

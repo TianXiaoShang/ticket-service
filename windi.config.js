@@ -47,6 +47,11 @@ export default defineConfig({
           777: "#777",
           888: "#888",
           999: "#999",
+          aaa: "#aaa",
+          bbb: "#bbb",
+          ccc: "#ccc",
+          ddd: "#ddd",
+          eee: "#eee",
           bg: "#F9F9F9",
         },
         red: {

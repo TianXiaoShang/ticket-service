@@ -89,7 +89,7 @@ export default {
             type: Boolean,
             default: true
         },
-        showBuy: {
+        showBuy: {    // 是否需要展示购买按钮，在电影详情页使用这个组件只是作为展示复用
             type: Boolean,
             default: true
         },
@@ -97,11 +97,11 @@ export default {
             type: Boolean,
             default: true
         },
-        showPlay: {
+        showPlay: {    // 是否需要预览视频，在电影详情页本身下面有“精彩瞬间”可以播放
             type: Boolean,
             default: true
         },
-        canTap: {
+        canTap: {   // 是否需要点击跳转，在电影详情页使用这个组件是不需要点击跳转的，只是作为展示复用
             type: Boolean,
             default: true
         }

@@ -30,7 +30,7 @@
 				:inactiveStyle="{ color: '#999999', transform: 'scale(1)' }"></u-tabs>
 			<!-- tab内容 -->
 			<div style="border-top: 1px solid #eee" class="pb-20px w-full">
-				<div v-if="!tabsDataList[tabIndex].row.length" class="mt-30px">
+				<div v-if="!tabsDataList[tabIndex].row || !tabsDataList[tabIndex].row.length" class="mt-30px">
 					<u-empty mode="coupon" text="暂无场次安排" icon="http://cdn.uviewui.com/uview/empty/coupon.png">
 					</u-empty>
 				</div>
@@ -80,12 +80,13 @@
 								</div>
 							</div>
 							<!-- 按钮 -->
-							<u-button class="min-w-64px" v-if="item.sell == 0 || item.is_sell == 0" shape="circle"
+							<!-- TAG-不确定状态sell与is_sell判定是否正确 -->
+							<u-button class="min-w-64px" v-if="item.sell == 1 && item.is_sell == 0" shape="circle"
 								size="small" color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);"
 								:text="getBtnStatusText(item)" @click="toSelectSet(item)">
 							</u-button>
 							<u-button v-else class="min-w-64px" :customStyle="{ color: '#999' }" shape="circle"
-								size="small" color="#EEEEEE" :text="getBtnStatusText(item)" @click="toSelectSet(item)">
+								size="small" color="#EEEEEE" :text="getBtnStatusText(item)">
 							</u-button>
 						</div>
 					</div>
@@ -103,7 +104,7 @@ export default {
 			movieList: [],
 			bigItem: null,
 			tabIndex: 0,
-			isAuto: false, // 是否为自动选座
+			isAuto: false, // 是否为自动选座  TAG-这里关于自动选座的逻辑，isAuto字段可能会调整。
 			tabsDataList: [],
 			currentIndex: 0,
 		}
@@ -120,8 +121,9 @@ export default {
 			return item.is_sell == 1 ? '已售空' : item.sell == 1 ? this.isAuto ? '去预约' : '去选座' : '未开售'
 		},
 		toSelectSet(item) {
+			// TAG-这里要判断是哪种场景，以决定是否需要跳转选座，还有可能不需要选座直接跳转下单页
 			uni.navigateTo({
-				url: '/film-detail/choice-set/index?id=' + item.id + '&isAuto=' + this.isAuto
+				url: '/film-detail/choice-set/index?id=' + item.id
 			})
 		},
 		changeTab(e) {
@@ -157,7 +159,6 @@ export default {
 			if (index === this.currentIndex + 1) {
 				return;
 			}
-			this.changeSwiper({ detail: { current: index - 1 } });
 			this.currentIndex = index - 1;
 		},
 		// 滑动切换影片
@@ -171,6 +172,7 @@ export default {
 		},
 		// 切换影片后获取数据
 		getDataForId(id) {
+			this.tabsDataList = [];
 			this.request("film.lists", { film_id: id, openid: this.userInfo.openid }).then(res => {
 				this.isAuto = res.isAuto == 1 ? true : false;
 				res.time.forEach(el => {
