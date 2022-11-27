@@ -16,9 +16,10 @@
 			<div class="text-16px text-gray-333 align-center font-semibold">{{ bigItem.title }}</div>
 			<div class="text-12px text-gray-666 align-center mt-10px">
 				<!-- TAG-时长字段total_time不知道对不对 -->
-				{{ bigItem.total_time ? bigItem.total_time + '分钟' : '' }}
-				{{ bigItem.type_name ? ' | ' + bigItem.type_name : '' }}
-				{{ bigItem.author ? ' | ' + bigItem.author : '' }}
+				{{
+						[bigItem.total_time ? bigItem.total_time + '分钟' : '', bigItem.type_name, bigItem.author].filter(el =>
+							el).join('|')
+				}}
 			</div>
 		</div>
 		<!-- tabs -->
@@ -86,7 +87,7 @@
 								:text="getBtnStatusText(item)" @click="toSelectSet(item)">
 							</u-button>
 							<u-button v-else class="min-w-64px" :customStyle="{ color: '#999' }" shape="circle"
-								size="small" color="#EEEEEE" :text="getBtnStatusText(item)">
+								size="small" color="#EEEEEE" :text="getBtnStatusText(item)" @click="toSelectSet(item)">
 							</u-button>
 						</div>
 					</div>

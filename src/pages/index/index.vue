@@ -99,6 +99,7 @@ export default {
 			if (!item.route) {
 				return;
 			}
+			// TAG-跳转到页面后，可能需要解析参数，同分类
 			uni.navigateTo({
 				url: item.route,
 			});
@@ -107,6 +108,7 @@ export default {
 		getData() {
 			// 剧院模式 1 / 影院模式 0
 			// 分类
+			// TAG-接口改成set.home，并且不区分模式
 			const typesApi = this.isMovieMode ? 'types' : 'drama.film.types';
 			this.request(typesApi).then(res => {
 				this.kindList = res.types;

@@ -2,11 +2,19 @@ import { BASE_URL } from "@/services/environment.service";
 import { getToken } from "@/util";
 import store from "@/store";
 
+// TAG-noDirect在旧版有地方用到，之后核对
 const request = function (path, data = {}, method = "GET", noDirect = true) {
   return new Promise((resolve, reject) => {
     const token = getToken() || "";
     data.token = token;
-    store.commit("SHOW_LOADING", "");
+    // data.showLoading为false则关闭loading，其他值都为打开
+    const showLoading = data.showLoading === false ? false : true;
+    if (showLoading === false) {
+      delete data.showLoading;
+    }
+    if (showLoading) {
+      store.commit("SHOW_LOADING", "");
+    }
     uni.request({
       url: BASE_URL + `${path}`,
       method,
@@ -42,7 +50,7 @@ const request = function (path, data = {}, method = "GET", noDirect = true) {
               },
             });
           } else if (res.data.errno === 0) {
-            uni.showToast({ title: res.data.message });
+            uni.showToast({ title: res.data.message, icon: 'none' });
           } else if (res.data.errno === 303) {
             getCurrentPages().length > 1
               ? uni.redirectTo({
@@ -68,7 +76,9 @@ const request = function (path, data = {}, method = "GET", noDirect = true) {
         reject(err);
       },
       complete: () => {
-        store.commit("HIDE_LOADING");
+        if (showLoading) {
+          store.commit("HIDE_LOADING");
+        }
       },
     });
   });

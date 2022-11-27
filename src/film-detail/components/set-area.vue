@@ -5,7 +5,7 @@
             <movable-view class="w-full h-full" :inertia="true" :scale="true" :scale-min="0.5" :scale-max="4"
                 direction="all" @change="onMove" @scale="onScale">
                 <div class="Stage flex justify-center items-center text-11px text-gray-333">
-                    5号厅
+                    {{ hallTitle }}
                 </div>
                 <div class="flex justify-center items-center pt-24px">
                     <span
@@ -17,42 +17,52 @@
                 <div v-for="(item, index) in seatArray" :key="index" class="flex justify-center mt-5px text-0px"
                     :style="'width:' + boxWidth + 'px;height:' + seatSize + 'px'">
                     <div v-for="(seat, col) in item" :key="col" class="inline-block"
-                        :style="{ width: seatSize + 'px', height: seatSize + 'px' }"
+                        :style="{ width: seatSize + 'px', height: seatSize + 'px', opacity: seat.active ? 1 : 0.25 }"
                         @click="handleChooseSeat(index, col)">
                         <!-- Status为-10，不做座位展示 -->
-                        <template v-if="seat.Status !== -10">
-                            <!-- 座位当前已选中的状态 -->
-                            <div class="w-full h-full" v-if="seat.Status === 10" :style="{ background: 'green' }">
-                                <image class="w-full h-full" src="../static/seat.png" mode="aspectFit">
-                                </image>
-                            </div>
-                            <!-- 座位已被他人占用的状态,其实是状态1，但是这里用!==0判断健壮性高一点 -->
-                            <div class="w-full h-full" v-else-if="seat.Status !== 0" :style="{ background: 'blue' }">
-                                <image class="w-full h-full" src="../static/seat.png" mode="aspectFit">
-                                </image>
-                            </div>
-                            <!-- 除了以上情况，以下Status === 0是可选且还未选的座位 -->
-                            <template v-else-if="seat.Status === 0">
-                                <!-- 座位可选，并且是情侣座 -->
-                                <div class="w-full h-full" v-if="seat.links && seat.linkDir === 'L'"
-                                    :style="{ background: 'pink' }">
-                                    <image class="w-full h-full" src="../static/seat.png" mode="aspectFit">
+                        <template v-if="seat.status !== -10">
+                            <!-- 座位当前已选中的状态 或者 被他人选中占用的状态（此时图片一样，放在一起判断，通过状态区分颜色） -->
+                            <template v-if="seat.status === 10 || seat.status === 1">
+                                <!-- 座位选中，并且是情侣座-左 -->
+                                <div class="w-full h-full" v-if="seat.links && seat.LinkDir === 'L'"
+                                    :style="{ background: seat.status === 10 ? '#2BC881' : '#E3E3E3' }">
+                                    <image class="w-full h-full" src="../static/seat-qinglv1-sel@10.png"
+                                        mode="aspectFit">
                                     </image>
                                 </div>
-                                <!-- 座位可选，并且是情侣座 -->
-                                <div class="w-full h-full" v-else-if="seat.links && seat.linkDir === 'R'"
-                                    :style="{ background: '#f40' }">
-                                    <image class="w-full h-full" src="../static/seat.png" mode="aspectFit">
+                                <!-- 座位选中，并且是情侣座-右 -->
+                                <div class="w-full h-full" v-else-if="seat.links && seat.LinkDir === 'R'"
+                                    :style="{ background: seat.status === 10 ? '#2BC881' : '#E3E3E3' }">
+                                    <image class="w-full h-full" src="../static/seat-qinglv2-sel@10.png"
+                                        mode="aspectFit">
+                                    </image>
+                                </div>
+                                <div class="w-full h-full" v-else
+                                    :style="{ background: seat.status === 10 ? '#2BC881' : '#E3E3E3' }">
+                                    <image class="w-full h-full" src="../static/seat-sel@10.png" mode="aspectFit">
+                                    </image>
+                                </div>
+                            </template>
+
+                            <!-- 除了以上情况，以下Status === 0是可选且还未选的座位 -->
+                            <template v-else-if="seat.status === 0">
+                                <!-- 座位可选，并且是情侣座-左 -->
+                                <div class="w-full h-full" v-if="seat.links && seat.LinkDir === 'L'"
+                                    :style="{ background: '#FA6400' }">
+                                    <image class="w-full h-full" src="../static/seat-qinglv1-nor@10.png"
+                                        mode="aspectFit">
+                                    </image>
+                                </div>
+                                <!-- 座位可选，并且是情侣座-右 -->
+                                <div class="w-full h-full" v-else-if="seat.links && seat.LinkDir === 'R'"
+                                    :style="{ background: '#FA6400' }">
+                                    <image class="w-full h-full" src="../static/seat-qinglv2-nor@10.png"
+                                        mode="aspectFit">
                                     </image>
                                 </div>
                                 <!-- 座位可选，并且有配置颜色则用颜色座位 -->
-                                <div class="w-full h-full" v-else-if="seat.color" :style="{ background: seat.color }">
+                                <div class="w-full h-full" v-else :style="{ background: seat.color || '#B4CCBD' }">
                                     <image class="w-full h-full" src="../static/seat.png" mode="aspectFit">
-                                    </image>
-                                </div>
-                                <!-- 座位可选，，但没配置颜色的微微，用默认座位 -->
-                                <div class="w-full h-full" v-else-if="!seat.color">
-                                    <image class="w-full h-full" src="../static/seat-no.png" mode="aspectFit">
                                     </image>
                                 </div>
                             </template>
@@ -102,6 +112,7 @@ export default {
         };
     },
     props: {
+        hallTitle: String,
         mapData: {
             type: Array,
             default: () => []
@@ -155,7 +166,7 @@ export default {
         //初始座位数组
         initSeatArray: function () {
             let seatArray = Array(this.seatRow).fill(0).map(() => Array(this.seatCol).fill({
-                Status: -10,  // 默认为无座位，当status为-10时，不会渲染座位
+                status: -10,  // 默认为无座位，当status为-10时，不会渲染座位
             }));
             this.seatArray = seatArray;
             this.seatSize = this.boxWidth > 0 ?
@@ -170,15 +181,32 @@ export default {
                     const element = el[index];
                     if (element.links && !element.linkId) {
                         // 把当前跟接下来的情侣座的linkId设置成一样。
-                        element.linkId = element.SeatCode;
-                        el[index + 1].linkId = element.SeatCode;
+                        element.linkId = element.seatCode;
+                        el[index + 1].linkId = element.seatCode;
                         // 设置当前跟接下来的情侣座的方向，用来区分图片展示
-                        element.linkDir = 'L';
-                        el[index + 1].linkDir = 'R';
+                        element.LinkDir = 'L';
+                        el[index + 1].LinkDir = 'R';
                         index++;
                     }
                 }
             })
+        },
+        // 对当前分区做高亮处理
+        changeActivePart(part) {
+            this.seatArray.forEach(row => {
+                row.forEach(seat => {
+                    if (!part || !part.id) {
+                        seat.active = true;
+                    } else {
+                        if (seat.part_id === part.id) {
+                            seat.active = true;
+                        } else {
+                            seat.active = false;
+                        }
+                    }
+                })
+            });
+            this.seatArray = [...this.seatArray]
         },
         //初始化是座位的地方
         initNonSeatPlace: function () {
@@ -195,7 +223,7 @@ export default {
             for (let i in arr) {
                 let m = ''
                 for (let n of arr[i]) {
-                    if (n.SeatCode) {
+                    if (n.seatCode) {
                         m = n.RowNum
                     }
                 }
@@ -226,7 +254,10 @@ export default {
         },
         //处理座位选择逻辑
         handleChooseSeat: function (row, col, loveFlag) {
-            let seatValue = this.seatArray[row][col].Status;
+            if (!this.seatArray[row][col]) {
+                return;
+            }
+            let seatValue = this.seatArray[row][col].status;
             let newArray = this.seatArray;
 
             //如果是已购座位，直接返回(1表示座位已经被他人占用, -10表示无座位)
@@ -253,11 +284,11 @@ export default {
 
             //如果是已选座位点击后变未选（10为已选择）
             if (seatValue === 10) {
-                newArray[row][col].Status = 0; // 0为可选择
+                newArray[row][col].status = 0; // 0为可选择
                 this.SelectNum--
                 this.getOptArr(newArray[row][col], 0);
             } else if (seatValue === 0) {
-                newArray[row][col].Status = 10;
+                newArray[row][col].status = 10;
                 this.SelectNum++;
                 this.getOptArr(newArray[row][col], 10);
             }
@@ -271,19 +302,19 @@ export default {
             const linkId = this.seatArray[row][col].linkId;
             if (this.seatArray[row][col].links && linkId) {
                 // 通过linkId找到另一个情侣座。
-                const love = this.seatArray[row].find(el => el.linkId === linkId && el.SeatCode !== this.seatArray[row][col].SeatCode);
+                const love = this.seatArray[row].find(el => el.linkId === linkId && el.seatCode !== this.seatArray[row][col].seatCode);
                 this.handleChooseSeat(row, love.XCoord, true);
             }
         },
         //处理已选座位数组
-        getOptArr: function (item, Status) {
+        getOptArr: function (item, status) {
             let optArr = this.optArr;
-            if (Status === 10) {
+            if (status === 10) {
                 optArr.push(item);
-            } else if (Status === 0) {
+            } else if (status === 0) {
                 let arr = [];
                 optArr.forEach(v => {
-                    if (v.SeatCode !== item.SeatCode) {
+                    if (v.seatCode !== item.seatCode) {
                         arr.push(v);
                     }
                 })
@@ -308,8 +339,8 @@ export default {
             let oldArray = [];
             for (let i = 0; i < this.seatRow; i++) {
                 for (let j = 0; j < this.seatCol; j++) {
-                    if (this.seatArray[i][j].Status === 10) {
-                        oldArray.push(this.seatArray[i][j].SeatCode)
+                    if (this.seatArray[i][j].status === 10) {
+                        oldArray.push(this.seatArray[i][j].seatCode)
                     }
                 }
             }
@@ -358,8 +389,8 @@ export default {
             let oldArray = this.seatArray.slice();
             for (let i = 0; i < this.seatRow; i++) {
                 for (let j = 0; j < this.seatCol; j++) {
-                    if (oldArray[i][j].Status === 10) {
-                        oldArray[i][j].Status = 0
+                    if (oldArray[i][j].status === 10) {
+                        oldArray[i][j].status = 0
                     }
                 }
             }
@@ -446,7 +477,7 @@ export default {
         checkRowSeatContinusAndEmpty: function (rowNum, startPos, endPos) {
             let isValid = true;
             for (let i = startPos; i <= endPos; i++) {
-                if (this.seatArray[rowNum][i].Status !== 0) {
+                if (this.seatArray[rowNum][i].status !== 0) {
                     isValid = false;
                     break;
                 }
@@ -467,7 +498,7 @@ export default {
             let oldArray = this.seatArray.slice();
             for (let i = 0; i < result.length; i++) {
                 //选定座位
-                oldArray[result[i][0]][result[i][1]].Status = 10
+                oldArray[result[i][0]][result[i][1]].status = 10
                 this.optArr.push(oldArray[result[i][0]][result[i][1]])
             }
             this.seatArray = oldArray;

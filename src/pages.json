@@ -28,7 +28,8 @@
     {
       "path": "pages/auth/index",
       "style": {
-        "navigationBarTitleText": "授权登陆"
+        "navigationBarTitleText": "授权登陆",
+        "disableScroll": true
       }
     }
   ],
@@ -64,7 +65,31 @@
         {
           "path": "choice-set/index",
           "style": {
-            "navigationBarTitleText": "选择座位"
+            "navigationBarTitleText": "选择座位",
+            "disableScroll": true
+          }
+        }
+      ]
+    },
+    {
+      "root": "order",
+      "pages": [
+        {
+          "path": "pay/index",
+          "style": {
+            "navigationBarTitleText": "订单支付"
+          }
+        },
+        {
+          "path": "detail/index",
+          "style": {
+            "navigationBarTitleText": "订单状态"
+          }
+        },
+        {
+          "path": "ticket/index",
+          "style": {
+            "navigationBarTitleText": "订单详情"
           }
         }
       ]

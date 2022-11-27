@@ -29,7 +29,7 @@
                 <div v-if="!read" @click="showPopup = true"
                     class="box-border rounded-full w-15px h-15px border border-solid border-red">
                 </div>
-                <span class="ml-4px">我已阅读并同意<span @click="showPopup = true" style="color: #33ABF4">《用户协议》</span></span>
+                <span class="ml-4px text-blue">我已阅读并同意<span @click="showPopup = true">《用户协议》</span></span>
             </div>
         </div>
 

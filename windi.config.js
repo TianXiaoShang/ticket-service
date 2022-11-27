@@ -54,9 +54,15 @@ export default defineConfig({
           eee: "#eee",
           bg: "#F9F9F9",
         },
+        blue:{
+          DEFAULT: "#33ABF4",
+        },
         red: {
           DEFAULT: "#FF545C",
         },
+        yellow:{
+          DEFAULT: "#FF8F1F",
+        }
       },
       borderRadius: {
         l: "10px",

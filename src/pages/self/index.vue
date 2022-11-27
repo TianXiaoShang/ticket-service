@@ -235,7 +235,17 @@ export default {
 		},
 		// TAG-需要上传文件到服务器接口，返回真实url后updateUserInfo
 		chooseavatar(e) {
-			console.log(e, '--------');
+			uni.uploadFile({
+				url: 'https://6test.djlnet.com.cn/app/theater_api.php?i=1&cinemaid=4&r=upload',
+				filePath: e.detail.avatarUrl,
+				name: 'file',
+				success: (uploadFileRes) => {
+					if(uploadFileRes.data){
+						const res = JSON.parse(uploadFileRes.data);
+						console.log(res, '===')
+					}
+				}
+			});
 		}
 	}
 };

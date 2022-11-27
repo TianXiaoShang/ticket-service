@@ -30,7 +30,9 @@ const store = new Vuex.Store({
       state.globalLoadingText = value;
     },
     HIDE_LOADING(state) {
-      state.globalLoadings.pop();
+      if(state.globalLoadings.length){
+        state.globalLoadings.pop();
+      }
     },
     // 存储当前影院信息
     SET_CINEMA(state, val) {

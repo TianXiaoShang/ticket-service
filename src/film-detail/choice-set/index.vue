@@ -13,35 +13,62 @@
 					<!-- {{ row.author ? ' | ' + row.author : '' }} -->
 				</div>
 			</div>
-			<span class="text-12px" style="color: #33ABF4" @click="showPopup = true">优惠说明</span>
+			<span class="text-12px text-blue" @click="showPopup = true">优惠说明</span>
 		</div>
 
 		<!-- 票档分类 -->
-		<div class="bg-white relative z-9999 overflow-hidden px-20px pt-10px box-border w-full">
+		<div class="bg-white relative z-9999 overflow-hidden box-border w-full" v-if="partList && partList.length">
 			<!-- 票档 -->
-			<div class="text-gray-999 h-62px overflow-y-auto">
-				<div v-for="(item, index) in dateList" :key="index"
-					:class="{ active: index === 1, 'pr-10px': index !== 2, 'mr-10px': index !== dateList.length - 1 }"
+			<div class="text-gray-999 h-37px overflow-x-auto px-20px whitespace-nowrap">
+				<div v-for="(item, index) in partList" :key="index" @click="tapPart(item, false)"
+					:class="{ active: currentPart.id === item.id && !activePartDis, 'mr-10px': index !== partList.length - 1 }"
 					style="background-color: #F8F8F8; border-color: #ddd"
-					class="mb-10px pl-10px h-35px flex rounded-5px overflow-hidden border border-solid bg-bg inline-flex  items-center ">
-					<image class="w-22px h-22px mr-3px" src="@/static/detail/reduce.png" />
-					<span class="text-14px text-999">280</span>
-					<div v-if="index === 2" class="ml-10px h-35px text-white text-9px flex justify-end items-start">
-						<div class="h-18px rounded-bl-5px px-5px bg-red flex items-center">每满2张减￥150</div>
+					class="px-10px h-35px flex rounded-5px overflow-hidden border border-solid bg-bg inline-flex items-center ">
+					<div class="w-18px h-18px mr-5px" :style="{ background: item.color || '#B4CCBD' }">
+						<image class="w-18px h-18px min-w-18px min-h-18px" src="../static/seat-sel@10.png"
+							mode="aspectFit">
+						</image>
 					</div>
+					<span class="text-14px text-999">¥{{ item.price }}</span>
 				</div>
 			</div>
-			<div class="absolute w-full left-0 bottom-0 h-15px"
-				style="background-image: linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 80%);">
+		</div>
+		<!-- 套票折扣 -->
+		<div class="bg-white relative z-9999 overflow-hidden box-border w-full my-10px"
+			v-if="disPartList && disPartList.length">
+			<!-- 票档 -->
+			<div class="text-gray-999 h-37px overflow-x-auto px-20px whitespace-nowrap">
+				<div v-for="(item, index) in disPartList" :key="index" @click="tapPart(item, true)"
+					:class="{ active: currentPart.id === item.id && activePartDis, 'mr-10px': index !== partList.length - 1 }"
+					style="background-color: #F8F8F8; border-color: #ddd"
+					class="pl-10px h-35px flex rounded-5px overflow-hidden border border-solid bg-bg inline-flex items-center ">
+					<div class="w-18px h-18px mr-3px" v-for="(el, index) in Number(item.discount_num)" :key="index"
+						:style="{ background: item.color || '#B4CCBD' }">
+						<image class="w-18px h-18px min-w-18px min-h-18px" src="../static/seat-sel@10.png"
+							mode="aspectFit">
+						</image>
+					</div>
+					<span class="text-14px text-999">
+						{{ currentPart.id === item.id && activePartDis ? item.discount_num + '人套票 ' : '' }}
+						¥{{ Number(item.price) * item.discount_num - item.discount_price }}</span>
+					<div class="ml-10px h-35px text-white text-9px flex justify-end items-start">
+						<div class="h-18px rounded-bl-5px px-5px bg-red flex items-center">
+							套票
+							<!-- 每{{ item.discount_num }}人票{{ Number(item.price) * item.discount_num - item.discount_price
+							}}元 -->
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 
 		<!-- 选座区域 -->
-		<div style="height: calc(100vh - 60px - 62px - 10px - 122px)" class="bg-gray-bg box-border">
+		<div :style="{ height: `calc(100vh - 60px - ${partList && partList.length ? '37px -' : ''}${disPartList && disPartList.length ? '57px -' : ''} 122px)` }"
+			class="bg-gray-bg box-border overflow-hidden">
 			<!-- 选座组件 -->
 			<div class="w-full h-full">
-				<set-area ref="SetArea" :mapData="map" :maxSelect="maxSelectSet" v-if="map && map.length"
-					@seatChange="seatChange">
+				<set-area ref="SetArea" :hallTitle="row.hall_title + '荧幕'" :mapData="map" :maxSelect="maxSelectSet"
+					v-if="map && map.length" @seatChange="seatChange">
 				</set-area>
 				<div v-else>
 					<u-empty mode="coupon" :text="!pageLoad ? 'loading...' : '暂无座位安排'"
@@ -59,13 +86,15 @@
 				<template v-if="selectSeatDataList.length">
 					<div class="inline-flex mr-10px items-center bg-gray-bg px-10px py-4px border rounded-5px box-border border-solid border-gray-ddd"
 						v-for="(item, index) in selectSeatDataList" :key="index">
-						<div class="w-18px h-18px mr-5px" :style="{ background: item.color || 'green' }">
-							<image class="w-18px h-18px min-w-18px min-h-18px" src="../static/seat.png"
+						<div class="w-18px h-18px mr-5px"
+							:style="{ background: selectSeatDataList.color || '#2BC881' }">
+							<image class="w-18px h-18px min-w-18px min-h-18px" src="../static/seat-sel@10.png"
 								mode="aspectFit">
 							</image>
 						</div>
-						<span class="text-gray-333 leading-relaxed text-14px">{{ item.originData.name }}</span>
-						<image @click="deleteSeat(item)" class="w-18px h-18px min-w-18px min-h-18px ml-10px"
+						<span class="text-gray-333 leading-relaxed text-14px">{{ item.RowNum + '排' + item.XCoord + '座'
+						}}</span>
+						<image @click="deleteSeat(item)" class="w-18px h-18px min-w-18px min-h-18px ml-5px"
 							src="../static/close.png" mode="aspectFit"></image>
 					</div>
 					<div class="absolute w-20px right-0 top-0 h-full"
@@ -80,7 +109,7 @@
 				<div class="flex">
 					<div class="text-red flex items-center">
 						<span class="text-12 ml-3px relative top-2px">¥</span>
-						<span class="text-18px font-semibold">{{totalPrice}}</span>
+						<span class="text-18px font-semibold">{{ totalPrice }}</span>
 					</div>
 					<div class="text-333 text-12 flex items-center ml-5px" @click="showPopup = true">
 						<span>价格明细</span>
@@ -103,18 +132,18 @@
 					<span> 费用明细 </span>
 					<u-icon name="close" size="18px" @click="showPopup = false"></u-icon>
 				</div>
-				<!-- TAG-价格明细内容待补充 -->
 				<scroll-view scroll-y="true" class="text-gray-666 max-h-50vh px-15px box-border mt-15px">
 					<div class="mb-25px">
 						<div class="text-gray-333 text-14px font-semibold flex justify-between items-center">
 							<span>票品信息</span>
-							<span>¥168</span>
+							<span>¥{{ totalPrice }}</span>
 						</div>
-						<div class="mt-15px text-12px text-gray-999">6排3座位、6排3座位、6排3座位、6排3座位</div>
+						<div class="mt-15px text-12px text-gray-999">{{ setListStr }}</div>
 					</div>
+					<!-- TAG-套票折扣字段待提供（计算价格接口） -->
 					<div class="mb-25px" v-for="item in 10" :key="item">
 						<div class="text-gray-333 text-14px font-semibold flex justify-between items-center">
-							<span>会员折扣</span>
+							<span>套票折扣</span>
 							<span class="text-red">-¥23</span>
 						</div>
 						<div class="mt-15px text-12px text-gray-999">半价日1折，-0.01元</div>
@@ -137,7 +166,7 @@ export default {
 	data() {
 		return {
 			id: '',
-			dateList: [{}, {}, {}, {}, {}],   // TAG-票档接口待对接
+			partList: [],
 			showPopup: false,
 			global: {},
 			row: {},
@@ -146,6 +175,9 @@ export default {
 			maxSelectSet: 0,
 			selectSeatDataList: [],
 			totalPrice: 0,
+			currentPart: {},
+			disPartList: [],
+			activePartDis: false,
 		}
 	},
 	components: { SetArea },
@@ -156,7 +188,36 @@ export default {
 			this.getData();
 		})
 	},
+	computed: {
+		setListStr() {
+			const arr = this.selectSeatDataList.map(item => item.RowNum + '排' + item.XCoord + '座')
+			return arr.join('、')
+		}
+	},
+	watch: {
+		// 分区选择变化
+		currentPart: {
+			handler() {
+				this.$refs.SetArea.changeActivePart(this.currentPart);
+			},
+			deep: true
+		}
+	},
 	methods: {
+		// 维护当前选中分区
+		tapPart(item, activePartDis) {
+			// 如果是同一个分区，只是选了切换了套票和非套票。则切换activePartDis即可。无需改变currentPart；
+			if (item.id === this.currentPart.id && this.activePartDis !== activePartDis) {
+				this.activePartDis = activePartDis;
+				return;
+			}
+			this.activePartDis = activePartDis;
+			if (item.id === this.currentPart.id) {
+				this.currentPart = {};
+			} else {
+				this.currentPart = item;
+			}
+		},
 		deleteSeat(item) {
 			this.$refs.SetArea.deleteSeat(item);
 		},
@@ -175,6 +236,15 @@ export default {
 				this.map = this.initMap(res.map.seat);
 				this.pageLoad = true;
 				this.maxSelectSet = (res.row.film_astrict || res.row.film_astrict == 0) ? Number(res.row.film_astrict) : 100000;
+				this.partList = res.row.part_ext || [];
+				// 套票优惠
+				const arr = this.partList.filter(el => el.is_discount == 1);   // 有套票优惠分区
+				this.disPartList = arr.map(el => {
+					return {
+						...el,
+						isDis: true
+					}
+				})
 			});
 		},
 		initMap(map) {
@@ -183,15 +253,17 @@ export default {
 				if (Object.hasOwnProperty.call(map, key)) {
 					const element = map[key];
 					const ele = {
-						YCoord: Number(element.row),
-						XCoord: Number(element.col),
-						SeatCode: element.mark,
-						Status: element.status,
-						color: element.color,
-						links: element.links,
-						originData: element,
-						RowNum: Number(element.row),
+						YCoord: Number(element.row),  // 排号
+						XCoord: Number(element.col),  // 座号
+						RowNum: Number(element.row),   // 行号
 						// ColumnNum  这个字段暂时没啥用，RowNum还能用来左侧行号的展示
+						seatCode: element.mark,   // 座位唯一code
+						status: element.status,   // 状态，-10为非座位，0为未购可选座位，10为当前已选座位, 1为已被他人占用座位
+						color: element.color,    // 座位颜色
+						links: element.links,   // 是否为情侣座
+						originData: element,   // 原始数据
+						active: true,   // 高亮展示   TAG-之后可能从剧院模式跳过来选座，如果带了分区id，则要在初始化的时候对Active做处理
+						part_id: element.part_id,   // 分区id
 					}
 					arr.push(ele)
 				}
@@ -200,8 +272,29 @@ export default {
 		},
 		seatChange(e) {
 			this.selectSeatDataList = e;
-			// TAG-变更后通过接口获取价格及优惠信息
-			this.totalPrice = this.selectSeatDataList.length * this.row.price;
+			if (!e || e.length === 0) {
+				this.totalPrice = 0;
+				return;
+			}
+			if (this.partList && this.partList.length) {
+				// 最后一个为当前选中的座位
+				const curSeat = e[e.length - 1];
+				// 比较当前选座是否为当前选中的分区，如果是则保持，如果不是则取消分区选中状态
+				const curPart = this.partList.find(el => el.id === curSeat.part_id);
+				if (curPart && curPart.id !== this.currentPart.id) {
+					this.currentPart = {};
+				}
+			}
+			// 调用接口计算价格
+			const ids = this.selectSeatDataList.map(el => el.seatCode)
+			this.request('order.seat', {
+				row_id: this.id,
+				seat: ids.toString(),
+				openid: this.userInfo.openid,
+				showLoading: false,
+			}).then(res => {
+				this.totalPrice = res.price;
+			})
 		},
 		toPay() {
 			if (!this.selectSeatDataList || !this.selectSeatDataList.length) {
@@ -212,17 +305,15 @@ export default {
 				return;
 			}
 			const ids = this.selectSeatDataList.map(el => el.originData.mark);
-			console.log(ids.toString(), this.totalPrice, '========');
-			return;
-			// this.request("order", {
-			// 	row_id: this.id,
-			// 	seat: ids.toString(),
-			// 	price: this.totalPrice,
-			// }).then(res => {
-			// 	wx.redirectTo({
-			// 		url: '/pages/order/pay/pay?id=' + res.data.order_id,
-			// 	});
-			// })
+			this.request("order", {
+				row_id: this.id,
+				seat: ids.toString(),
+				price: this.totalPrice,
+			}).then(res => {
+				uni.redirectTo({
+					url: '/order/pay/index?id=' + res.order_id,
+				})
+			})
 		}
 	}
 };

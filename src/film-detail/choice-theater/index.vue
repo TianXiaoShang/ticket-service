@@ -42,7 +42,7 @@
 			<!-- 票档 -->
 			<div class="text-12px mb-12px flex justify-between">
 				<span class="text-gray-333 font-semibold">票档</span>
-				<span style="color: #33ABF4">优惠说明</span>
+				<span class="text-blue">优惠说明</span>
 			</div>
 			<div class="mb-20px text-gray-999">
 				<div v-for="(item, index) in dateList" :key="index"

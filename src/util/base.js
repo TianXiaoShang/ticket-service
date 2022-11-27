@@ -14,7 +14,6 @@ const setInfo = (member) => {
 const login = (mid) => {
   return new Promise((resolve, reject) => {
     // #ifdef MP-WEIXIN
-    store.commit("LOGIN", false);
     uni.login({
       provider: "weixin", // 使用微信登录
       success: (loginRes) => {
@@ -62,16 +61,9 @@ const getUserProfile = () => {
     wx.getUserProfile({
       desc: "用于完善会员资料",
       success: (result) => {
-        request("member.update", result.userInfo).then(
-          (res) => {
-            if (res.member) {
-              setInfo(res.member);
-              resolve(res.member);
-            }
-          },
-          () => {
-            reject();
-          }
+        updateUserInfo(result.userInfo).then(
+          (res) => resolve(res),
+          () => reject()
         );
       },
       fail: (err) => {
@@ -131,4 +123,19 @@ const initCinemaConfig = async () => {
   }
 };
 
-export { login, getUserProfile, getPhoneNumber, initCinemaConfig };
+const updateUserInfo = (userInfo) => {
+  return new Promise((resolve, reject) => {
+    request("member.update", userInfo).then(
+      (res) => {
+        if (res.member) {
+          setInfo(res.member);
+          resolve(res.member);
+        }
+      },
+      () => {
+        reject();
+      }
+    );
+  });
+};
+export { login, getUserProfile, updateUserInfo, getPhoneNumber, initCinemaConfig };
