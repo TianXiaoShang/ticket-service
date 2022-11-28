@@ -48,7 +48,7 @@
                             <span :style="{ 'text-decoration': order.is_ticket == 1 ? 'line-through;' : 'none' }">票码：{{
                                     order.dynamic
                             }}</span>
-                            <span
+                            <span @click="onCopy(order.dynamic)"
                                 class="px-10px h-26px flex items-center justify-center rounded-25px ml-20px border border-solid border-color-333">复制</span>
                         </div>
                     </div>
@@ -87,7 +87,7 @@
                             <span :style="{ 'text-decoration': item.is_ticket == 1 ? 'line-through;' : 'none' }">票码：{{
                                     ticket[ticketCurrent].dynamic
                             }}</span>
-                            <span
+                            <span @click="onCopy(ticket[ticketCurrent].dynamic)"
                                 class="px-10px h-26px flex items-center justify-center rounded-25px ml-20px border border-solid border-color-333">复制</span>
                         </div>
                     </div>

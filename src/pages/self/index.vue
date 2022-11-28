@@ -76,7 +76,7 @@
 								class="w-12vw h-12vw shadow-md rounded-full" />
 							<span class="mt-5px text-12 text-gray-333">我的票夹</span>
 						</div>
-						<div class="scroll-list-item flex flex-col justify-center items-center">
+						<div class="scroll-list-item flex flex-col justify-center items-center" @click="toOrderList">
 							<image mode="aspectFit" src="@/static/self/mine-order.png"
 								class="w-12vw h-12vw shadow-md rounded-full" />
 							<span class="mt-5px text-12 text-gray-333">我的订单</span>
@@ -97,8 +97,10 @@
 				<div v-if="neerTicket.ticket" @click="toNeerTicket"
 					class="card mt-20px flex justify-between items-center px-20px py-14px text-white rounded">
 					<div>
-						<div class="text-14">{{ neerTicket.ticket.film_title || '影片名称' }}</div>
-						<div class="mt-5px text-12 opacity-50">{{ neerTicket.ticket.entrance_time }}</div>
+						<div class="text-14">{{ neerTicket.ticket.film_title }}</div>
+						<div class="mt-5px text-12 opacity-50">{{
+								moment(order.ticket.entrance_time * 1000).format('YYYY-MM-DD HH:mm')
+						}}</div>
 					</div>
 					<div class="text-14 flex items-center">
 						<span>待观看</span>
@@ -146,6 +148,7 @@
 </template>
 
 <script>
+// TAG - 列表跳转没对接
 import NavBar from '@/components/nav-bar';
 import { getUserProfile, getPhoneNumber } from '@/util/base';
 
@@ -194,6 +197,11 @@ export default {
 		toVip() {
 			console.log('toVip');
 		},
+		toOrderList() {
+			uni.navigateTo({
+				url: '/order/list/index'
+			})
+		},
 		toNeerTicket() {
 			// TAG-要对接路由跳转地址，跳转到订单详情页
 			const url = `/pages/ticket/detail/detail?id=${this.neerTicket.ticket.order_id}`;
@@ -240,7 +248,7 @@ export default {
 				filePath: e.detail.avatarUrl,
 				name: 'file',
 				success: (uploadFileRes) => {
-					if(uploadFileRes.data){
+					if (uploadFileRes.data) {
 						const res = JSON.parse(uploadFileRes.data);
 						console.log(res, '===')
 					}

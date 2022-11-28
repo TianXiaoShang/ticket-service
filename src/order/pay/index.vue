@@ -112,8 +112,7 @@
                                 <div class="flex">
                                     <div class="text-gray-999 text-14 mr-8px"> ￥{{ order.charge.charge_price }} </div>
                                     <div class="w-22px h-22px">
-                                        <u-checkbox size="22px" :disabled="order.charge.charge_open == 1"
-                                            activeColor="#FF545C" :label="' '" name="true">
+                                        <u-checkbox size="22px" activeColor="#FF545C" :label="' '" name="true">
                                         </u-checkbox>
                                     </div>
                                 </div>
@@ -457,6 +456,11 @@ export default {
 
         },
         getData() {
+            this.getOrderPayment();
+            this.getCouponList();
+            this.getDiyForm();
+        },
+        getOrderPayment() {
             // TAG - 这里订单已超时取消的情况，返回的res.data.url不应该是/pages/order/detail/detail?id=99733,新的路径为/order/detail/index?id=99733
             this.request("order.payment", {
                 order_id: this.id
@@ -481,58 +485,61 @@ export default {
                 if (this.global.buy_text) {
                     this.global.buy_text = parseRichText(this.global.buy_text)
                 }
-
                 // 倒计时
                 const time = res.order.expire_time;
-                if (time) {
+                this.getExpireTime(time);
+                this.timer = setInterval(() => {
                     this.getExpireTime(time);
-                    this.timer = setInterval(() => {
-                        this.getExpireTime(time);
-                    }, 1000);
-                } else {
-                    this.timer && clearInterval(this.timer)
-                }
-
-                // 获取优惠券
-                this.request("coupon.used", {
-                    order_id: this.id
-                }).then(res => {
-                    let flag = false;
-                    this.couponList = res.list;
-                    res.list.forEach((ele, i) => {
-                        // 是否有可用优惠券
-                        if (ele.status == 1) {
-                            this.hasEnbalCoupon = true;
-                        }
-                        // 默认选中一个可用优惠券
-                        if (!flag && parseFloat(this.total) >= parseFloat(ele.enough) && ele.status == 1) {
-                            this.curCoupon = ele.id;
-                            this.showCouponName = ele.name;
-                            flag = true;
-                        }
-                        if (parseFloat(this.total) < parseFloat(ele.enough) || ele.status != 1) {
-                            // 没到满减条件或状态为非可用状态1
-                            ele.disabled = true;
+                }, 1000);
+            })
+        },
+        getDiyForm() {
+            // 自定义表单
+            this.request("order.payDiyForm").then(res => {
+                if (res.fields && res.fields.length) {
+                    res.fields.forEach(el => {
+                        if (el.data_type == 1) {
+                            this.diyformData[el.diy_type] = '';
+                        } else if (el.data_type == 2) {
+                            this.diyformData[el.diy_type] = res.f_data[el.diy_type][0] || 0;
                         }
                     })
-                })
-
-                // 自定义表单
-                this.request("order.payDiyForm").then(res => {
-                    if (res.fields && res.fields.length) {
-                        res.fields.forEach(el => {
-                            if (el.data_type == 1) {
-                                this.diyformData[el.diy_type] = '';
-                            } else if (el.data_type == 2) {
-                                this.diyformData[el.diy_type] = res.f_data[el.diy_type][0] || 0;
-                            }
-                        })
+                }
+                this.diyform = res;
+            })
+        },
+        getCouponList() {
+            // 获取优惠券
+            this.request("coupon.used", {
+                order_id: this.id
+            }).then(res => {
+                let flag = false;
+                this.couponList = res.list;
+                res.list.forEach((ele, i) => {
+                    // 是否有可用优惠券
+                    if (ele.status == 1) {
+                        this.hasEnbalCoupon = true;
                     }
-                    this.diyform = res;
+                    // 默认选中一个可用优惠券
+                    if (!flag && parseFloat(this.total) >= parseFloat(ele.enough) && ele.status == 1) {
+                        this.curCoupon = ele.id;
+                        this.showCouponName = ele.name;
+                        flag = true;
+                    }
+                    if (parseFloat(this.total) < parseFloat(ele.enough) || ele.status != 1) {
+                        // 没到满减条件或状态为非可用状态1
+                        ele.disabled = true;
+                    }
                 })
             })
         },
         getExpireTime(time) {
+            // 等待支付时间结束，清除定时器，重新获取数据,发现超时会重定向到订单状态页order/detail/index去
+            if (moment(time * 1000).isBefore(moment())) {
+                this.timer && clearInterval(this.timer);
+                this.getData();
+                return;
+            }
             const t = (moment(time * 1000).diff(moment())) / 1000;
             let m = Math.floor(t / 60);
             let s = Math.floor(t % 60);
@@ -543,11 +550,12 @@ export default {
                 s = '0' + s;
             }
             this.payTime = m + ':' + s;
-            if (t <= 0) {
-                this.getData();
-            }
         },
         toPay() {
+            if (!this.read) {
+                uni.showToast({ title: "请勾选同意服务条款", icon: 'none' })
+                return;
+            }
             if (!this.user.name) {
                 uni.showToast({ title: "请填写姓名", icon: 'none' })
             }

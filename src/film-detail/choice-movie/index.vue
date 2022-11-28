@@ -44,12 +44,17 @@
 						<div class="flex flex-col flex-1">
 							<div class="flex">
 								<div class="mr-20px">
+									<!-- 开始时间 -->
 									<div class="text-gray-333 text-18px font-semibold">
-										{{ getHourAndMinute(item.entrance_time) }}</div>
-									<div class="text-gray-999 text-10px mt-4px">{{ getHourAndMinute(item.end_time) }}散场
+										{{ moment(item.entrance_time * 1000).format('HH:mm') }}
+									</div>
+									<!-- 散场时间 -->
+									<div class="text-gray-999 text-10px mt-4px">
+										{{ moment(item.end_time * 1000).format('HH:mm') }}散场
 									</div>
 								</div>
 								<div>
+									<!-- 语言 时长 -->
 									<div class="text-gray-333 mt-1px text-14px">{{ item.language }}{{ is_pattern != 1 ?
 											item.filmtype : ''
 									}} {{ item.total_time }}分钟</div>

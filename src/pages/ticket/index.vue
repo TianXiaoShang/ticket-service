@@ -1,91 +1,69 @@
 <template>
-	<view class="content">
-		<image class="logo" src="../../static/logo.png"></image>
-		<view>
-			<text class="bg-red-400 text-gray-900 text-3xl">{{ title }}</text>
-		</view>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		aaa<br/>
-		end<br/>
-	</view>
+	<div class="page-box bg-gray-bg p-20px pt-0 box-border">
+		<loading />
+		<!-- 空状态 -->
+		<div v-if="!ticketList || !ticketList.length" class="mt-20px">
+			<u-empty mode="order" text="暂无数据" icon="http://cdn.uviewui.com/uview/empty/order.png">
+			</u-empty>
+		</div>
+		<!-- 票夹列表 -->
+		<template v-else>
+			<div @click="toSelect(item)" class="bg-white rounded box-border mt-20px p-20px relative overflow-hidden"
+				v-for="(item, index) in ticketList" :key="index">
+
+				<div class="text-14 font-semibold">{{ item.film_title }}</div>
+
+				<div class="text-12px text-gray-999 my-10px font-normal flex justify-between items-center">
+					<!-- TAG - 独立 -->
+					<span>{{ item.cinema_title }}</span>
+					<span class="text-red text-14">{{ moment(item.entrance_time *
+							1000).format('YYYY-MM-DD HH:mm')
+					}}</span>
+				</div>
+
+				<div class="text-14 font-normal flex justify-between items-center">
+					<span class="text-gray-333">{{ item.hall_title }}</span>
+					<span class="text-12px text-blue">查看详情</span>
+				</div>
+
+				<!-- 状态 -->
+				<div class="absolute right-0 top-0 text-12px text-white px-8px py-5px"
+					:style="{ 'border-radius': '0 10px 0 10px', background: statusColor[item.status] }">
+					{{ statusSign[item.status] }}
+				</div>
+			</div>
+		</template>
+	</div>
 </template>
 
 <script>
 export default {
 	data() {
 		return {
-			title: 'ticket',
+			ticketList: [],
+			statusSign: ['', '待观影', '已取票', '已结束', '已退款'],
+			statusColor: ['', '#FF545C', '#EEEEEE', '#EEEEEE', '#EEEEEE'],
 		}
 	},
-	onLoad() {
-	},
 	methods: {
-	}
+		toSelect(item) {
+			uni.navigateTo({
+				url: '/order/ticket/index?id=' + item.id
+			})
+		},
+		getData(status) {
+			this.request("ticket").then(res => {
+				let ticket = res.ticket;
+				const ticket2 = ticket.sort((a, b) => { return b.entrance_time - a.entrance_time });
+				this.ticketList = ticket2;
+			})
+		},
+	},
+	onShow: function () {
+		// 确保已经登陆完成
+		this.waitLogin().then(() => {
+			this.getData();
+		});
+	},
 };
 </script>
-
-<style lang="scss" scoped>
-.content {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-
-	.logo {
-		height: 200rpx;
-		width: 200rpx;
-		margin: 200rpx auto 50rpx auto;
-	}
-
-	.text-area {
-		display: flex;
-		justify-content: center;
-	}
-
-	.title {
-		font-size: 36rpx;
-		color: #8f8f94;
-	}
-}
-</style>

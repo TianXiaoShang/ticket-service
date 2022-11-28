@@ -103,7 +103,7 @@
                 </div>
                 <div class="mt-10px font-normal text-gray-999 text-14px flex items-center justify-between">
                     <span>订单编号：{{ order.order_no }}</span>
-                    <span class="text-blue" @click="onCopy">复制</span>
+                    <span class="text-blue" @click="onCopy(order.order_no)">复制</span>
                 </div>
                 <div class="mt-10px font-normal text-gray-999 text-14px">创建时间：{{ moment(order.create_time *
                         1000).format('YYYY-MM-DD HH:mm:ss')
@@ -142,6 +142,7 @@
 </template>
 
 <script>
+import { orderStatus } from '../util';
 import moment from 'moment';
 export default {
     data() {
@@ -149,7 +150,8 @@ export default {
             id: '',
             order: {},
             timer: null,
-            payTime: ''
+            payTime: '',
+            orderStatus
         }
     },
     onLoad(options) {
@@ -190,14 +192,6 @@ export default {
                 url: '/order/ticket/index?id=' + this.id
             })
         },
-        onCopy() {
-            uni.setClipboardData({
-                data: this.order.order_no,
-                success: function () {
-                    console.log('success');
-                }
-            });
-        },
         getData() {
             this.request("order.detail", {
                 order_id: this.id
@@ -229,12 +223,6 @@ export default {
             if (t <= 0) {
                 this.getData();
             }
-        },
-        orderStatus: function (status) {
-            status = parseInt(status);
-            var arr = ['', '待支付', '已付款', '退款中', '已退款', '已取消']
-            status == 11 ? status = 5 : '';
-            return arr[status];
         },
     },
     onUnload() {

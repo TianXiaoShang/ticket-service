@@ -105,21 +105,13 @@ export default {
             );
           });
         },
-        // 时间戳转时分
-        getHourAndMinute(time) {
-          if (!time) {
-            return "";
-          }
-          const num = Number(time) * 1000;
-          let h = this.moment(num).hour();
-          let m = this.moment(num).minute();
-          if (h < 10) {
-            h = "0" + h;
-          }
-          if (m < 10) {
-            m = "0" + m;
-          }
-          return h + ":" + m;
+        onCopy(value) {
+          uni.setClipboardData({
+            data: value,
+            success: function () {
+              console.log("onCopy-success");
+            },
+          });
         },
       },
       onHide() {
