@@ -206,7 +206,7 @@
 
 
         <!-- 底部已选展示，购买 -->
-        <div class="fixed z-9999 bottom-0 h-100px left-0 w-full box-border bg-white">
+        <div class="fixed z-998 bottom-0 h-100px left-0 w-full box-border bg-white">
             <!-- 《服务条款》 -->
             <div class="h-40px pt-15px text-14px box-border px-20px flex items-center">
                 <image v-if="read" @click="onRead(false)" src="@/static/common/agree-sel@2x.png" class="w-15px h-15px">
@@ -264,7 +264,7 @@
                                     v-for="(item, index) in couponList" :key="index">
                                     <div class="flex flex-col text-white justify-center items-center bg-red p-15px">
                                         <div class="font-semibold special-text"><span class="text-14px">¥</span><span
-                                                class="text-28px">{{ item.deduct }}</span></div>
+                                                class="text-28px">{{ item.deduct === '0.00' || item.deduct == 0 ? '免费券' : item.deduct }}</span></div>
                                         <div class="text-10px font-normal mt-5px -mb-5px">
                                             {{ item.condition }}
                                         </div>
@@ -293,7 +293,7 @@
                         </div>
                     </u-radio-group>
                 </div>
-                <div class="py-10px">
+                <div class="pt-10px">
                     <u-button shape="circle" size="normal" :customStyle="{ height: '44px', width: '200px' }"
                         color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="确定" @click="onSelectCoupon()">
                     </u-button>
@@ -301,7 +301,7 @@
             </div>
         </u-popup>
 
-        <!-- 优惠明细 -->
+        <!-- 优惠明细 TAG - 这里都没对接 -->
         <u-popup :show="showPopup" :closeOnClickOverlay="true" :round="20" @close="showPopup = false">
             <div class="w-full">
                 <div class="text-gray-333 px-20px pt-20px pb-10px flex justify-between items-center border-l-0 border-t-0 border-r-0 
@@ -317,7 +317,6 @@
                         </div>
                         <div class="mt-15px text-12px text-gray-999">setListStr</div>
                     </div>
-                    <!-- TAG-套票折扣字段待提供（计算价格接口） -->
                     <div class="mb-25px" v-for="item in 10" :key="item">
                         <div class="text-gray-333 text-14px font-semibold flex justify-between items-center">
                             <span>套票折扣</span>
@@ -348,7 +347,7 @@
                     class="text-gray-666 text-14px max-h-50vh px-15px box-border mt-15px min-h-10vh">
                     {{ order.charge.charge_desc }}
                 </scroll-view>
-                <div class="py-10px">
+                <div class="pt-10px">
                     <u-button shape="circle" size="normal" :customStyle="{ height: '44px', width: '200px' }"
                         color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="确定"
                         @click="showChargePopup = false">
@@ -370,7 +369,7 @@
                 <scroll-view scroll-y="true" class="text-gray-666 max-h-50vh px-15px box-border mt-15px">
                     <rich-text :nodes="global.buy_text"></rich-text>
                 </scroll-view>
-                <div class="py-10px">
+                <div class="pt-10px">
                     <u-button shape="circle" size="normal" :customStyle="{ height: '44px', width: '200px' }"
                         color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="确定" @click="onRead(true)">
                     </u-button>

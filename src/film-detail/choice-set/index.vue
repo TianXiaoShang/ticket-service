@@ -2,7 +2,7 @@
 	<div class="page-box bg-white box-border">
 		<loading />
 		<!-- 电影信息 -->
-		<div class=" bg-white pt-16px px-20px pb-10px flex justify-between items-center relative z-9999">
+		<div class=" bg-white pt-16px px-20px pb-10px flex justify-between items-center relative z-998">
 			<div>
 				<div class="text-gray-333 text-14px font-semibold">{{ row.film_title }}</div>
 				<div class="text-gray-666 text-12px mt-8px">
@@ -17,7 +17,7 @@
 		</div>
 
 		<!-- 票档分类 -->
-		<div class="bg-white relative z-9999 overflow-hidden box-border w-full" v-if="partList && partList.length">
+		<div class="bg-white relative z-998 overflow-hidden box-border w-full" v-if="partList && partList.length">
 			<!-- 票档 -->
 			<div class="text-gray-999 h-37px overflow-x-auto px-20px whitespace-nowrap">
 				<div v-for="(item, index) in partList" :key="index" @click="tapPart(item, false)"
@@ -34,7 +34,7 @@
 			</div>
 		</div>
 		<!-- 套票折扣 -->
-		<div class="bg-white relative z-9999 overflow-hidden box-border w-full my-10px"
+		<div class="bg-white relative z-998 overflow-hidden box-border w-full my-10px"
 			v-if="disPartList && disPartList.length">
 			<!-- 票档 -->
 			<div class="text-gray-999 h-37px overflow-x-auto px-20px whitespace-nowrap">
@@ -79,7 +79,7 @@
 		</div>
 
 		<!-- 底部已选展示，购买 -->
-		<div class="fixed z-9999 bottom-0 h-122px left-0 w-full box-border bg-white"
+		<div class="fixed z-998 bottom-0 h-122px left-0 w-full box-border bg-white"
 			style="box-shadow: 0px -2px 6px 0px rgba(51,51,51,0.05);">
 			<!-- 已选 -->
 			<div class="overflow-hidden h-52px box-border overflow-x-auto pl-10px py-10px" style="white-space: nowrap;">
@@ -140,12 +140,12 @@
 						</div>
 						<div class="mt-15px text-12px text-gray-999">{{ setListStr }}</div>
 					</div>
-					<!-- TAG-套票折扣字段待提供（计算价格接口） -->
-					<div class="mb-25px" v-for="item in 10" :key="item">
+					<div class="mb-25px" v-if="part_discount" :key="item">
 						<div class="text-gray-333 text-14px font-semibold flex justify-between items-center">
 							<span>套票折扣</span>
-							<span class="text-red">-¥23</span>
+							<span class="text-red">-¥{{ part_discount }}</span>
 						</div>
+						<!-- TAG-待对接 -->
 						<div class="mt-15px text-12px text-gray-999">半价日1折，-0.01元</div>
 					</div>
 				</scroll-view>
@@ -175,6 +175,7 @@ export default {
 			maxSelectSet: 0,
 			selectSeatDataList: [],
 			totalPrice: 0,
+			part_discount: 0, // 套票折扣金额
 			currentPart: {},
 			disPartList: [],
 			activePartDis: false,
@@ -185,6 +186,7 @@ export default {
 		this.id = options.id;
 		// 确保已经登陆完成
 		this.waitLogin().then(() => {
+			this.checkAuth();
 			this.getData();
 		})
 	},
@@ -294,6 +296,7 @@ export default {
 				showLoading: false,
 			}).then(res => {
 				this.totalPrice = res.price;
+				this.part_discount = res.part_discount;
 			})
 		},
 		toPay() {

@@ -26,8 +26,8 @@
 				indicatorActiveColor="#FF545C">
 				<view class="scroll-list-item" v-for="(item, index) in kindList" :key="index">
 					<div class="scroll-list-item flex flex-col justify-center items-center">
-						<image mode="aspectFit" :src="item.icon" class="w-12vw h-12vw rounded" />
-						<span class="mt-5px text-gray-999 text-12">{{ item.title }}</span>
+						<image mode="aspectFit" :src="item.home_icon" class="w-12vw h-12vw rounded" />
+						<span class="mt-5px text-gray-999 text-12">{{ item.home_name }}</span>
 					</div>
 				</view>
 			</u-scroll-list>
@@ -100,18 +100,14 @@ export default {
 				return;
 			}
 			// TAG-跳转到页面后，可能需要解析参数，同分类
-			uni.navigateTo({
-				url: item.route,
-			});
+			this.toPath(item.route)
 		},
 		// 获取首页数据，依赖基础配置也就是waitInitConfig
 		getData() {
-			// 剧院模式 1 / 影院模式 0
 			// 分类
-			// TAG-接口改成set.home，并且不区分模式
-			const typesApi = this.isMovieMode ? 'types' : 'drama.film.types';
-			this.request(typesApi).then(res => {
-				this.kindList = res.types;
+			this.request('set.home').then(res => {
+				console.log(res, 'resssssssssssss')
+				this.kindList = res.homes;
 				if (this.kindList.length > 4) {
 					this.indicator = true;
 				}

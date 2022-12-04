@@ -14,30 +14,19 @@
 			<div class="flex justify-between items-center px-20px">
 				<div class="flex items-center">
 					<!-- 头像 -->
-					<div v-if="isWx"
+					<div @click="toPath('/pages/auth-user-info/index')"
 						class="relative rounded-full border-solid shadow-lg border-2 border-white box-border overflow-hidden w-60px h-60px">
-						<!-- TAG-需添加默认头像 -->
-						<image :src="userInfo.avatar" class="w-full h-full" />
-						<button class="absolute left-0 right-0 top-0 bottom-0 opacity-0" open-type="chooseAvatar"
-							@chooseavatar="chooseavatar"></button>
-					</div>
-					<!-- TAG-抖音暂时保留原来的授权方式，微信已经不支持getUserProfile方法 -->
-					<div v-else @click="getUserInfo"
-						class="rounded-full border-solid shadow-lg border-2 border-white box-border overflow-hidden w-60px h-60px">
 						<!-- TAG-需添加默认头像 -->
 						<image :src="userInfo.avatar" class="w-full h-full" />
 					</div>
 					<!-- 昵称 -->
 					<div class="ml-10px">
-						<div @click="getUserInfo" class="text-333 font-semibold text-20">{{ userInfo.nickname || '未登陆'
-						}}</div>
+						<div @click="toPath('/pages/auth-user-info/index')" class="text-333 font-semibold text-20">
+							{{ userInfo.nickname || '未登陆' }}</div>
 						<!-- 手机号 -->
 						<div class="text-666 text-12 mt-5px">
-							<span class="relative">
+							<span class="relative" @click="toPath('/pages/auth-user-info/index')">
 								{{ userInfo.mobile || '点击授权手机号' }}
-								<button @getphonenumber="getMobile"
-									class="opacity-0 absolute left-0 right-0 top-0 bottom-0" openType="getPhoneNumber">
-								</button>
 							</span>
 						</div>
 					</div>
@@ -49,8 +38,8 @@
 				</div>
 			</div>
 			<!-- vip卡 start -->
-			<div class="mt-20px relative text-0px" @click="toVip">
-				<image mode="widthFix" src="@/static/self/card.png" class="w-full" />
+			<div class="mt-20px relative text-0px h-15.76vw w-full" @click="toVip">
+				<image src="@/static/self/card.png" class="w-full h-15.76vw" />
 				<div
 					class="absolute left-20px right-20px top-0 bottom-0 flex items-center justify-between px-20px box-border">
 					<div class="flex items-center">
@@ -71,25 +60,30 @@
 				<!-- 宫格 -->
 				<div class="mb-20px">
 					<u-scroll-list class="scroll-list is-scroll" :indicator="false">
-						<div class="scroll-list-item flex flex-col justify-center items-center">
+						<div class="scroll-list-item flex flex-col justify-center items-center"
+							@click="switchToPath('/pages/ticket/index')">
 							<image mode="aspectFit" src="@/static/self/mine-tickets.png"
 								class="w-12vw h-12vw shadow-md rounded-full" />
 							<span class="mt-5px text-12 text-gray-333">我的票夹</span>
 						</div>
-						<div class="scroll-list-item flex flex-col justify-center items-center" @click="toOrderList">
+						<div class="scroll-list-item flex flex-col justify-center items-center"
+							@click="toPath('/order/list/index')">
 							<image mode="aspectFit" src="@/static/self/mine-order.png"
 								class="w-12vw h-12vw shadow-md rounded-full" />
 							<span class="mt-5px text-12 text-gray-333">我的订单</span>
 						</div>
-						<div class="scroll-list-item flex flex-col justify-center items-center">
+						<div class="scroll-list-item flex flex-col justify-center items-center"
+							@click="toPath('/coupon/my-coupon/index')">
 							<image mode="aspectFit" src="@/static/self/mine-coupon.png"
 								class="w-12vw h-12vw shadow-md rounded-full" />
 							<span class="mt-5px text-12 text-gray-333">优惠券</span>
 						</div>
-						<div class="scroll-list-item flex flex-col justify-center items-center">
+						<div class="scroll-list-item flex flex-col justify-center items-center relative">
 							<image mode="aspectFit" src="@/static/self/mine-service.png"
 								class="w-12vw h-12vw shadow-md rounded-full" />
 							<span class="mt-5px text-12 text-gray-333">在线客服</span>
+							<button slot="title" class="z-9 absolute left-0 right-0 top-0 bottom-0 opacity-0"
+								open-type="contact"></button>
 						</div>
 					</u-scroll-list>
 				</div>
@@ -109,7 +103,7 @@
 				</div>
 				<!-- 功能卡片 -->
 				<div class="bar-wrap">
-					<div
+					<div @click="toPath('/coupon/center/index')"
 						class="h-56px mt-10px px-20px box-border py-18px flex items-center justify-between bg-white rounded">
 						<div class="flex items-center">
 							<image mode="aspectFit" src="@/static/self/gift-16.png" class="w-16px h-16px" />
@@ -125,7 +119,7 @@
 						</div>
 						<u-icon name="arrow-right" class="ml-4px" size="16px" color="#999"></u-icon>
 					</div>
-					<div
+					<div @click="toPath('/rights/my-rights/index')"
 						class="h-56px mt-10px px-20px box-border py-18px flex items-center justify-between bg-white rounded">
 						<div class="flex items-center">
 							<image mode="aspectFit" src="@/static/self/vip-16.png" class="w-16px h-16px" />
@@ -150,7 +144,6 @@
 <script>
 // TAG - 列表跳转没对接
 import NavBar from '@/components/nav-bar';
-import { getUserProfile, getPhoneNumber } from '@/util/base';
 
 export default {
 	data() {
@@ -172,15 +165,10 @@ export default {
 	onLoad() {
 		// 确保已经登陆完成，再去检查是否有授权
 		this.waitLogin().then(() => {
-			// 没有授权用户信息则跳转登录页
-			if (!this.checkAuth()) {
-				uni.navigateTo({
-					url: '/pages/auth/index?noLogin=true'
-				})
-			} else {
-				this.getAllData();
-				this.loginFlag = true;
-			}
+			// 检查授权用户信息，在没有授权的情况下引导授权，但不阻塞购买业务
+			this.checkAuth();
+			this.getAllData();
+			this.loginFlag = true;
 		})
 	},
 	methods: {
@@ -197,15 +185,10 @@ export default {
 		toVip() {
 			console.log('toVip');
 		},
-		toOrderList() {
-			uni.navigateTo({
-				url: '/order/list/index'
-			})
-		},
 		toNeerTicket() {
 			// TAG-要对接路由跳转地址，跳转到订单详情页
-			const url = `/pages/ticket/detail/detail?id=${this.neerTicket.ticket.order_id}`;
-			console.log(url, 'toNeerTicket');
+			const url = `/order/ticket/index?id=${this.neerTicket.ticket.order_id}`;
+			console.log(url, this.neerTicket, 'toNeerTicket');
 		},
 		// 个人详细业务数据
 		getMemberDate() {
@@ -229,32 +212,6 @@ export default {
 			}
 			this.agentUrl = url;
 		},
-		// TAG-等授权页设计好，在微信端要进行跳转授权页面处理。原getUserProfile已不支持
-		getUserInfo() {
-			getUserProfile().then(res => {
-				uni.showToast({
-					title: "授权成功",
-					icon: "none",
-				})
-			})
-		},
-		getMobile(e) {
-			getPhoneNumber(e).then(res => { }, () => { })
-		},
-		// TAG-需要上传文件到服务器接口，返回真实url后updateUserInfo
-		chooseavatar(e) {
-			uni.uploadFile({
-				url: 'https://6test.djlnet.com.cn/app/theater_api.php?i=1&cinemaid=4&r=upload',
-				filePath: e.detail.avatarUrl,
-				name: 'file',
-				success: (uploadFileRes) => {
-					if (uploadFileRes.data) {
-						const res = JSON.parse(uploadFileRes.data);
-						console.log(res, '===')
-					}
-				}
-			});
-		}
 	}
 };
 </script>

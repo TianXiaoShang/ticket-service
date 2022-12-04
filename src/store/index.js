@@ -55,6 +55,7 @@ const store = new Vuex.Store({
     LOGOUT(state) {
       state.loginStatus = false;
       state.token = null;
+      state.userInfo = {};
     },
     SET_TOKEN(state, value) {
       state.token = value;

@@ -3,8 +3,8 @@
     <div class="w-100vw min-h-100vh py-20px bg-white box-border">
         <!-- 简介 -->
         <div class="px-20px">
-            <film-item :showPlay="false" :canTap="false" showDistance :showAddress="false" :detail="filmData"
-                :showBuy="false" :showPrice="false">
+            <film-item :showPlay="false" :canTap="false" :showAddress="false" :detail="filmData" :showBuy="false"
+                :showPrice="false">
             </film-item>
         </div>
         <!-- 地址栏 -->
@@ -28,7 +28,7 @@
         <!-- 分割 -->
         <div class="h-12px bg-gray-bg"></div>
         <!-- 介绍/精彩瞬间 -->
-        <div class="py-10px" v-if="filmData.moments && filmData.moments.length">
+        <div class="py-10px" v-if="(filmData.moments && filmData.moments.length)">
             <div class="px-20px text-gray-333 text-14 font-semibold">介绍/精彩瞬间</div>
             <div class="overflow-x-auto flex flex-nowrap items-center w-full box-border items-center text-0px mt-12px">
                 <!-- 视频 -->
@@ -57,6 +57,10 @@
                 </div>
             </div>
         </div>
+        <!-- 骨架 -->
+        <div class="p-10px" v-if="!load">
+            <u-skeleton rows="0" titleWidth="100%" titleHeight="110" title :title="true" loading></u-skeleton>
+        </div>
         <div v-if="filmData.moments && filmData.moments.length" class="h-12px bg-gray-bg"></div>
         <!-- tab -->
         <u-sticky bgColor="#fff" v-if="load">
@@ -66,7 +70,7 @@
                 :inactiveStyle="{ color: '#999999', transform: 'scale(1)' }"></u-tabs>
         </u-sticky>
         <div class="mt-20px px-20px box-border" v-else>
-            <u-skeleton rows="6" :title="true" loading></u-skeleton>
+            <u-skeleton rows="12" :title="true" loading></u-skeleton>
         </div>
         <!-- 内容 -->
         <div class="px-20px pb-84px">
@@ -148,13 +152,9 @@ export default {
     methods: {
         toSelectFilm() {
             if (this.isMovieMode) {
-                uni.navigateTo({
-                    url: '/film-detail/choice-movie/index?id=' + this.id
-                })
+                this.toPath('/film-detail/choice-movie/index?id=' + this.id)
             } else {
-                uni.navigateTo({
-                    url: '/film-detail/choice-theater/index?id=' + this.id
-                })
+                this.toPath('/film-detail/choice-theater/index?id=' + this.id)
             }
         },
         onPlay(e) {

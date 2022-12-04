@@ -4,6 +4,8 @@
         <div class="w-full relative">
             <div class="image-filter translate-y-25vw transform scale-130 flex flex-col justify-center items-center">
                 <image class="w-full" :src="cinema.logo"></image>
+                <!-- 比下面的字大一些 -->
+                <div class="text-48px text-gray-111 font-extrabold mt-60px">{{ cinema.title }}</div>
             </div>
             <div
                 class="w-full absolute left-1/2 top-18vh transform -translate-x-1/2 flex flex-col justify-center items-center">
@@ -12,15 +14,40 @@
             </div>
         </div>
 
-        <div class="fixed bottom-10vh w-full">
+        <div class="fixed bottom-10vh w-full flex flex-col items-center justify-center">
+            <div class="flex w-8/10 flex-col items-center justify-center mb-36px">
+                <div style="box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.05);"
+                    class="w-full h-50px bg-white rounded py-10px px-15px box-border mt-10px flex items-center">
+                    <div class="text-gray-999 text-14px mr-10px">头像</div>
+                    <div class="flex-1 relative text-0px h-full flex items-center">
+                        <!-- TAG-需添加默认头像 -->
+                        <image class="w-35px h-35px rounded-full overflow-hidden" :src="user.avatarUrl"></image>
+                        <button class="absolute left-0 right-0 top-0 bottom-0 opacity-0" open-type="chooseAvatar"
+                            @chooseavatar="chooseavatar"></button>
+                    </div>
+                </div>
+                <div style="box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.05);"
+                    class="w-full h-50px bg-white rounded py-10px px-15px box-border mt-10px flex items-center">
+                    <div class="text-gray-999 text-14px mr-10px">昵称</div>
+                    <input placeholder-style="color: #999; font-size: 14px; margin-top: 1px;" placeholder="请输入昵称"
+                        type="nickname" v-model="user.name" @input="inputName" />
+                </div>
+                <div style="box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.05);"
+                    class="w-full h-50px bg-white rounded py-10px px-15px box-border mt-10px flex items-center">
+                    <div class="text-gray-999 text-14px mr-10px">手机</div>
+                    <div class="flex-1 relative h-full flex items-center">
+                        <input placeholder-style="color: #999; font-size: 14px; margin-top: 1px;" placeholder="授权手机号"
+                            v-model="user.phone" />
+                        <button @getphonenumber="getMobile" class="opacity-0 absolute z-9 left-0 right-0 top-0 bottom-0"
+                            openType="getPhoneNumber">
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div class="flex w-full flex-col items-center justify-center">
                 <div class="w-3/5">
-                    <u-button shape="circle" class='w-full' @click="onSubmit" color="#FF545C" type="primary"
-                        text="授权登录"></u-button>
-                </div>
-                <div class="mt-15px w-3/5">
-                    <u-button shape="circle" color="#FF545C" class='w-full' @click="back" :plain="true" text="取消登陆">
-                    </u-button>
+                    <u-button shape="circle" :disabled="(!loginStatus || disabled)" class='w-full' @click="onSubmit"
+                        color="#FF545C" type="primary" text="完成授权"></u-button>
                 </div>
             </div>
             <div class="flex mt-25px justify-center items-center text-14 text-gray-333">
@@ -63,18 +90,28 @@
 </template>
 
 <script>
-// 注意： 该页面仅用于授权过期重新登录，授权用户信息走auth-user-info。
-import { login } from '@/util/base';
+import { getUserProfile, updateUserInfo, getPhoneNumber } from '@/util/base';
 
 export default {
     data() {
         return {
             read: false,
             showPopup: false,
+            user: {
+                avatarUrl: '',
+                name: '',
+                phone: '',
+            },
+            disabled: false,
         }
     },
     onShow() { },
     onLoad() {
+        this.waitLogin().then(() => {
+            this.user.avatarUrl = this.userInfo.avatar;
+            this.user.name = this.userInfo.nickname;
+            this.user.phone = this.userInfo.mobile;
+        })
     },
     methods: {
         onRead(val) {
@@ -83,15 +120,82 @@ export default {
         },
         onSubmit() {
             if (this.read) {
-                login().then(() => {
-                    this.back(800)
-                });
+                if (this.isWx) {
+                    if (!this.user.avatarUrl) {
+                        uni.showToast({
+                            title: "请授权头像",
+                            icon: 'none'
+                        })
+                        return;
+                    }
+                    if (!this.user.name) {
+                        uni.showToast({
+                            title: "请输入昵称",
+                            icon: 'none'
+                        })
+                        return;
+                    }
+                    this.user.name = this.user.name.trim();
+                    if (this.user.name.length > 15 || this.user.name.length <= 0) {
+                        uni.showToast({
+                            title: "昵称长度应在0-15字符之间",
+                            icon: 'none'
+                        })
+                        return;
+                    }
+                    if (!this.user.phone) {
+                        uni.showToast({
+                            title: "请授权手机号",
+                            icon: 'none'
+                        })
+                        return;
+                    };
+                    this.disabled = true;
+                    updateUserInfo({ ...this.userInfo, avatarUrl: this.user.avatarUrl, nickName: this.user.name, mobile: this.user.phone }).then(() => {
+                        uni.showToast({
+                            title: "授权成功",
+                            icon: "none",
+                        });
+                        this.back(800);
+                    }, () => {
+                        uni.showToast({
+                            title: "授权失败，请重试",
+                            icon: "none",
+                        });
+                        this.disabled = false;
+                    })
+                } else {  // 抖音用原来的授权方式
+                    getUserProfile().then(res => {
+                        this.back();
+                    })
+                }
             } else {
                 uni.showToast({
                     title: "请先阅读并同意《用户协议》",
                     icon: 'none'
                 })
             }
+        },
+        inputName(event) {
+            this.user.name = event.detail.value;
+        },
+        chooseavatar(e) {
+            uni.uploadFile({
+                url: this.BASE_URL + 'upload',
+                filePath: e.detail.avatarUrl,
+                name: 'file',
+                success: (uploadFileRes) => {
+                    if (uploadFileRes.data) {
+                        const res = JSON.parse(uploadFileRes.data);
+                        this.user.avatarUrl = res.data.files.url;
+                    }
+                }
+            });
+        },
+        getMobile(e) {
+            getPhoneNumber(e, true).then(res => {
+                this.user.phone = res;
+            })
         },
     }
 };

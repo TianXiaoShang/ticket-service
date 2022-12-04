@@ -31,6 +31,13 @@
         "navigationBarTitleText": "授权登陆",
         "disableScroll": true
       }
+    },
+    {
+      "path": "pages/auth-user-info/index",
+      "style": {
+        "navigationBarTitleText": "用户授权",
+        "disableScroll": true
+      }
     }
   ],
   "subPackages": [
@@ -96,6 +103,46 @@
           "path": "list/index",
           "style": {
             "navigationBarTitleText": "订单列表"
+          }
+        }
+      ]
+    },
+    {
+      "root": "coupon",
+      "pages": [
+        {
+          "path": "my-coupon/index",
+          "style": {
+            "navigationBarTitleText": "我的优惠券"
+          }
+        },
+        {
+          "path": "center/index",
+          "style": {
+            "navigationBarTitleText": "领券中心"
+          }
+        },
+        {
+          "path": "detail/index",
+          "style": {
+            "navigationBarTitleText": "领券详情"
+          }
+        }
+      ]
+    },
+    {
+      "root": "rights",
+      "pages": [
+        {
+          "path": "my-rights/index",
+          "style": {
+            "navigationBarTitleText": "权益卡"
+          }
+        },
+        {
+          "path": "detail/index",
+          "style": {
+            "navigationBarTitleText": "权益卡详情"
           }
         }
       ]

@@ -115,14 +115,11 @@ export default {
         },
         toFilmDetail() {
             if (!this.canTap) return;
-            uni.navigateTo({
-                url: '/film-detail/detail/index?id=' + this.detail.id
-            })
+            this.toPath('/film-detail/detail/index?id=' + this.detail.id)
         },
         toSelectFilm() {
-            uni.navigateTo({
-                url: '/film-detail/choice-movie/index?id=' + this.detail.id
-            })
+            if (!this.canTap) return;
+            this.toPath('/film-detail/choice-movie/index?id=' + this.detail.id)
         }
     }
 };

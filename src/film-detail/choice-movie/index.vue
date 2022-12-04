@@ -7,7 +7,7 @@
 				@change="changeSwiper" :current="currentIndex">
 				<swiper-item @click="tapSwiperItem(index)" :class="{ active: bigItem.id === item.id }"
 					v-for="(item, index) in movieList" :key="index"
-					class="swiper-item text-0 flex items-end justify-center">
+					class="swiper-item text-0px flex items-end justify-center">
 					<image class="w-25vw rounded-10px overflow-hidden h-39vw" :src="item.logo" mode="scaleToFill" />
 				</swiper-item>
 			</swiper>
@@ -55,7 +55,7 @@
 								</div>
 								<div>
 									<!-- 语言 时长 -->
-									<div class="text-gray-333 mt-1px text-14px">{{ item.language }}{{ is_pattern != 1 ?
+									<div class="text-gray-333 mt-1px text-14px">{{ item.language }}{{ setting.is_pattern != 1 ?
 											item.filmtype : ''
 									}} {{ item.total_time }}分钟</div>
 									<div class="text-gray-999 text-10px mt-6px">{{ item.ext.hall_title }}</div>
@@ -128,9 +128,7 @@ export default {
 		},
 		toSelectSet(item) {
 			// TAG-这里要判断是哪种场景，以决定是否需要跳转选座，还有可能不需要选座直接跳转下单页
-			uni.navigateTo({
-				url: '/film-detail/choice-set/index?id=' + item.id
-			})
+            this.toPath('/film-detail/choice-set/index?id=' + item.id)
 		},
 		changeTab(e) {
 			this.tabIndex = e.index;

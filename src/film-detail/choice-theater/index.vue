@@ -149,6 +149,7 @@ export default {
 	},
 	methods: {
 		toSelectFilm() {
+			// TAG-从剧院模式跳过去选座，要带分区id，在座位初始化的时候对Active做处理
 			// TAG-这里要判断是哪种场景，以决定是否需要跳转选座，还有可能不需要选座直接跳转下单页
 			console.log('toSelectFilm')
 		},

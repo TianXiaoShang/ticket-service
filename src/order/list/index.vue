@@ -18,20 +18,23 @@
                 <scroll-view scroll-y="true" style="height: calc(100vh - 42px - 20px);">
                     <div @click="toOrderDetail(item)" class="bg-white rounded box-border mt-10px p-20px relative"
                         v-for="(item, index) in orderList" :key="index">
-                        <div class="text-14 font-semibold">{{ item.film_title }}</div>
-                        <div class="text-12px text-gray-999 my-10px font-normal flex justify-between items-center">
-                            <!-- TAG - 独立 -->
-                            <span>{{ item.cinema_title }} {{ item.hall_title }}</span>
-                            <span>{{ orderStatus(item.status) }}</span>
-                        </div>
-                        <div class="text-14 font-normal flex justify-between items-center">
-                            <span class="text-gray-333">{{ item.status == 2 || item.status == 3 || item.status ==
-                                    4 ? item.price : item.total
-                            }}/共{{ item.number }}张</span>
-                            <span class="text-12px text-gray-999">{{ moment(item.entrance_time *
-                                    1000).format('YYYY-MM-DD HH:mm')
-                            }}</span>
-                        </div>
+                        <template v-if="item.id">
+                            <div class="text-14 font-semibold">{{ item.film_title }}</div>
+                            <div class="text-12px text-gray-999 my-10px font-normal flex justify-between items-center">
+                                <!-- TAG - 独立 -->
+                                <span>{{ item.cinema_title }} {{ item.hall_title }}</span>
+                                <span>{{ orderStatus(item.status) }}</span>
+                            </div>
+                            <div class="text-14 font-normal flex justify-between items-center">
+                                <span class="text-gray-333">{{ item.status == 2 || item.status == 3 || item.status ==
+                                        4 ? item.price : item.total
+                                }}/共{{ item.number }}张</span>
+                                <span class="text-12px text-gray-999">{{ moment(item.entrance_time *
+                                        1000).format('YYYY-MM-DD HH:mm')
+                                }}</span>
+                            </div>
+                        </template>
+                        <u-skeleton v-else rows="2" title :avatar="false" loading></u-skeleton>
                     </div>
                 </scroll-view>
             </template>
@@ -44,32 +47,31 @@ import { orderStatus } from '../util';
 export default {
     data() {
         return {
-            id: '',
             tabIndex: 0,
             statusList: [{ name: '全部' }, { name: '待付款' }, { name: '已付款' }, { name: '已取消' }],
-            orderList: [],
+            orderList: new Array(8).fill({}),
             orderStatus,
         }
     },
-    onLoad(options) {
-        this.id = options.id;
+    onLoad() {
     },
     methods: {
         toOrderDetail(item) {
-            uni.navigateTo({
-                url: '/order/detail/index?id=' + item.id
-            })
+            this.toPath('/order/detail/index?id=' + item.id)
         },
         changeTab(e) {
             this.tabIndex = e.index;
             this.getData(this.tabIndex)
         },
         getData(status) {
+            this.orderList = new Array(8).fill({});
             status == 3 ? status = 11 : '';
             this.request("order.lists", {
                 status: status
             }).then(res => {
-                this.orderList = res.order;
+                this.orderList = res.order || [];
+            }, () => {
+                this.orderList = [];
             })
         },
     },

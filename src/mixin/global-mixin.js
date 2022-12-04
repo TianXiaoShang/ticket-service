@@ -58,7 +58,20 @@ export default {
         },
         // 其实只是检测有没有授权用户信息。小程序初始化时已经直接静默登陆了
         checkAuth() {
-          return !!this.userInfo.nickname;
+          if (!this.userInfo.nickname) {
+            uni.showModal({
+              title: "提示",
+              content: "请完善用户信息",
+              confirmText: "去授权",
+              success: function (res) {
+                if (res.confirm) {
+                  this.toPath("/pages/auth-user-info/index");
+                } else if (res.cancel) {
+                  console.log("用户点击取消");
+                }
+              },
+            });
+          }
         },
         // 等待登陆完成，一般来说登陆一定会成功，除非接口挂了
         waitLogin() {
@@ -112,6 +125,26 @@ export default {
               console.log("onCopy-success");
             },
           });
+        },
+        toPath(path, delay = 0) {
+          if (!path) {
+            return;
+          }
+          setTimeout(() => {
+            uni.navigateTo({
+              url: path,
+            });
+          }, delay);
+        },
+        switchToPath(path, delay = 0) {
+          if (!path) {
+            return;
+          }
+          setTimeout(() => {
+            uni.switchTab({
+              url: path,
+            });
+          }, delay);
         },
       },
       onHide() {

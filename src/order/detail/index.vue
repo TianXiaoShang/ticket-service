@@ -2,7 +2,7 @@
     <div class="page-box bg-gray-bg box-border">
         <loading />
         <!-- 倒计时区域 -->
-        <div :style="{
+        <div v-if="order.id" :style="{
             background: order.status == 2 ? '#2ACB95' :
                 order.status == 1 ? '#FF545C' :
                     order.status == 3 ? '#FF9933' :
@@ -10,6 +10,9 @@
         }" class="p-30px flex flex-col justify-center items-center text-white">
             <div class="text-16 font-semibold">订单{{ orderStatus(order.status) }}</div>
             <div class="text-16 font-semibold" v-if="order.status == 1">剩余支付时间 {{ payTime }}</div>
+        </div>
+        <div v-else>
+            <u-skeleton rows="0" titleWidth="100%" titleHeight="82" title :title="true" loading></u-skeleton>
         </div>
 
         <!-- 中间内容 -->
@@ -120,22 +123,22 @@
             <div class="mt-10px">
                 <u-skeleton rows="3" titleWidth="100%" titleHeight="100" title :title="true" loading></u-skeleton>
             </div>
-            <div class="mt-10px">
-                <u-skeleton rows="5" titleWidth="100%" titleHeight="50" title :title="true" loading></u-skeleton>
+            <div class="mt-20px">
+                <u-skeleton rows="8" titleWidth="100%" titleHeight="50" title :title="true" loading></u-skeleton>
             </div>
         </div>
 
 
         <!-- 底部按钮 -->
         <div v-if="order.status == 1"
-            class="fixed z-9999 pb-20px bottom-0 h-70px flex items-center justify-between px-20px left-0 w-full box-border">
+            class="fixed z-998 pb-20px bottom-0 h-70px flex items-center justify-between px-20px left-0 w-full box-border">
             <u-button shape="circle" size="normal"
                 :customStyle="{ height: '44px', width: 'calc((100vw - 40px) / 2 - 8px)', margin: 0, border: '1px solid #FF545C', color: '#FF545C' }"
                 color="#fff" text="取消订单" @click="cancelOrder">
             </u-button>
             <u-button shape="circle" size="normal"
                 :customStyle="{ height: '44px', width: 'calc((100vw - 40px) / 2 - 8px)', margin: 0 }"
-                color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="提交订单" @click="toPay">
+                color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);" text="继续支付" @click="toPay">
             </u-button>
         </div>
     </div>
@@ -151,7 +154,7 @@ export default {
             order: {},
             timer: null,
             payTime: '',
-            orderStatus
+            orderStatus,
         }
     },
     onLoad(options) {
@@ -183,19 +186,16 @@ export default {
             });
         },
         toPay() {
-            uni.navigateTo({
-                url: '/order/pay/index?id=' + this.id
-            })
+            this.toPath('/order/pay/index?id=' + this.id)
         },
         toTicket() {
-            uni.navigateTo({
-                url: '/order/ticket/index?id=' + this.id
-            })
+            this.toPath('/order/ticket/index?id=' + this.id)
         },
         getData() {
             this.request("order.detail", {
                 order_id: this.id
             }).then(res => {
+                // return;
                 this.order = res.order;
                 // 倒计时
                 const time = res.order.expire_time;

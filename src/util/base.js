@@ -7,7 +7,9 @@ const setInfo = (member) => {
     return;
   }
   const token = member.token || "";
-  setToken(token);
+  if (token) {
+    setToken(token);
+  }
   setUserInfo(member || {});
 };
 
@@ -57,29 +59,30 @@ const getUserProfile = () => {
     resolve();
     // #endif
 
-    // #ifdef MP-WEIXIN
-    wx.getUserProfile({
-      desc: "用于完善会员资料",
-      success: (result) => {
-        updateUserInfo(result.userInfo).then(
-          (res) => resolve(res),
-          () => reject()
-        );
-      },
-      fail: (err) => {
-        console.log(err, "getUserProfile-fail");
-        uni.showToast({
-          title: "用户拒绝授权", // 用户油盐不进，实在没办法
-          icon: "none",
-        });
-        reject();
-      },
-    });
-    // #endif
+    // 微信端已经废弃该api
+    // // #ifdef MP-WEIXIN
+    // wx.getUserProfile({
+    //   desc: "用于完善会员资料",
+    //   success: (result) => {
+    //     updateUserInfo(result.userInfo).then(
+    //       (res) => resolve(res),
+    //       () => reject()
+    //     );
+    //   },
+    //   fail: (err) => {
+    //     console.log(err, "getUserProfile-fail");
+    //     uni.showToast({
+    //       title: "用户拒绝授权", // 用户油盐不进，实在没办法
+    //       icon: "none",
+    //     });
+    //     reject();
+    //   },
+    // });
+    // // #endif
   });
 };
 
-const getPhoneNumber = (res) => {
+const getPhoneNumber = (res, getNumber) => {
   return new Promise((resolve, reject) => {
     if (res.detail.errMsg.includes("fail")) {
       uni.showToast({
@@ -93,17 +96,26 @@ const getPhoneNumber = (res) => {
       iv: res.detail.iv,
       data: res.detail.encryptedData,
     };
-    request("member.mobile", params).then(
-      (res) => {
-        uni.showToast({
-          title: "授权成功",
-          icon: "none",
-        });
-        setInfo(res.member);
-        resolve(res.member);
-      },
-      () => reject()
-    );
+    if (getNumber) {
+      request("member.mobile", params).then(
+        (res) => {
+          resolve(res.member.mobile);
+        },
+        () => reject()
+      );
+    } else {
+      request("member.mobile", params).then(
+        (res) => {
+          uni.showToast({
+            title: "授权成功",
+            icon: "none",
+          });
+          setInfo(res.member);
+          resolve(res.member);
+        },
+        () => reject()
+      );
+    }
   });
 };
 
@@ -138,4 +150,10 @@ const updateUserInfo = (userInfo) => {
     );
   });
 };
-export { login, getUserProfile, updateUserInfo, getPhoneNumber, initCinemaConfig };
+export {
+  login,
+  getUserProfile,
+  updateUserInfo,
+  getPhoneNumber,
+  initCinemaConfig,
+};

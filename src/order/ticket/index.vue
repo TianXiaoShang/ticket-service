@@ -2,7 +2,7 @@
     <div class="page-box bg-gray-bg box-border p-20px box-border relative">
         <loading />
         <div class="is-bg"></div>
-        <div class="relative z-999">
+        <div class="relative z-999" v-if="order.id">
             <!-- 电影 -->
             <div class="p-15px rounded bg-white flex justify-between items-center">
                 <!-- TAG - 图片没有 -->
@@ -31,15 +31,23 @@
                         :activeStyle="{ color: '#333', fontWeight: 'bold', transform: 'scale(1.05)' }"
                         :inactiveStyle="{ color: '#999999', transform: 'scale(1)' }"></u-tabs>
                 </div>
-                <!-- 扫码入场 -->
+                <!-- 取票 -->
                 <div class="" v-if="global.show_ticketscode != 1 && tabIndex === 0">
                     <div class="py-20px relative" style="border-top: 1px solid #eee">
-                        <div class="flex justify-center items-center"
-                            :style="{ opacity: order.is_ticket != 1 ? '1' : '0.4' }">
-                            <!-- 组件地址 https://ext.dcloud.net.cn/plugin?id=39 -->
-                            <tki-qrcode ref="qrcode" :cid="order.dynamic" :val="order.dynamic" :size="150" unit="px"
-                                :background="'#fff'" :foreground="'#000'" :onval="onval" :loadMake="true"
-                                :showLoading="true" />
+                        <div class="flex justify-center items-center relative">
+                            <!-- is_ticket是整体的取票状态，status是单个的扫码入场状态 -->
+                            <div :style="{ opacity: order.is_ticket != 1 && order.status <= 1 ? '1' : '0.07' }">
+                                <!-- 组件地址 https://ext.dcloud.net.cn/plugin?id=39 -->
+                                <tki-qrcode ref="qrcode" :cid="order.dynamic" :val="order.dynamic" :size="150" unit="px"
+                                    :background="'#fff'" :foreground="'#000'" :onval="onval" :loadMake="true"
+                                    :showLoading="true" />
+                            </div>
+                            <div
+                                class="absolute flex flex-col justify-center items-center left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                <image class="w-55px h-55px" :src="`../static/${statusOrder[order.status]}.png`" />
+                                <div class="mt-8px text-16px font-semibold" style="color: #63c899">
+                                    {{ statusOrderText[order.status] }}</div>
+                            </div>
                         </div>
                     </div>
                     <div class="flex flex-col justify-center items-center text-14px mt-10px">
@@ -53,40 +61,44 @@
                         </div>
                     </div>
                 </div>
+                <!-- 扫码入场 -->
                 <div class="" v-if="global.show_ticketscode != 1 ? tabIndex === 1 : tabIndex === 0">
                     <div class="py-20px relative" style="border-top: 1px solid #eee">
                         <swiper v-if="ticket.length" circular :indicator-dots="false" :current="ticketCurrent"
                             @animationfinish="changeFinish" :autoplay="false" :duration="500">
                             <swiper-item v-for="(item, index) in ticket" :key="index">
-                                <div class="flex justify-center items-center relative"
-                                    :style="{ opacity: order.is_ticket != 1 ? '1' : '0.3' }">
-                                    <!-- 组件地址 https://ext.dcloud.net.cn/plugin?id=39 -->
-                                    <tki-qrcode ref="qrcode" :cid="item.id" :val="item.dynamic + index" :size="150"
-                                        unit="px" :background="'#fff'" :foreground="'#000'" :onval="onval"
-                                        :loadMake="true" :showLoading="true" />
+                                <div class="flex justify-center items-center relative">
+                                    <div :style="{ opacity: item.status <= 1 ? '1' : '0.07' }">
+                                        <!-- 组件地址 https://ext.dcloud.net.cn/plugin?id=39 -->
+                                        <tki-qrcode ref="qrcode" :cid="item.id" :val="item.dynamic + index" :size="150"
+                                            unit="px" :background="'#fff'" :foreground="'#000'" :onval="onval"
+                                            :loadMake="true" :showLoading="true" />
+                                    </div>
                                     <div
-                                        class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-55px h-55px">
-                                        <image class="w-full h-full" src="../static/previous-dis@2x.png" />
+                                        class="absolute flex flex-col justify-center items-center left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                        <image class="w-55px h-55px"
+                                            :src="`../static/${statusSign[item.status]}.png`" />
+                                        <div class="mt-8px text-16px font-semibold" style="color: #63c899">
+                                            {{ statusSignText[item.status] }}</div>
                                     </div>
                                 </div>
                             </swiper-item>
                         </swiper>
-                        <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-25px h-25px" @click="onPrev">
+                        <div v-if="(ticket.length > 1)"
+                            class="absolute left-0 top-1/2 transform -translate-y-1/2 w-25px h-25px" @click="onPrev">
                             <image class="w-full h-full" src="../static/previous-dis@2x.png" />
                         </div>
-                        <div class="absolute right-0 top-1/2 transform -translate-y-1/2 w-25px h-25px" @click="onNext">
+                        <div v-if="(ticket.length > 1)"
+                            class="absolute right-0 top-1/2 transform -translate-y-1/2 w-25px h-25px" @click="onNext">
                             <image class="w-full h-full" src="../static/previous-nor@2x.png" />
                         </div>
                     </div>
                     <div class="flex flex-col justify-center items-center text-14px mt-10px">
-                        <div class="text-gray-999">{{ ticket[ticketCurrent].seat_name }}({{ ticketCurrent + 1 + '/' +
-                                ticket.length
-                        }})
+                        <div class="text-gray-999">
+                            {{ ticket[ticketCurrent].seat_name }}({{ ticketCurrent + 1 + '/' + ticket.length }})
                         </div>
                         <div class="flex items-center text-gray-333 font-normal mt-10px">
-                            <span :style="{ 'text-decoration': item.is_ticket == 1 ? 'line-through;' : 'none' }">票码：{{
-                                    ticket[ticketCurrent].dynamic
-                            }}</span>
+                            <span>票码：{{ ticket[ticketCurrent].dynamic }}</span>
                             <span @click="onCopy(ticket[ticketCurrent].dynamic)"
                                 class="px-10px h-26px flex items-center justify-center rounded-25px ml-20px border border-solid border-color-333">复制</span>
                         </div>
@@ -115,7 +127,20 @@
                 </div>
             </div>
         </div>
-
+        <div v-else class="relative z-999">
+            <div class="bg-white p-20px rounded">
+                <u-skeleton avatarShape="square" avatarSize="102" rows="2" title avatar loading></u-skeleton>
+            </div>
+            <div class="bg-white p-20px mt-20px rounded">
+                <u-skeleton rows="2" title :avatar="false" loading></u-skeleton>
+            </div>
+            <div class="bg-white p-20px mt-20px rounded">
+                <u-skeleton rows="8" title :avatar="false" loading></u-skeleton>
+            </div>
+            <div class="bg-white p-20px mt-20px rounded">
+                <u-skeleton rows="8" title :avatar="false" loading></u-skeleton>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -135,8 +160,10 @@ export default {
             tabsDataList: [],
             ticketCurrent: 0,
             canAnimationFlag: true,
-            statusOrder: ['', 'yiqupiao', 'yifangyin', 'yituikuan'],
-            statusSign: ['', '', 'yiqupiao', 'yifangyin', 'yituikuan'],
+            statusOrder: ['', 'yiqupiao', 'yijieshu', 'yituikuan'],
+            statusOrderText: ['', '已取票', '已结束', '已退款'],
+            statusSign: ['', '', 'yiqupiao', 'yijieshu', 'yituikuan'],
+            statusSignText: ['', '', '已取票', '已结束', '已退款'],
         }
     },
     components: { tkiQrcode },
@@ -169,9 +196,7 @@ export default {
             this.tabIndex = e.index;
         },
         toDetail() {
-            uni.navigateTo({
-                url: '/order/detail/index?id=' + this.id
-            })
+            this.toPath('/order/detail/index?id=' + this.id)
         },
         getData() {
             this.request("ticket.detail", {
@@ -181,7 +206,7 @@ export default {
                     this.richText = parseRichText(res.watch_film);
                 }
                 this.myCinema = res.cinema;
-                this.ticket = [...res.ticket, { ...res.ticket[0], id: '01' }, { ...res.ticket[0], id: '02' }];
+                this.ticket = res.ticket;
                 this.order = res.order;
                 this.global = res.global;
 

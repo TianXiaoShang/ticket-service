@@ -1,5 +1,6 @@
 import { BASE_URL } from "@/services/environment.service";
 import { getToken } from "@/util";
+import { login } from "@/util/base";
 import store from "@/store";
 
 // TAG-noDirect在旧版有地方用到，之后核对
@@ -50,8 +51,9 @@ const request = function (path, data = {}, method = "GET", noDirect = true) {
               },
             });
           } else if (res.data.errno === 0) {
-            uni.showToast({ title: res.data.message, icon: 'none' });
-          } else if (res.data.errno === 303) {
+            uni.showToast({ title: res.data.message, icon: "none" });
+          } else if (res.data.errno === 303) {   // 登陆失效
+            store.commit("LOGOUT");
             getCurrentPages().length > 1
               ? uni.redirectTo({
                   url: "/pages/auth/auth",
