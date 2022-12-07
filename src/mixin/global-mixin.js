@@ -43,7 +43,7 @@ export default {
         // #endif
       },
       methods: {
-        goHome(delay = 800) {
+        goHome(delay = 0) {
           setTimeout(() => {
             uni.reLaunch({ url: `/pages/index/index` });
           }, delay);
@@ -56,24 +56,40 @@ export default {
             uni.navigateBack();
           }, delay);
         },
-        // 其实只是检测有没有授权用户信息。小程序初始化时已经直接静默登陆了
-        checkAuth() {
-          if (!this.userInfo.nickname) {
-            uni.showModal({
-              title: "提示",
-              content: "请完善用户信息",
-              confirmText: "去授权",
-              success: function (res) {
-                if (res.confirm) {
+        // 其实只是检测有没有授权用户信息。小程序初始化时已经直接静默登录了
+        // 一般只检查昵称，特殊情况检查手机号
+        checkAuth(onlyStatus = false, showModal = true) {
+          return new Promise((resolve, reject) => {
+            if (!this.userInfo.nickname || !this.userInfo.mobile) {
+              if (onlyStatus) {
+                // onlyStatus - 仅获取状态则返回状态即可
+                reject();
+              } else {
+                if (showModal) {
+                  uni.showModal({
+                    title: "提示",
+                    content: "请完善用户信息",
+                    confirmText: "去授权",
+                    success: (res) => {
+                      if (res.confirm) {
+                        this.toPath("/pages/auth-user-info/index");
+                      } else if (res.cancel) {
+                        console.log("用户点击取消");
+                      }
+                      reject();
+                    },
+                  });
+                } else {
                   this.toPath("/pages/auth-user-info/index");
-                } else if (res.cancel) {
-                  console.log("用户点击取消");
+                  reject();
                 }
-              },
-            });
-          }
+              }
+            } else {
+              resolve();
+            }
+          });
         },
-        // 等待登陆完成，一般来说登陆一定会成功，除非接口挂了
+        // 等待登录完成，一般来说登录一定会成功，除非接口挂了
         waitLogin() {
           return new Promise((resolve, reject) => {
             if (this.loginStatus) {
@@ -146,10 +162,22 @@ export default {
             });
           }, delay);
         },
+        // 对小数点为0的字符串做去除，23.00 => 23 | 23.01 => 23.01 | 23.00 => 23
+        splitPoint(value) {
+          if (!value || typeof value !== "string") {
+            return value;
+          }
+          const arr = value.split(".");
+          if (arr.length === 2 && (arr[1] === "0" || arr[1] === "00")) {
+            return arr[0];
+          } else {
+            return value;
+          }
+        },
       },
       onHide() {
         // 不管是否使用了waitLogin都进行解除监听，防止重复监听onLogin
-        // 本质上使用waitLogin方式只是为了等登陆完成，不需要重复执行回调，尽管promise状态不会再次改变
+        // 本质上使用waitLogin方式只是为了等登录完成，不需要重复执行回调，尽管promise状态不会再次改变
         uni.$off("onLogin");
         // 同上理
         uni.$off("onInitCinemaSetting");

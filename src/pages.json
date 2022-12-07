@@ -28,7 +28,7 @@
     {
       "path": "pages/auth/index",
       "style": {
-        "navigationBarTitleText": "授权登陆",
+        "navigationBarTitleText": "授权登录",
         "disableScroll": true
       }
     },
@@ -143,6 +143,42 @@
           "path": "detail/index",
           "style": {
             "navigationBarTitleText": "权益卡详情"
+          }
+        }
+      ]
+    },
+    {
+      "root": "vip",
+      "pages": [
+        {
+          "path": "vip/index",
+          "style": {
+            "navigationBarTitleText": "会员中心",
+            "mp-weixin": {
+              "navigationStyle": "custom",
+              "backgroundColor": "#F9F9F9"
+            },
+            "mp-toutiao": {
+              "navigationStyle": "default"
+            }
+          }
+        },
+        {
+          "path": "record/index",
+          "style": {
+            "navigationBarTitleText": "余额记录"
+          }
+        },
+        {
+          "path": "find/index",
+          "style": {
+            "navigationBarTitleText": "找回会员"
+          }
+        },
+        {
+          "path": "perfect/index",
+          "style": {
+            "navigationBarTitleText": "完善资料"
           }
         }
       ]

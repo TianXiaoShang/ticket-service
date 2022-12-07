@@ -47,7 +47,7 @@ export default {
         }
     },
     onLoad() {
-        // 确保已经登陆完成
+        // 确保已经登录完成
         this.waitLogin().then(() => {
             this.getData(this.tabIndex + 1);
         });

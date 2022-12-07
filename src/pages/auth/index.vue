@@ -19,7 +19,7 @@
                         text="授权登录"></u-button>
                 </div>
                 <div class="mt-15px w-3/5">
-                    <u-button shape="circle" color="#FF545C" class='w-full' @click="back" :plain="true" text="取消登陆">
+                    <u-button shape="circle" color="#FF545C" class='w-full' @click="back" :plain="true" text="取消登录">
                     </u-button>
                 </div>
             </div>

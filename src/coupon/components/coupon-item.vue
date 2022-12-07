@@ -69,11 +69,3 @@ export default {
     },
 };
 </script>
-
-
-<style lang="scss" scoped>
-.special-text {
-    transform: scale(1, 1.1);
-    transform-origin: 0 0;
-}
-</style>

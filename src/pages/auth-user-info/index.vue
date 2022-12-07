@@ -18,23 +18,23 @@
             <div class="flex w-8/10 flex-col items-center justify-center mb-36px">
                 <div style="box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.05);"
                     class="w-full h-50px bg-white rounded py-10px px-15px box-border mt-10px flex items-center">
-                    <div class="text-gray-999 text-14px mr-10px">头像</div>
+                    <div class="text-gray-666 text-14px mr-10px">头像</div>
                     <div class="flex-1 relative text-0px h-full flex items-center">
-                        <!-- TAG-需添加默认头像 -->
-                        <image class="w-35px h-35px rounded-full overflow-hidden" :src="user.avatarUrl"></image>
+                        <image v-if="user.avatarUrl" class="w-35px h-35px rounded-full overflow-hidden" :src="user.avatarUrl"></image>
+                        <span v-else class="text-14px text-gray-999">点击授权头像</span>
                         <button class="absolute left-0 right-0 top-0 bottom-0 opacity-0" open-type="chooseAvatar"
                             @chooseavatar="chooseavatar"></button>
                     </div>
                 </div>
                 <div style="box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.05);"
                     class="w-full h-50px bg-white rounded py-10px px-15px box-border mt-10px flex items-center">
-                    <div class="text-gray-999 text-14px mr-10px">昵称</div>
+                    <div class="text-gray-666 text-14px mr-10px">昵称</div>
                     <input placeholder-style="color: #999; font-size: 14px; margin-top: 1px;" placeholder="请输入昵称"
                         type="nickname" v-model="user.name" @input="inputName" />
                 </div>
                 <div style="box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.05);"
                     class="w-full h-50px bg-white rounded py-10px px-15px box-border mt-10px flex items-center">
-                    <div class="text-gray-999 text-14px mr-10px">手机</div>
+                    <div class="text-gray-666 text-14px mr-10px">手机</div>
                     <div class="flex-1 relative h-full flex items-center">
                         <input placeholder-style="color: #999; font-size: 14px; margin-top: 1px;" placeholder="授权手机号"
                             v-model="user.phone" />

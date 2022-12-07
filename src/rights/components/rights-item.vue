@@ -68,7 +68,8 @@
             <!-- 权益卡兑换须知 -->
             <pay-popup :rightsData="rightsData" @success="$emit('success')" ref="isPayPopup"></pay-popup>
         </div>
-        <u-skeleton v-else rows="0" titleWidth="100%" titleHeight="144" title :title="true" loading></u-skeleton>
+        <u-skeleton v-else rows="0" titleWidth="100%" :titleHeight="showDetailBtn ? 144 : 132" title :title="true"
+            loading></u-skeleton>
     </div>
 </template>
 
@@ -107,11 +108,3 @@ export default {
     },
 };
 </script>
-
-
-<style lang="scss" scoped>
-.special-text {
-    transform: scale(1, 1.1);
-    transform-origin: 0 0;
-}
-</style>

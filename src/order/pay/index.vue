@@ -264,7 +264,9 @@
                                     v-for="(item, index) in couponList" :key="index">
                                     <div class="flex flex-col text-white justify-center items-center bg-red p-15px">
                                         <div class="font-semibold special-text"><span class="text-14px">¥</span><span
-                                                class="text-28px">{{ item.deduct === '0.00' || item.deduct == 0 ? '免费券' : item.deduct }}</span></div>
+                                                class="text-28px">{{ item.deduct === '0.00' || item.deduct == 0 ? '免费券'
+                                                        : item.deduct
+                                                }}</span></div>
                                         <div class="text-10px font-normal mt-5px -mb-5px">
                                             {{ item.condition }}
                                         </div>
@@ -425,7 +427,7 @@ export default {
     },
     onLoad(options) {
         this.id = options.id;
-        // 确保已经登陆完成
+        // 确保已经登录完成
         this.waitLogin().then(() => {
             this.getData();
             if (this.userInfo.mobile) {
@@ -598,7 +600,9 @@ export default {
             this.showReadPopup = false;
         },
         getMobile(e) {
-            getPhoneNumber(e).then(res => { }, () => { })
+            getPhoneNumber(e, true).then(res => {
+                this.user.phone = res;
+            }, () => { })
         },
     }
 };
@@ -615,10 +619,5 @@ export default {
             padding-bottom: 8px !important;
         }
     }
-}
-
-.special-text {
-    transform: scale(1, 1.1);
-    transform-origin: 0 0;
 }
 </style>

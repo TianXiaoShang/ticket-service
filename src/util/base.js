@@ -96,26 +96,21 @@ const getPhoneNumber = (res, getNumber) => {
       iv: res.detail.iv,
       data: res.detail.encryptedData,
     };
-    if (getNumber) {
-      request("member.mobile", params).then(
-        (res) => {
+    request("member.mobile", params).then(
+      (res) => {
+        if (getNumber) {
           resolve(res.member.mobile);
-        },
-        () => reject()
-      );
-    } else {
-      request("member.mobile", params).then(
-        (res) => {
+        } else {
           uni.showToast({
             title: "授权成功",
             icon: "none",
           });
           setInfo(res.member);
           resolve(res.member);
-        },
-        () => reject()
-      );
-    }
+        }
+      },
+      () => reject()
+    );
   });
 };
 

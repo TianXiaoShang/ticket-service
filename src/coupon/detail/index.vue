@@ -69,7 +69,7 @@ export default {
             this.id = sceneObj.id ? sceneObj.id : this.id;
             this.flag = true;
         }
-        // 确保已经登陆完成
+        // 确保已经登录完成
         this.waitLogin().then(() => {
             this.getData();
         });
@@ -100,11 +100,3 @@ export default {
     },
 };
 </script>
-
-
-<style lang="scss" scoped>
-.special-text {
-    transform: scale(1, 1.1);
-    transform-origin: 0 0;
-}
-</style>

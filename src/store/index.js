@@ -5,7 +5,7 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    loginStatus: false, // 获取登陆状态
+    loginStatus: false, // 获取登录状态
     token: null, // token
     userInfo: {}, // 储存来自weixin授权的用户信息（头像信息等）
     globalLoadings: [], // loading组件控制
@@ -45,15 +45,14 @@ const store = new Vuex.Store({
     SET_POS(state, val) {
       state.userLocation = val;
     },
-    // 登陆，更新状态
+    // 登录，更新状态
     LOGIN(state, value) {
-      // 触发全局登陆完成事件
+      // 触发全局登录完成事件
       uni.$emit("onLogin", value);
       state.loginStatus = value;
     },
     // 登出
     LOGOUT(state) {
-      state.loginStatus = false;
       state.token = null;
       state.userInfo = {};
     },

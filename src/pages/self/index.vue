@@ -22,7 +22,7 @@
 					<!-- 昵称 -->
 					<div class="ml-10px">
 						<div @click="toPath('/pages/auth-user-info/index')" class="text-333 font-semibold text-20">
-							{{ userInfo.nickname || '未登陆' }}</div>
+							{{ userInfo.nickname || '点击登录' }}</div>
 						<!-- 手机号 -->
 						<div class="text-666 text-12 mt-5px">
 							<span class="relative" @click="toPath('/pages/auth-user-info/index')">
@@ -32,8 +32,8 @@
 					</div>
 				</div>
 				<div class="right">
-					<u-button @click="toVip" class="h-26px min-w-58px" shape="circle" size="small" color="#FF545C"
-						text="VIP">
+					<u-button @click="toVip" class="h-26px min-w-58px" shape="circle" size="small"
+						:color="card.id ? '#FF545C' : '#bbb'" text="VIP">
 					</u-button>
 				</div>
 			</div>
@@ -44,13 +44,15 @@
 					class="absolute left-20px right-20px top-0 bottom-0 flex items-center justify-between px-20px box-border">
 					<div class="flex items-center">
 						<image mode="aspectFit" src="@/static/self/vipvip.png" class="w-18px h-18px" />
-						<span class="ml-5px text-16 font-semibold" style="color: #673F0F">{{ cinema.title }}</span>
+						<span class="ml-5px text-16 font-semibold" style="color: #673F0F">{{ authFlag ? cinema.title :
+								'会员未登录'
+						}}</span>
 					</div>
-					<div class="text-16 special-text" v-if="card.id" style="color: #A04A07">
+					<div class="text-16 special-text" v-if="authFlag && card.id" style="color: #A04A07">
 						<span class="text-14">¥</span>
 						<span class="text-22px ml-2px">{{ card.balance }}</span>
 					</div>
-					<div class="text-16" v-else style="color: #A04A07">
+					<div class="text-16" v-if="(authFlag && !card.id)" style="color: #A04A07">
 						开通会员
 					</div>
 				</div>
@@ -111,7 +113,7 @@
 						</div>
 						<u-icon name="arrow-right" class="ml-4px" size="16px" color="#999"></u-icon>
 					</div>
-					<div
+					<div @click="toEmployee"
 						class="h-56px mt-10px px-20px box-border py-18px flex items-center justify-between bg-white rounded">
 						<div class="flex items-center">
 							<image mode="aspectFit" src="@/static/self/staff-16.png" class="w-16px h-16px" />
@@ -153,6 +155,7 @@ export default {
 			global: 0,
 			neerTicket: {},
 			loginFlag: false,
+			authFlag: false,
 			agentUrl: '', // TAG-分销申请的不同状态跳转不同分销页面
 		}
 	},
@@ -163,7 +166,7 @@ export default {
 		}
 	},
 	onLoad() {
-		// 确保已经登陆完成，再去检查是否有授权
+		// 确保已经登录完成，再去检查是否有授权
 		this.waitLogin().then(() => {
 			// 检查授权用户信息，在没有授权的情况下引导授权，但不阻塞购买业务
 			this.checkAuth();
@@ -182,9 +185,6 @@ export default {
 				this.neerTicket = res;
 			})
 		},
-		toVip() {
-			console.log('toVip');
-		},
 		toNeerTicket() {
 			// TAG-要对接路由跳转地址，跳转到订单详情页
 			const url = `/order/ticket/index?id=${this.neerTicket.ticket.order_id}`;
@@ -192,11 +192,14 @@ export default {
 		},
 		// 个人详细业务数据
 		getMemberDate() {
-			this.getMember(this.userInfo.openid).then(res => {
-				this.member = res.member;
-				this.card = res.card;
-				this.global = res.global;
-				this.initAgent();
+			this.checkAuth(true).then(() => {
+				this.authFlag = true;
+				this.getMember(this.userInfo.openid).then(res => {
+					this.member = res.member;
+					this.card = res.card;
+					this.global = res.global;
+					this.initAgent();
+				})
 			})
 		},
 		// 分销商信息,根据状态进行跳转
@@ -212,6 +215,16 @@ export default {
 			}
 			this.agentUrl = url;
 		},
+		toVip() {
+			this.checkAuth(false, false).then(() => {
+				this.toPath('/vip/vip/index');
+			})
+		},
+		toEmployee() {
+			this.checkAuth().then(() => {
+				// this.toPath('/vip/vip/index');
+			})
+		}
 	}
 };
 </script>
@@ -227,10 +240,5 @@ export default {
 
 .card {
 	background: linear-gradient(166deg, #3D3669 0%, #1B2E57 100%);
-}
-
-.special-text {
-	transform: scale(1, 1.1);
-	transform-origin: 0 0;
 }
 </style>

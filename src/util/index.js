@@ -15,6 +15,7 @@ const getToken = function () {
 };
 
 const setToken = function (token) {
+  console.log(token, '--------');
   setStorage(tokenKey, token);
   store.commit("SET_TOKEN", token);
 };
@@ -24,7 +25,7 @@ const clearToken = function () {
   store.commit("SET_TOKEN", "");
 };
 
-// userInfo 不从本地取，每次登陆都会重新获取，之后从store取，写在本地暂时没啥用
+// userInfo 不从本地取，每次登录都会重新获取，之后从store取，写在本地暂时没啥用
 const userInfoKey = "USER_INFO";
 const setUserInfo = function (userInfo) {
   if (!userInfo) {

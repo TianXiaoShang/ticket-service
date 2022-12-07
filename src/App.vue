@@ -23,7 +23,7 @@ export default {
 	},
 	onShow: function (options) {
 		console.log('App Show')
-		// 有上级id则重新登陆进行绑定
+		// 有上级id则重新登录进行绑定
 		const mid = options2mid(options);
 		if (mid) {
 			login(mid);

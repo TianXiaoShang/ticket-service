@@ -184,7 +184,7 @@ export default {
 	components: { SetArea },
 	onLoad(options) {
 		this.id = options.id;
-		// 确保已经登陆完成
+		// 确保已经登录完成
 		this.waitLogin().then(() => {
 			this.checkAuth();
 			this.getData();
@@ -293,7 +293,7 @@ export default {
 				row_id: this.id,
 				seat: ids.toString(),
 				openid: this.userInfo.openid,
-				showLoading: false,
+				_showLoading: false,
 			}).then(res => {
 				this.totalPrice = res.price;
 				this.part_discount = res.part_discount;

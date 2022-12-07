@@ -71,7 +71,7 @@ export default {
             this.curType = 'canPay';
         }
         if (!this.id) return;
-        // 确保已经登陆完成
+        // 确保已经登录完成
         this.waitLogin().then(() => {
             this.getData();
         });

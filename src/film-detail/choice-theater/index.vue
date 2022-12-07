@@ -142,7 +142,7 @@ export default {
 	components: { NavBar },
 	onLoad(options) {
 		this.id = options.id;
-		// 确保已经登陆完成
+		// 确保已经登录完成
 		this.waitLogin().then(() => {
 			this.getData();
 		})
