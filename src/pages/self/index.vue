@@ -16,15 +16,14 @@
 					<!-- 头像 -->
 					<div @click="toPath('/pages/auth-user-info/index')"
 						class="relative rounded-full border-solid shadow-lg border-2 border-white box-border overflow-hidden w-60px h-60px">
-						<!-- TAG-需添加默认头像 -->
-						<image :src="userInfo.avatar" class="w-full h-full" />
+						<image :src="(userInfo.avatar || DEFAULT_AVATAR)" class="w-full h-full" />
 					</div>
 					<!-- 昵称 -->
 					<div class="ml-10px">
 						<div @click="toPath('/pages/auth-user-info/index')" class="text-333 font-semibold text-20">
 							{{ userInfo.nickname || '点击登录' }}</div>
 						<!-- 手机号 -->
-						<div class="text-666 text-12 mt-5px">
+						<div class="text-gray-666 text-12 mt-5px">
 							<span class="relative" @click="toPath('/pages/auth-user-info/index')">
 								{{ userInfo.mobile || '点击授权手机号' }}
 							</span>
@@ -129,7 +128,7 @@
 						</div>
 						<u-icon name="arrow-right" class="ml-4px" size="16px" color="#999"></u-icon>
 					</div>
-					<div
+					<div @click="toAgent"
 						class="h-56px mt-10px px-20px box-border py-18px flex items-center justify-between bg-white rounded">
 						<div class="flex items-center">
 							<image mode="aspectFit" src="@/static/self/distributor-16.png" class="w-16px h-16px" />
@@ -205,13 +204,13 @@ export default {
 		// 分销商信息,根据状态进行跳转
 		initAgent() {
 			const { is_agent, agent_status } = this.member;
-			let url = "/pages/retail-center/apply-form/index";
+			let url = "/retail/apply/index";
 			if (is_agent === "1" && agent_status === "1") {
-				url = "/pages/retail-center/retail/index";
+				url = "/retail/home/index";
 			} else if (is_agent === "0") {
-				url = "/pages/retail-center/apply-form/index";
+				url = "/retail/apply/index";
 			} else if (agent_status === "0") {
-				url = "/pages/retail-center/audit-page/index";
+				url = "/retail/audit-page/index";
 			}
 			this.agentUrl = url;
 		},
@@ -220,9 +219,14 @@ export default {
 				this.toPath('/vip/vip/index');
 			})
 		},
+		toAgent() {
+			this.checkAuth(false).then(() => {
+				this.toPath(this.agentUrl)
+			})
+		},
 		toEmployee() {
 			this.checkAuth().then(() => {
-				// this.toPath('/vip/vip/index');
+				this.toPath('/staff/home/index');
 			})
 		}
 	}

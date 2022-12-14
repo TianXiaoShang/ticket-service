@@ -14,8 +14,7 @@
                 <div class="flex items-center">
                     <div
                         class="rounded-full border-solid shadow-lg border-2 border-white box-border overflow-hidden w-50px h-50px">
-                        <!-- TAG-需添加默认头像 -->
-                        <image :src="member.avatar" class="w-full h-full" />
+                        <image :src="(member.avatar || DEFAULT_AVATAR)" class="w-full h-full" />
                     </div>
                     <div class="text-20px text-white font-semibold ml-10px">
                         {{ member.nickname }}
@@ -33,39 +32,43 @@
                     </span>
                     <span class="flex items-center mt-8px" v-if="(member.card_no && !card.name)"
                         @click="toPath('/vip/perfect/index')">
-                        <!-- TAG - 待换图标 -->
-                        <image class="w-14px h-14px mr-6px" src="../static/findvip@2x.png" />
+                        <image class="w-14px h-14px mr-6px" src="../static/wszl.png" />
                         <span class="text-white text-14px">完善资料</span>
                     </span>
                 </div>
             </div>
-            <div class="mt-20px w-full h-31.52vw box-border bg-no-repeat px-20px py-16px"
-                style="background-image: url(../static/vipcard2@2x.png);border-raidus: 10px 10px 0 0; background-size: 100% 100%;">
-                <div class="flex justify-between text-16px font-semibold" style="color: #673F0F">
-                    <div class="flex items-center font-semibold">
-                        <image src="@/static/self/vipvip.png" class="w-18px h-18px mr-6px" />
-                        <!-- TAG - 独立 -->
-                        <span>{{ cinema.title }}VIP会员卡</span>
-                    </div>
-                    <div v-if="member.levelname"
-                        class="w-60px h-20px text-10px flex items-center justify-center rounded"
-                        style="background: rgba(159,74,7, 0.5); color: #F9F9F9">
-                        {{ splitPoint(member.discount) }}折优惠
-                    </div>
+            <div class="mt-20px w-full h-31.52vw box-border overflow-hidden" style="border-raidus: 15px 15px 0 0;">
+                <div class="h-31.52vw absolute left-0 right-0 px-20px text-0px box-border">
+                    <image class="h-full w-full" src="../static/vipcard2@2x.png" />
                 </div>
-                <div class="special-text mt-18px flex justify-between items-end text-22px font-semibold"
-                    v-if="(member.card_no)" style="color: #A04A07">
-                    <div>
-                        <span class="text-14px mr-5px">￥</span>
-                        <span>{{ member.credit2 }}</span>
+                <div class="relative z-99 px-20px py-16px h-31.52vw box-border w-full">
+                    <div class="flex justify-between text-16px font-semibold" style="color: #673F0F">
+                        <div class="flex items-center font-semibold">
+                            <image src="@/static/self/vipvip.png" class="w-18px h-18px mr-6px" />
+                            <!-- TAG - 独立 -->
+                            <span>{{ cinema.title }}VIP会员卡</span>
+                        </div>
+                        <div v-if="member.levelname"
+                            class="w-60px h-20px text-10px flex items-center justify-center rounded"
+                            style="background: rgba(159,74,7, 0.5); color: #F9F9F9">
+                            {{ splitPoint(member.discount) }}折优惠
+                        </div>
                     </div>
-                    <div v-if="(member.card_no)" class="text-12px" style="color: #B56B25">NO: {{ member.card_no }}</div>
+                    <div class="special-text mt-18px flex justify-between items-end text-22px font-semibold"
+                        v-if="(member.card_no)" style="color: #A04A07">
+                        <div>
+                            <span class="text-14px mr-5px">￥</span>
+                            <span>{{ member.credit2 }}</span>
+                        </div>
+                        <div v-if="(member.card_no)" class="text-12px" style="color: #B56B25">NO: {{ member.card_no }}
+                        </div>
+                    </div>
+                    <div v-else class="text-red mt-30px text-16px font-semibold">VIP卡未激活</div>
                 </div>
-                <div v-else class="text-red mt-30px text-16px font-semibold">VIP卡未激活</div>
             </div>
         </div>
         <div class="relative z-100 bg-white p-20px -mt-20px box-border"
-            :style="{ height: `calc(100vh - ${navBarHeight + statusBarHeight}px - 30px - 50px - 20px - 31.52vw + 20px)` }"
+            :style="{ height: `calc(100vh - ${isWx ? navBarHeight + statusBarHeight : 0}px - 30px - 50px - 20px - 31.52vw + 20px)` }"
             style="border-radius: 20px 20px 0 0;">
             <div class="flex flex-col items-center justify-center">
                 <div class="flex items-center">

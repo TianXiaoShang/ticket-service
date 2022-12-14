@@ -44,13 +44,13 @@
                 <div class="text-gray-999 flex justify-between items-center text-14">联系人</div>
                 <div class="mt-10px flex items-center">
                     <div class="text-14px font-semibold text-gray-333 w-5em">姓名<span class="text-red">*</span></div>
-                    <u--input :customStyle="{ background: '#F2F3F5' }" placeholder="请输入姓名" border="surround"
+                    <u--input :customStyle="inputCustomStyle" placeholder="请输入姓名" border="surround"
                         v-model="user.name"></u--input>
                 </div>
                 <div class="mt-10px flex items-center">
                     <div class="text-14px font-semibold text-gray-333 w-5em">手机号<span class="text-red">*</span></div>
                     <div class="relative h-40px flex-1">
-                        <u--input :customStyle="{ background: '#F2F3F5' }" placeholder="点击获取手机号" border="surround"
+                        <u--input :customStyle="inputCustomStyle" placeholder="点击获取手机号" border="surround"
                             v-model="user.phone"></u--input>
                         <button slot="button" @getphonenumber="getMobile"
                             class="absolute left-0 top-0 right-0 bottom-0 opacity-0 z-999" openType="getPhoneNumber">
@@ -63,7 +63,7 @@
                         <div class="text-14px font-semibold text-gray-333 w-5em">{{ item.tp_name }}<span
                                 v-if="item.tp_must == 1" class="text-red">*</span></div>
 
-                        <u--input v-if="item.data_type == 1" :customStyle="{ background: '#F2F3F5' }"
+                        <u--input v-if="item.data_type == 1" :customStyle="inputCustomStyle"
                             :placeholder="item.placeholder || ''" border="surround"
                             v-model="diyformData[item.diy_type]">
                         </u--input>
@@ -124,7 +124,7 @@
 
             <!-- 支付方式 -->
             <div class="bg-white mt-10px p-20px rounded-10px is-input">
-                <div class="text-gray-999 flex justify-between items-center text-14">联系人</div>
+                <div class="text-gray-999 flex justify-between items-center text-14">支付方式</div>
                 <div class="mt-10px">
                     <u-radio-group v-model="payType">
                         <div class="w-full">
@@ -607,17 +607,3 @@ export default {
     }
 };
 </script>
-
-
-<style lang="scss" scoped>
-.is-input {
-    &::v-deep {
-        .u-border {
-            border: none !important;
-            border-radius: 10px !important;
-            padding-top: 8px !important;
-            padding-bottom: 8px !important;
-        }
-    }
-}
-</style>

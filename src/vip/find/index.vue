@@ -7,14 +7,14 @@
                 <div class="flex items-center">
                     <div class="text-14px font-semibold text-gray-333 w-5em">姓名<span class="text-red ml-2px">*</span>
                     </div>
-                    <u--input :customStyle="{ background: '#F2F3F5' }" placeholder="请输入姓名" border="surround"
+                    <u--input :customStyle="inputCustomStyle" placeholder="请输入姓名" border="surround"
                         v-model="user.name"></u--input>
                 </div>
                 <div class="mt-10px flex items-center">
                     <div class="text-14px font-semibold text-gray-333 w-5em">手机号<span class="text-red ml-2px">*</span>
                     </div>
                     <div class="relative h-40px flex-1">
-                        <u--input :customStyle="{ background: '#F2F3F5' }" placeholder="点击获取手机号" border="surround"
+                        <u--input :customStyle="inputCustomStyle" placeholder="点击获取手机号" border="surround"
                             v-model="user.phone"></u--input>
                         <button slot="button" @getphonenumber="getMobile"
                             class="absolute left-0 top-0 right-0 bottom-0 opacity-0 z-999" openType="getPhoneNumber">
@@ -24,7 +24,7 @@
                 <!-- <div class="mt-10px flex items-center">
                     <div class="text-14px font-semibold text-gray-333 w-5em">编号<span class="text-red ml-2px">*</span>
                     </div>
-                    <u--input :customStyle="{ background: '#F2F3F5' }" placeholder="请输入编号" border="surround"
+                    <u--input :customStyle="inputCustomStyle" placeholder="请输入编号" border="surround"
                         v-model="user.code"></u--input>
                 </div> -->
             </div>
@@ -34,13 +34,13 @@
                 <div class="flex items-center">
                     <div class="text-14px font-semibold text-gray-333 w-5em">密码<span class="text-red ml-2px">*</span>
                     </div>
-                    <u--input type="password" :customStyle="{ background: '#F2F3F5' }" placeholder="请输入密码"
+                    <u--input type="password" :customStyle="inputCustomStyle" placeholder="请输入密码"
                         border="surround" v-model="user.password"></u--input>
                 </div>
                 <div class="mt-10px flex items-center">
                     <div class="text-14px font-semibold text-gray-333 w-5em">确认密码<span class="text-red ml-2px">*</span>
                     </div>
-                    <u--input type="password" :customStyle="{ background: '#F2F3F5' }" placeholder="请再次输入密码"
+                    <u--input type="password" :customStyle="inputCustomStyle" placeholder="请再次输入密码"
                         border="surround" v-model="user.password2"></u--input>
                 </div>
             </div>
@@ -145,16 +145,3 @@ export default {
 
 };
 </script>
-
-<style lang="scss" scoped>
-.is-input {
-    &::v-deep {
-        .u-border {
-            border: none !important;
-            border-radius: 10px !important;
-            padding-top: 8px !important;
-            padding-bottom: 8px !important;
-        }
-    }
-}
-</style>

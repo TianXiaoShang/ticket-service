@@ -56,7 +56,10 @@ const request = function (path, data = {}, method = "GET", noDirect = true) {
               },
             });
           } else if (res.data.errno === 0) {
-            uni.showToast({ title: res.data.message, icon: "none" });
+            // 错误信息一般默认展示，特殊情况通过store控制
+            if (!store.state.hideErrorMessage) {
+              uni.showToast({ title: res.data.message, icon: "none" });
+            }
             reject(res.data);
           } else if (res.data.errno === 303) {
             // 登录失效

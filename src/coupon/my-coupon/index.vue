@@ -16,7 +16,7 @@
             </div>
             <!-- 优惠券列表 -->
             <template v-else>
-                <scroll-view scroll-y="true" class="pt-10px" style="height: calc(100vh - 42px - 20px - 10px - 44px);">
+                <scroll-view scroll-y="true" class="pt-10px" style="height: calc(100vh - 42px - 20px - 10px - 44px - 5px);">
                     <div v-for="(item, index) in conpupList" :key="index" class="mb-10px">
                         <coupon-item :conpupData="item"></coupon-item>
                     </div>

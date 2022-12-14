@@ -70,7 +70,7 @@
                                 <div class="flex justify-center items-center relative">
                                     <div :style="{ opacity: item.status <= 1 ? '1' : '0.07' }">
                                         <!-- 组件地址 https://ext.dcloud.net.cn/plugin?id=39 -->
-                                        <tki-qrcode ref="qrcode" :cid="item.id" :val="item.dynamic + index" :size="150"
+                                        <tki-qrcode ref="qrcode" :cid="item.id" :val="item.dynamic" :size="150"
                                             unit="px" :background="'#fff'" :foreground="'#000'" :onval="onval"
                                             :loadMake="true" :showLoading="true" />
                                     </div>

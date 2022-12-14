@@ -5,6 +5,7 @@ import store from "@/store";
 import { getMember } from "@/api/common.js";
 import { setUserInfo } from "@/util";
 import moment from "moment";
+import DEFAULT_AVATAR from "@/static/common/default-avatar.png";
 
 export default {
   install(Vue) {
@@ -12,14 +13,17 @@ export default {
       data() {
         return {
           BASE_URL,
+          DEFAULT_AVATAR,
           moment,
           isWx: false, // 判断微信还是抖音
           request,
           triggered: true,
-          currentPage: 0,
-          pageSize: 20,
-          totalCount: 0,
+          _currentPage: 1,
+          _finish: false,
+          // _pageSize: 20,
+          // _totalCount: 0,
           pageLoad: false,
+          inputCustomStyle: { background: "#F2F3F5" },
           _loading: {
             show(text) {
               store.commit("SHOW_LOADING", text);

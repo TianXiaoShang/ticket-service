@@ -12,7 +12,7 @@
 				:autoplay="true" :interval="2000" :duration="500">
 				<swiper-item class="swiper-item rounded h-0px w-full" v-for="(item, index) in bannerList" :key="index"
 					@click="toDetail(item)">
-					<view class="swiper-item h-full w-full font-0px">
+					<view class="swiper-item h-full w-full text-0px">
 						<image :src="item.img" class="w-full h-full" />
 					</view>
 				</swiper-item>
@@ -106,7 +106,6 @@ export default {
 		getData() {
 			// 分类
 			this.request('set.home').then(res => {
-				console.log(res, 'resssssssssssss')
 				this.kindList = res.homes;
 				if (this.kindList.length > 4) {
 					this.indicator = true;

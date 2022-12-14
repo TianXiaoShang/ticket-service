@@ -20,7 +20,7 @@
                     class="w-full h-50px bg-white rounded py-10px px-15px box-border mt-10px flex items-center">
                     <div class="text-gray-666 text-14px mr-10px">头像</div>
                     <div class="flex-1 relative text-0px h-full flex items-center">
-                        <image v-if="user.avatarUrl" class="w-35px h-35px rounded-full overflow-hidden" :src="user.avatarUrl"></image>
+                        <image v-if="(user.avatarUrl || DEFAULT_AVATAR)" class="w-35px h-35px rounded-full overflow-hidden" :src="user.avatarUrl"></image>
                         <span v-else class="text-14px text-gray-999">点击授权头像</span>
                         <button class="absolute left-0 right-0 top-0 bottom-0 opacity-0" open-type="chooseAvatar"
                             @chooseavatar="chooseavatar"></button>

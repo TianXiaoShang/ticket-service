@@ -7,9 +7,4 @@ import request from "@/services/request.service";
 const getMember = (openid) => {
   return request("member", { openid: openid });
 };
-
-const commissionConfig = () => {
-  return request("commission.set");
-};
-
-export { getMember, commissionConfig };
+export { getMember };

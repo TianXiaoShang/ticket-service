@@ -13,6 +13,7 @@ const store = new Vuex.Store({
     cinema: null, // 影院信息
     setting: null, // 影院配置信息
     userLocation: null, // 用户位置坐标信息
+    hideErrorMessage: false,  // 控制接口请求错误信息提示
   },
   getters: {
     loginStatus: (state) => state.loginStatus,
@@ -23,6 +24,7 @@ const store = new Vuex.Store({
     cinema: (state) => state.cinema,
     setting: (state) => state.setting,
     userLocation: (state) => state.userLocation,
+    hideErrorMessage: (state) => state.hideErrorMessage,
   },
   mutations: {
     SHOW_LOADING(state, value) {
@@ -61,6 +63,9 @@ const store = new Vuex.Store({
     },
     UPDATE_USERINFO(state, value) {
       state.userInfo = value;
+    },
+    UPDATE_HIDE_ERROR_MESSAGE(state, value) {
+      state.hideErrorMessage = value;
     },
   },
 });

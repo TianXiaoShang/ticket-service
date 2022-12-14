@@ -7,13 +7,13 @@
                 <div class="flex items-center">
                     <div class="text-14px font-semibold text-gray-333 w-5em">姓名<span class="text-red ml-2px">*</span>
                     </div>
-                    <u--input :customStyle="{ background: '#F2F3F5' }" placeholder="请输入姓名" border="surround"
+                    <u--input :customStyle="inputCustomStyle" placeholder="请输入姓名" border="surround"
                         v-model="user.name"></u--input>
                 </div>
                 <div class="flex mt-10px items-center">
                     <div class="text-14px font-semibold text-gray-333 w-5em">身份证
                     </div>
-                    <u--input :customStyle="{ background: '#F2F3F5' }" placeholder="请输入身份证（选填）" border="surround"
+                    <u--input :customStyle="inputCustomStyle" placeholder="请输入身份证（选填）" border="surround"
                         v-model="user.card"></u--input>
                 </div>
                 <div class="flex mt-10px items-center">
@@ -104,16 +104,3 @@ export default {
     },
 };
 </script>
-
-<style lang="scss" scoped>
-.is-input {
-    &::v-deep {
-        .u-border {
-            border: none !important;
-            border-radius: 10px !important;
-            padding-top: 8px !important;
-            padding-bottom: 8px !important;
-        }
-    }
-}
-</style>

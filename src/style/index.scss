@@ -12,8 +12,21 @@
   overflow: hidden;
 }
 
-
 .special-text {
   transform: scale(1, 1.1);
   transform-origin: 0 0;
+}
+
+// 改写输入框样式
+.is-input {
+  .u-border {
+    border: none !important;
+    border-radius: 10px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+  .u-input {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
 }
