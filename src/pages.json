@@ -42,6 +42,23 @@
   ],
   "subPackages": [
     {
+      "root": "search",
+      "pages": [
+        {
+          "path": "search/index",
+          "style": {
+            "navigationBarTitleText": "搜索"
+          }
+        },
+        {
+          "path": "type/index",
+          "style": {
+            "navigationBarTitleText": "分类"
+          }
+        }
+      ]
+    },
+    {
       "root": "film-detail",
       "pages": [
         {
@@ -52,6 +69,19 @@
         },
         {
           "path": "choice-theater/index",
+          "style": {
+            "navigationBarTitleText": "选票",
+            "mp-weixin": {
+              "navigationStyle": "custom",
+              "backgroundColor": "#F9F9F9"
+            },
+            "mp-toutiao": {
+              "navigationStyle": "default"
+            }
+          }
+        },
+        {
+          "path": "auto-choice/index",
           "style": {
             "navigationBarTitleText": "选票",
             "mp-weixin": {

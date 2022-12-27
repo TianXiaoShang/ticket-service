@@ -15,8 +15,9 @@
             </div>
             <!-- 订单列表 -->
             <template v-else>
-                <scroll-view scroll-y="true" style="height: calc(100vh - 42px - 20px);">
-                    <div @click="toOrderDetail(item)" class="bg-white rounded box-border mt-10px p-20px relative"
+                <scroll-view scroll-y="true" style="height: calc(100vh - 42px - 20px);"
+                    @scrolltolower="searchScrollLower">
+                    <div @click="toOrderDetail(item)" class="bg-white rounded box-border mb-10px p-20px relative"
                         v-for="(item, index) in orderList" :key="index">
                         <template v-if="item.id">
                             <div class="text-14 font-semibold">{{ item.film_title }}</div>
@@ -36,6 +37,7 @@
                         </template>
                         <u-skeleton v-else rows="2" title :avatar="false" loading></u-skeleton>
                     </div>
+                    <div v-if="pageFinish" class="pb-15px text-center text-12px text-gray-999">没有更多啦~</div>
                 </scroll-view>
             </template>
         </div>
@@ -60,25 +62,39 @@ export default {
             this.toPath('/order/detail/index?id=' + item.id)
         },
         changeTab(e) {
+            this.myCurrentPage = 1;
             this.tabIndex = e.index;
-            this.getData(this.tabIndex)
-        },
-        getData(status) {
             this.orderList = new Array(8).fill({});
-            status == 3 ? status = 11 : '';
-            this.request("order.lists", {
-                status: status
+            this.getData()
+        },
+        getData() {
+            const status = this.tabIndex == 3 ? 11 : this.tabIndex;
+            this.request("order.newlists", {
+                status: status ,
+                page: this.myCurrentPage,
             }).then(res => {
-                this.orderList = res.order || [];
+                const { total, list } = res;
+                if (!this.orderList[0] || !this.orderList[0].id) {
+                    this.orderList = [];
+                }
+                this.orderList = [...this.orderList, ...list];
+                this.myCurrentPage++;
+                this.pageFinish = this.orderList.length >= Number(total);
             }, () => {
                 this.orderList = [];
             })
+        },
+        searchScrollLower() {
+            if (this.pageFinish) {
+                return;
+            }
+            this.getData();
         },
     },
     onShow: function () {
         // 确保已经登录完成
         this.waitLogin().then(() => {
-            this.getData(this.tabIndex);
+            this.getData();
         });
     },
 };

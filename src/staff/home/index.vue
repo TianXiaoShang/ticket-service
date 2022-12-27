@@ -76,7 +76,6 @@
 </template>
 
 <script>
-// TAG - 列表跳转没对接
 import NavBar from '@/components/nav-bar';
 import tkiQrcode from "tki-qrcode/components/tki-qrcode/tki-qrcode.vue"
 

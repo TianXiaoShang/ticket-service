@@ -51,8 +51,8 @@
                             {{ agentInfo.member.commission_ok || 0 }}
                         </div>
                         <div class="text-10px opacity-50">成功提现佣金：{{ agentInfo.member.commission_pay ||
-                                0
-                        }}{{ configData.texts.yuan }}</div>
+        0
+}}{{ configData.texts.yuan }}</div>
                     </div>
                 </div>
             </div>
@@ -68,7 +68,7 @@
                         </div>
                         <div class="ml-4px flex items-center">
                             <span class="text-gray-999 text-12px mr-8px">{{ agentInfo.member.commission_ok || 0
-                            }}元</span>
+}}元</span>
                             <u-icon name="arrow-right" size="16px" color="#999"></u-icon>
                         </div>
                     </div>
@@ -117,6 +117,7 @@
                     <div @click="toPath('/retail/audit-list/index')" v-if="true || agentInfo.level.is_audit == 1"
                         class="h-56px mt-10px px-20px box-border py-18px flex items-center justify-between bg-white rounded">
                         <div class="flex items-center">
+                            <!-- TAG - 图标待更换 -->
                             <image mode="aspectFit" src="../static/code-16.png" class="w-16px h-16px" />
                             <span class="ml-10px text-gray-333 text-14px">申请列表</span>
                         </div>
@@ -131,7 +132,6 @@
 </template>
 
 <script>
-// TAG - 列表跳转没对接
 import NavBar from '@/components/nav-bar';
 
 export default {

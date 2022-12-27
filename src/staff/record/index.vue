@@ -9,29 +9,33 @@
             </div>
             <!-- 订单列表 -->
             <template v-else>
-                <div class="bg-white rounded box-border p-20px relative"
-                    :class="{ 'mb-10px': index !== dataList.lenght - 1 }" v-for="(item, index) in dataList"
-                    :key="index">
-                    <div class="text-14px font-normal flex justify-between items-center text-gray-999">
-                        <div class="flex font-semibold pr-20px text-16px flex-col items-center justify-center text-red"
-                            style="border-right: 1px solid #eee;">
-                            <div>{{ moment(item.entrance_time * 1000).format('HH:mm') }}</div>
-                            <div class="mt-10px min-w-60px max-w-60px leading-5 flex justify-center">{{ item.hall_title
-                            }}</div>
-                        </div>
-                        <div class="flex-1 flex justify-between pl-20px items-center">
-                            <div>
-                                <div class="text-gray-333 text-16px font-semibold mb-15px leading-5">
-                                    {{ item.film_title }}
-                                </div>
-                                <div>{{ item.type_title || '-' }}</div>
+                <scroll-view scroll-y="true" style="height: calc(100vh - 40px);" @scrolltolower="searchScrollLower">
+                    <div class="bg-white rounded box-border p-20px relative" :class="{ 'mt-10px': index !== 0 }"
+                        v-for="(item, index) in dataList" :key="index">
+                        <div class="text-14px font-normal flex justify-between items-center text-gray-999">
+                            <div class="flex font-semibold pr-20px text-16px flex-col items-center justify-center text-red"
+                                style="border-right: 1px solid #eee;">
+                                <div>{{ moment(item.entrance_time * 1000).format('HH:mm') }}</div>
+                                <div
+                                    class="mt-10px min-w-60px max-w-60px text-center text-15px leading-5 flex justify-center">
+                                    {{ item.hall_title
+                                    }}</div>
                             </div>
-                            <div @click="toPath('/staff/check/index?id=' + item.id)"
-                                class="w-70px text-12px min-w-70px h-26px flex text-white justify-center items-center rounded-15px bg-red">
-                                查看详情</div>
+                            <div class="flex-1 flex justify-between pl-20px items-center">
+                                <div>
+                                    <div class="text-gray-333 text-16px font-semibold mb-15px leading-5">
+                                        {{ item.film_title }}
+                                    </div>
+                                    <div>{{ item.type_title || '-' }}</div>
+                                </div>
+                                <div @click="toPath('/staff/check/index?id=' + item.id)"
+                                    class="w-70px text-12px min-w-70px h-26px flex text-white justify-center items-center rounded-15px bg-red">
+                                    查看详情</div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <div v-if="pageFinish" class="py-15px text-center text-12px text-gray-999">没有更多啦~</div>
+                </scroll-view>
             </template>
         </div>
     </div>
@@ -52,11 +56,20 @@ export default {
     },
     methods: {
         getData() {
-            this.dataList = [];
-            this.request("staff.endRow").then(res => {
-                // TAG - 数据量太大，要做分页
-                this.dataList = res.row && res.row.length ? res.row.splice(0, 40) : [];
+            this.request("staff.newendRow", {
+                page: this.myCurrentPage,
+            }).then(res => {
+                const { total, list } = res;
+                this.dataList = [...this.dataList, ...list];
+                this.myCurrentPage++;
+                this.pageFinish = this.dataList.length >= Number(total);
             })
+        },
+        searchScrollLower() {
+            if (this.pageFinish) {
+                return;
+            }
+            this.getData();
         },
     },
 };

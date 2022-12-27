@@ -5,7 +5,7 @@
         <div class="relative z-999" v-if="order.id">
             <!-- 电影 -->
             <div class="p-15px rounded bg-white flex justify-between items-center">
-                <!-- TAG - 图片没有 -->
+                <!-- TAG - TAG-A - 图片没有 -->
                 <div>
                     <image class="w-92px h-126px mr-15px rounded overflow-hidden"
                         src="http://mallsaasphoto.djlcom.com/images/1/sonCinema/id_4/aAYwJjjac4ziJijWJeAcWIjBcA1373.jpg" />

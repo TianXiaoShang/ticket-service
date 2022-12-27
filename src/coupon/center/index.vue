@@ -43,7 +43,7 @@ export default {
             this.toPath('/order/detail/index?id=' + item.id)
         },
         getData() {
-            this.request("coupon").then(res => {
+            this.request("coupon", { openid: this.userInfo.openid }).then(res => {
                 this.conpupList = res.coupons;
             })
         },

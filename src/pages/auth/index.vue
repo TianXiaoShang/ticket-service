@@ -29,7 +29,7 @@
                 <div v-if="!read" @click="showPopup = true"
                     class="box-border rounded-full w-15px h-15px border border-solid border-red">
                 </div>
-                <span class="ml-4px">我已阅读并同意<span class="text-blue" @click="showPopup = true">《用户协议》</span></span>
+                <span class="ml-4px">我已阅读并同意<span class="text-blue" @click="showPopup = true">《服务条款》</span></span>
             </div>
         </div>
 
@@ -43,13 +43,9 @@
                         <u-icon name="close" size="18px" @click="showPopup = false"></u-icon>
                     </span>
                 </div>
-                <!-- TAG-服务条款内容待补充 -->
                 <scroll-view scroll-y="true" class="text-gray-666 max-h-50vh px-15px box-border mt-15px">
-                    <span>出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖</span>
-                    <span>出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖</span>
-                    <span>出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖</span>
-                    <span>出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖</span>
-                    <span>出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖</span>
+                    <rich-text v-if="login_explain" :nodes="login_explain"></rich-text>
+                    <span v-else>暂无服务条款内容</span>
                 </scroll-view>
                 <div class="pt-10px">
                     <u-button shape="circle" size="normal" :customStyle="{ height: '44px', width: '200px' }"
@@ -65,16 +61,21 @@
 <script>
 // 注意： 该页面仅用于授权过期重新登录，授权用户信息走auth-user-info。
 import { login } from '@/util/base';
+import { parseRichText } from '@/util';
 
 export default {
     data() {
         return {
             read: false,
             showPopup: false,
+            login_explain: '',
         }
     },
     onShow() { },
     onLoad() {
+        this.waitLogin().then(() => {
+            this.login_explain = this.setting.login_explain ? parseRichText(this.setting.login_explain) : '';
+        });
     },
     methods: {
         onRead(val) {
@@ -88,7 +89,7 @@ export default {
                 });
             } else {
                 uni.showToast({
-                    title: "请先阅读并同意《用户协议》",
+                    title: "请先阅读并同意《服务条款》",
                     icon: 'none'
                 })
             }

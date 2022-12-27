@@ -38,7 +38,7 @@
                             <span>粉丝类型</span>
                             <span class="mt-8px text-gray-333">{{ item.level || '-' }}</span>
                         </div>
-                        <!-- TAG - 订单金额跟佣金金额一样？ -->
+                        <!-- TAG - TAG-A - 订单金额跟佣金金额一样？ -->
                         <div class="flex text-12px text-gray-999 flex-col items-center justify-center">
                             <span>订单金额</span>
                             <span class="mt-8px text-gray-333">{{ item.commission || '-' }}</span>
@@ -53,7 +53,7 @@
                             style="border: 1px solid #333" @click="onCopy(item.order_no)">复制单号</div>
                     </div>
                 </div>
-                <div v-if="_finish" class="pb-15px text-center text-12px text-gray-999">没有更多啦~</div>
+                <div v-if="pageFinish" class="pb-15px text-center text-12px text-gray-999">没有更多啦~</div>
             </scroll-view>
             <u-empty v-else mode="order" text="暂无分销订单数据" icon="http://cdn.uviewui.com/uview/empty/order.png">
             </u-empty>
@@ -94,17 +94,17 @@ export default {
         getData() {
             this.request("commission.order.get_list", {
                 day: this.dayList[this.tabIndex].day,
-                page: this._currentPage,
+                page: this.myCurrentPage,
             })
                 .then((res) => {
                     const { total, list } = res;
                     this.listData = [...this.listData, ...list];
-                    this._currentPage++;
-                    this._finish = this.listData.length >= total;
+                    this.myCurrentPage++;
+                    this.pageFinish = this.listData.length >= Number(total);
                 });
         },
         searchScrollLower() {
-            if (this._finish) {
+            if (this.pageFinish) {
                 return;
             }
             this.getData();
@@ -112,7 +112,7 @@ export default {
         changeTab(e) {
             this.listData = [];
             this.tabIndex = e.index;
-            this._currentPage = 1;
+            this.myCurrentPage = 1;
             this.getData();
         },
     },

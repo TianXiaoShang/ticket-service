@@ -134,7 +134,6 @@
                         <u-icon name="close" size="18px" @click="showPopup = false"></u-icon>
                     </span>
                 </div>
-                <!-- TAG-服务条款内容待补充 -->
                 <scroll-view scroll-y="true" class="text-gray-666 max-h-50vh px-15px box-border mt-15px">
                     <rich-text :nodes="applycontent"></rich-text>
                 </scroll-view>
@@ -150,7 +149,6 @@
 </template>
 
 <script>
-// TAG - 列表跳转没对接
 import NavBar from '@/components/nav-bar';
 import { getStatusBarInfo } from '@/util/index.js'
 import { parseRichText } from '@/util';

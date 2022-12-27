@@ -23,7 +23,7 @@
                 <div class="h-17px" v-if="!detail.author"></div>
                 <div class="truncate">
                     <span v-if="showPrice">价格：</span>
-                    <!-- TAG-价格字段待对接 -->
+                    <!-- TAG - TAG-A -价格字段待对接 -->
                     <span v-if="showPrice" class="text-red text-16 font-semibold">¥68</span>
                 </div>
                 <div class="truncate w-full h-17px" v-if="detail.director">
@@ -33,7 +33,7 @@
                     <span>主演：{{ detail.author }}</span>
                 </div>
                 <div class="tags h-16px overflow-x-auto text-0px" v-if="detail.type_name" style="white-space: nowrap">
-                    <!-- TAG-标签列表待对接，应该是数组不是type_name -->
+                    <!-- TAG - TAG-A -标签列表待对接，应该是数组不是type_name -->
                     <div class="inline-block mr-4px">
                         <u-tag :text="detail.type_name" plain shape="circle" size="mini" type="warning"></u-tag>
                     </div>
@@ -47,7 +47,7 @@
                         {{ detail.title }}
                     </div>
                     <div class="tags mt-4px h-16px overflow-x-auto text-0px" style="white-space: nowrap">
-                        <!-- TAG-标签列表待对接，应该是数组不是type_name -->
+                        <!-- TAG - TAG-A -标签列表待对接，应该是数组不是type_name -->
                         <div class="inline-block mr-4px">
                             <u-tag v-if="detail.type_name" :text="detail.type_name" borderColor="#999" color="#333"
                                 plain shape="circle" size="mini"></u-tag>
@@ -57,14 +57,14 @@
                 <div class="text-12 text-gray-666 w-full flex justify-between items-end">
                     <div class="flex-1 truncate">
                         <div class="truncate">
-                            <!-- TAG-待补充时间段字段 -->
+                            <!-- TAG - TAG-A -待补充时间段字段 -->
                             2022.10.10-2022.12.12
                         </div>
                         <div class="truncate" v-if="showAddress">
                             {{ detail.address }}
                         </div>
                     </div>
-                    <!-- TAG-价格字段待对接 -->
+                    <!-- TAG - TAG-A -价格字段待对接 -->
                     <span v-if="showPrice" class="text-red text-16 font-semibold ml-10px">¥68</span>
                 </div>
             </div>

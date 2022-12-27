@@ -26,7 +26,7 @@
                             <div class="flex font-semibold pr-20px text-16px flex-col items-center justify-center text-red"
                                 style="border-right: 1px solid #eee;">
                                 <div>{{ moment(item.entrance_time * 1000).format('HH:mm') }}</div>
-                                <div class="mt-10px">{{ item.hall_title }}</div>
+                                <div class="mt-10px min-w-60px max-w-60px text-center text-15px leading-5">{{ item.hall_title }}</div>
                             </div>
                             <div class="flex-1 flex justify-between pl-20px items-center">
                                 <div>

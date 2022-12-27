@@ -4,7 +4,6 @@
         <div class="relative z-999" v-if="info.id">
             <!-- 电影 -->
             <div class="p-15px rounded bg-white flex justify-between items-center">
-                <!-- TAG - 图片没有 -->
                 <div>
                     <image class="bg-gray-bg w-76px h-102px mr-15px rounded overflow-hidden" :src="info.ext.film_logo" />
                 </div>

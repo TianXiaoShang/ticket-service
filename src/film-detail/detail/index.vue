@@ -73,7 +73,7 @@
             <u-skeleton rows="12" :title="true" loading></u-skeleton>
         </div>
         <!-- 内容 -->
-        <div class="px-20px pb-84px">
+        <div class="px-20px pb-64px">
             <div v-show="tabIndex === 0" class="pt-10px">
                 <rich-text :nodes="filmData.content"></rich-text>
             </div>
@@ -88,9 +88,16 @@
                 <rich-text :nodes="global.entrance_explain"></rich-text>
             </div>
             <div v-show="tabIndex === 2" class="pt-10px">
-                <div :class="{ 'mb-16px': index !== hotList.length - 1 }" v-for="(item, index) in hotList" :key="index">
-                    <film-item :detail="item" @play="onPlay"></film-item>
-                </div>
+                <scroll-view :style="{ height: 'calc(100vh - 64px)' }" scroll-y="true" v-if="hotList && hotList.length"
+                    @scrolltolower="searchScrollLower">
+                    <div :class="{ 'mb-16px': index !== hotList.length - 1 }" v-for="(item, index) in hotList"
+                        :key="index">
+                        <film-item :detail="item" @play="onPlay"></film-item>
+                    </div>
+                    <div v-if="pageFinish" class="py-15px text-center text-12px text-gray-999">没有更多啦~</div>
+                </scroll-view>
+                <u-empty v-else mode="data" text="暂无推荐内容" icon="http://cdn.uviewui.com/uview/empty/data.png">
+                </u-empty>
             </div>
         </div>
         <!-- 选座按钮 -->
@@ -175,8 +182,7 @@ export default {
                 this.distance = res;
             })
             // 获取详情
-            let api = this.isMovieMode ? 'film' : 'drama.film';
-            this.request(api, {
+            this.request('film', {
                 film_id: this.id
             }).then(res => {
                 this.filmData = res.film || {};
@@ -187,11 +193,17 @@ export default {
                 this.global.refund_explain = this.global.refund_explain ? parseRichText(this.global.refund_explain) : '';
                 this.global.entrance_explain = this.global.entrance_explain ? parseRichText(this.global.entrance_explain) : '';
             })
+            this.getRecommend();
+
+        },
+        getRecommend() {
             // 获取推荐
-            // TAG-接口要更换，有添加分页， 推荐影片接口为film.recommend，全部影片接口为film.all
-            const hotListApi = this.isMovieMode ? 'recommend' : 'drama.film.recommend';
-            this.request(hotListApi).then(res => {
-                this.hotList = res.films.sort((a, b) => Number(b.sort) - Number(a.sort));
+            this.request('film.recommend', { page: this.myCurrentPage }).then(res => {
+                const { total, list } = res;
+                const ticket = list.sort((a, b) => Number(b.sort) - Number(a.sort));
+                this.hotList = [...this.hotList, ...ticket];
+                this.myCurrentPage++;
+                this.pageFinish = this.hotList.length >= Number(total);
             })
         },
         onCall() {
@@ -199,7 +211,13 @@ export default {
         },
         onMap() {
             openMap(this.filmData)
-        }
+        },
+        searchScrollLower() {
+            if (this.pageFinish) {
+                return;
+            }
+            this.getRecommend();
+        },
     }
 };
 </script>

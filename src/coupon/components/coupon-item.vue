@@ -5,8 +5,8 @@
             <div class="font-semibold special-text min-w-84px flex justify-center items-end">
                 <span class="text-14px mb-3px" v-if="!(conpupData.deduct === '0.00' || conpupData.deduct == 0)">¥</span>
                 <span class="text-28px">{{
-                        conpupData.deduct === '0.00' || conpupData.deduct == 0 ? '免费券' : conpupData.deduct
-                }}</span>
+        conpupData.deduct === '0.00' || conpupData.deduct == 0 ? '免费券' : conpupData.deduct
+}}</span>
             </div>
             <div class="text-10px font-normal mt-5px -mb-5px">
                 {{ conpupData.condition }}
@@ -19,7 +19,6 @@
                 <div class="text-gray-999 text-12px mt-8px">{{ conpupData.subtract }}</div>
                 <div class="text-gray-999 text-10px mt-15px">{{ conpupData.strtime }}</div>
             </div>
-            <!-- TAG - 这里要按钮对接状态 -->
             <div class="height-full min-w-52px flex items-center ml-10px">
                 <u-button class="min-w-52px" shape="circle" size="small"
                     :plain="(conpupData.status != 1 && conpupData.status != 0)" :color="statusColor[conpupData.status]"
@@ -51,8 +50,8 @@ export default {
     },
     data() {
         return {
-            statusText: ['领取', '使用', '', '已使用', '已过期'],  // TAG - 这里状态要等待对接，两个状态合并成一个状态后，状态值要对接，同时已过期跟已使用目前都是返回3，需要后端修改
-            statusColor: ['linear-gradient(180deg, #FF545C 0%, #FF545C 100%);', 'linear-gradient(180deg, #FF545C 0%, #FF545C 100%);', '', '#999', '#f37b1d'],
+            statusText: ['领取', '已领取', '已使用', '已过期'],
+            statusColor: ['#FF545C', '#FF545C', '', '#999', '#f37b1d'],
         }
     },
     onLoad() {
@@ -60,11 +59,7 @@ export default {
     },
     methods: {
         toDetail() {
-            if (this.conpupData.status == 0) {
-                this.toPath('/coupon/detail/index?id=' + this.conpupData.id);
-            } else if (this.conpupData.status == 1) {
-                this.switchToPath('/pages/index/index');
-            }
+            this.toPath('/coupon/detail/index?id=' + this.conpupData.id);
         },
     },
 };

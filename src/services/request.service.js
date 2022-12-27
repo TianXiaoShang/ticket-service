@@ -2,7 +2,6 @@ import { BASE_URL } from "@/services/environment.service";
 import { getToken } from "@/util";
 import store from "@/store";
 
-// TAG-noDirect在旧版有地方用到，之后核对
 const request = function (path, data = {}, method = "GET", noDirect = true) {
   return new Promise((resolve, reject) => {
     const token = getToken() || "";
@@ -82,7 +81,7 @@ const request = function (path, data = {}, method = "GET", noDirect = true) {
             // 请求成功
             if (_showToast) {
               uni.showToast({
-                title: res.data.message || "操作成功",
+                title: res.message || res.data.message || "操作成功",
                 icon: "none",
               });
             }

@@ -15,11 +15,11 @@
 		<div class="p-20px flex flex-col justify-center items-center" v-if="bigItem">
 			<div class="text-16px text-gray-333 align-center font-semibold">{{ bigItem.title }}</div>
 			<div class="text-12px text-gray-666 align-center mt-10px">
-				<!-- TAG-时长字段total_time不知道对不对 -->
+				<!-- TAG - TAG-A -时长字段total_time不知道对不对 -->
 				{{
-						[bigItem.total_time ? bigItem.total_time + '分钟' : '', bigItem.type_name, bigItem.author].filter(el =>
-							el).join('|')
-				}}
+		[bigItem.total_time ? bigItem.total_time + '分钟' : '', bigItem.type_name, bigItem.author].filter(el =>
+			el).join('|')
+}}
 			</div>
 		</div>
 		<!-- tabs -->
@@ -55,13 +55,14 @@
 								</div>
 								<div>
 									<!-- 语言 时长 -->
-									<div class="text-gray-333 mt-1px text-14px">{{ item.language }}{{ setting.is_pattern != 1 ?
-											item.filmtype : ''
-									}} {{ item.total_time }}分钟</div>
+									<div class="text-gray-333 mt-1px text-14px">{{ item.language }}{{ setting.is_pattern
+		!= 1 ?
+		item.filmtype : ''
+}} {{ item.total_time }}分钟</div>
 									<div class="text-gray-999 text-10px mt-6px">{{ item.ext.hall_title }}</div>
 								</div>
 							</div>
-							<!-- TAG-标签列表待对接,tags是随便写的 -->
+							<!-- TAG - TAG-A -标签列表待对接,tags是随便写的 -->
 							<div v-if="(item.tags && item.tags.length) || item.is_annual == 1"
 								class="max-w-50vw tags mt-10px h-16px overflow-x-auto text-0px"
 								style="white-space: nowrap">
@@ -86,7 +87,6 @@
 								</div>
 							</div>
 							<!-- 按钮 -->
-							<!-- TAG-不确定状态sell与is_sell判定是否正确 -->
 							<u-button class="min-w-64px" v-if="item.sell == 1 && item.is_sell == 0" shape="circle"
 								size="small" color="linear-gradient(180deg, #FF545C 0%, #FF545C 100%);"
 								:text="getBtnStatusText(item)" @click="toSelectSet(item)">
@@ -110,7 +110,6 @@ export default {
 			movieList: [],
 			bigItem: null,
 			tabIndex: 0,
-			isAuto: false, // 是否为自动选座  TAG-这里关于自动选座的逻辑，isAuto字段可能会调整。
 			tabsDataList: [],
 			currentIndex: 0,
 		}
@@ -124,11 +123,18 @@ export default {
 	},
 	methods: {
 		getBtnStatusText(item) {
-			return item.is_sell == 1 ? '已售空' : item.sell == 1 ? this.isAuto ? '去预约' : '去选座' : '未开售'
+			return item.is_sell == 1 ? '已售空' : item.sell == 1 ? item.seat_random == 1 ? '去预约' : '去选座' : '未开售'
 		},
 		toSelectSet(item) {
-			// TAG-这里要判断是哪种场景，以决定是否需要跳转选座，还有可能不需要选座直接跳转下单页
-            this.toPath('/film-detail/choice-set/index?id=' + item.id)
+			if (item.is_sell != 1 && item.sell == 1) {
+				if (item.seat_random == 1) {
+					const filmInfo = this.tabsDataList[this.tabIndex].name + ' | ' + this.moment(Number(item.entrance_time || 0) *
+						1000).format('HH:mm');
+					this.toPath('/film-detail/auto-choice/index?id=' + this.id + '&sessionId=' + item.id + '&filmInfo=' + filmInfo);
+				} else {
+					this.toPath('/film-detail/choice-set/index?id=' + item.id)
+				}
+			}
 		},
 		changeTab(e) {
 			this.tabIndex = e.index;
@@ -178,7 +184,6 @@ export default {
 		getDataForId(id) {
 			this.tabsDataList = [];
 			this.request("film.lists", { film_id: id, openid: this.userInfo.openid }).then(res => {
-				this.isAuto = res.isAuto == 1 ? true : false;
 				res.time.forEach(el => {
 					el.name = el.title;
 					if (el.name.includes('-')) {

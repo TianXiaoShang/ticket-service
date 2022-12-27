@@ -20,7 +20,8 @@
                     class="w-full h-50px bg-white rounded py-10px px-15px box-border mt-10px flex items-center">
                     <div class="text-gray-666 text-14px mr-10px">头像</div>
                     <div class="flex-1 relative text-0px h-full flex items-center">
-                        <image v-if="(user.avatarUrl || DEFAULT_AVATAR)" class="w-35px h-35px rounded-full overflow-hidden" :src="user.avatarUrl"></image>
+                        <image v-if="(user.avatarUrl || DEFAULT_AVATAR)"
+                            class="w-35px h-35px rounded-full overflow-hidden" :src="user.avatarUrl"></image>
                         <span v-else class="text-14px text-gray-999">点击授权头像</span>
                         <button class="absolute left-0 right-0 top-0 bottom-0 opacity-0" open-type="chooseAvatar"
                             @chooseavatar="chooseavatar"></button>
@@ -56,7 +57,7 @@
                 <div v-if="!read" @click="showPopup = true"
                     class="box-border rounded-full w-15px h-15px border border-solid border-red">
                 </div>
-                <span class="ml-4px">我已阅读并同意<span class="text-blue" @click="showPopup = true">《用户协议》</span></span>
+                <span class="ml-4px">我已阅读并同意<span class="text-blue" @click="showPopup = true">《服务条款》</span></span>
             </div>
         </div>
 
@@ -70,13 +71,9 @@
                         <u-icon name="close" size="18px" @click="showPopup = false"></u-icon>
                     </span>
                 </div>
-                <!-- TAG-服务条款内容待补充 -->
                 <scroll-view scroll-y="true" class="text-gray-666 max-h-50vh px-15px box-border mt-15px">
-                    <span>出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖</span>
-                    <span>出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖</span>
-                    <span>出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖</span>
-                    <span>出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖</span>
-                    <span>出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖出淤泥而不染，濯清涟而不妖</span>
+                    <rich-text v-if="login_explain" :nodes="login_explain"></rich-text>
+                    <span v-else>暂无服务条款内容</span>
                 </scroll-view>
                 <div class="pt-10px">
                     <u-button shape="circle" size="normal" :customStyle="{ height: '44px', width: '200px' }"
@@ -91,6 +88,7 @@
 
 <script>
 import { getUserProfile, updateUserInfo, getPhoneNumber } from '@/util/base';
+import { parseRichText } from '@/util';
 
 export default {
     data() {
@@ -103,6 +101,7 @@ export default {
                 phone: '',
             },
             disabled: false,
+            login_explain: '',
         }
     },
     onShow() { },
@@ -111,6 +110,7 @@ export default {
             this.user.avatarUrl = this.userInfo.avatar;
             this.user.name = this.userInfo.nickname;
             this.user.phone = this.userInfo.mobile;
+            this.login_explain = this.setting.login_explain ? parseRichText(this.setting.login_explain) : '';
         })
     },
     methods: {
@@ -171,7 +171,7 @@ export default {
                 }
             } else {
                 uni.showToast({
-                    title: "请先阅读并同意《用户协议》",
+                    title: "请先阅读并同意《服务条款》",
                     icon: 'none'
                 })
             }

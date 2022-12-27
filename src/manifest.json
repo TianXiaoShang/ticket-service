@@ -9,7 +9,8 @@
     "appid": "wxf8440ecefffe34e2",
     "setting": {
       "urlCheck": false,
-      "ignoreDevUnusedFiles": false
+      "ignoreDevUnusedFiles": false,
+      "lazyCodeLoading": "requiredComponents"
     },
     "usingComponents": true,
     "permission": {

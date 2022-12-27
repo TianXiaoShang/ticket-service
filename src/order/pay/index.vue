@@ -6,20 +6,20 @@
             class="p-30px flex flex-col justify-center items-center text-white">
             <div class="text-16 font-semibold">剩余支付时间 {{ payTime }}</div>
             <div class="text-12 mt-4px">
-                <!-- TAG-电影相关时间，类型，主演数据没有 -->
+                <!-- TAG - TAG-A -电影相关时间，类型，主演数据没有 -->
                 {{
-                        [order.total_time ? order.total_time + '分钟' : '', order.type_name, order.author].filter(el =>
-                            el).join('|')
-                }}时间 ｜ 类型 ｜ 主演
+        [order.total_time ? order.total_time + '分钟' : '', order.type_name, order.author].filter(el =>
+            el).join('|')
+}}时间 ｜ 类型 ｜ 主演
             </div>
         </div>
         <div class="p-20px pb-122px box-border" v-if="order.id">
             <!-- 订单信息 -->
             <div class="bg-white p-20px rounded-10px">
                 <div class="font-semibold text-gray-333 text-16">{{ order.order_no }}</div>
-                <div class="mt-10px font-normal text-gray-999 text-14">{{ moment(order.entrance_time *
-                        1000).format('YYYY-MM-DD HH:mm')
-                }}</div>
+                <div class="mt-10px font-normal text-gray-999 text-14">
+                    {{ moment(order.entrance_time * 1000).format('YYYY-MM-DD HH:mm') }}
+                </div>
                 <!-- TAG-独立 -->
                 <div class="mt-10px font-normal text-gray-999 text-14">{{ myCinema.address }}</div>
                 <u-divider></u-divider>
@@ -73,9 +73,7 @@
                             <view
                                 class="rounded-10px text-14px text-gray-333 px-9px box-border h-40px w-full flex items-center"
                                 style="background:#F2F3F5">
-                                {{
-                                        item.tp_text[diyformData[item.diy_type]] || item.placeholder
-                                }}
+                                {{ item.tp_text[diyformData[item.diy_type]] || item.placeholder }}
                             </view>
                         </picker>
                     </div>
@@ -103,8 +101,9 @@
                             <div class="flex justify-between items-center">
                                 <div class="flex">
                                     <div class="flex flex-col">
-                                        <span class="text-14 text-gray-333 font-semibold">{{ order.charge.charge_name
-                                        }}</span>
+                                        <span class="text-14 text-gray-333 font-semibold">
+                                            {{ order.charge.charge_name }}
+                                        </span>
                                         <span class="font-normal text-12px mt-4px text-blue"
                                             @click="showChargePopup = true">查看详情</span>
                                     </div>
@@ -128,7 +127,7 @@
                 <div class="mt-10px">
                     <u-radio-group v-model="payType">
                         <div class="w-full">
-                            <div class="flex justify-between" v-if="pay.wechat">
+                            <div class="flex justify-between" v-if="pay.wechat && money !== 0">
                                 <div class="flex">
                                     <image src="../static/wechat@2x.png" class="w-22px h-22px" alt="" />
                                     <div class="ml-10px flex flex-col">
@@ -138,23 +137,28 @@
                                     </div>
                                 </div>
                                 <div class="w-22px h-22px">
-                                    <u-radio size="22px" activeColor="#FF545C" :label="' '" name="wechat"></u-radio>
+                                    <u-radio size="22px" activeColor="#FF545C" :label="' '"
+                                        :disabled="!pay.wechat.enable" name="wechat"></u-radio>
                                 </div>
                             </div>
-                            <div class="flex justify-between mt-20px" v-if="pay.card">
+                            <div class="flex justify-between mt-20px" v-if="pay.card && money !== 0">
                                 <div class="flex">
                                     <image src="../static/balance@2x.png" class="w-22px h-22px" alt="" />
                                     <div class="ml-10px flex flex-col">
-                                        <span class="text-gray-333 font-semibold">余额支付</span>
+                                        <span class="text-gray-333 font-semibold">
+                                            余额支付
+                                            <span class="text-12px ml-8px">¥{{ userInfo.credit2 }}</span>
+                                        </span>
                                         <span class="font-normal text-10px mt-4px text-yellow">
                                             {{ pay.card.desc || '' }}</span>
                                     </div>
                                 </div>
                                 <div class="w-22px h-22px">
-                                    <u-radio size="22px" activeColor="#FF545C" :label="' '" name="card"></u-radio>
+                                    <u-radio size="22px" activeColor="#FF545C" :label="' '" :disabled="!pay.card.enable"
+                                        name="card"></u-radio>
                                 </div>
                             </div>
-                            <div class="flex justify-between mt-20px" v-if="pay.annual">
+                            <div class="flex justify-between mt-20px" v-if="pay.annual && money !== 0">
                                 <div class="flex">
                                     <image src="../static/vip@2x.png" class="w-22px h-22px" alt="" />
                                     <div class="ml-10px flex flex-col">
@@ -166,10 +170,11 @@
                                     </div>
                                 </div>
                                 <div class="w-22px h-22px">
-                                    <u-radio size="22px" activeColor="#FF545C" :label="' '" name="annual"></u-radio>
+                                    <u-radio size="22px" activeColor="#FF545C" :label="' '"
+                                        :disabled="!pay.annual.enable" name="annual"></u-radio>
                                 </div>
                             </div>
-                            <div class="flex justify-between mt-20px" v-if="pay.offline">
+                            <div class="flex justify-between mt-20px" v-if="money === 0">
                                 <div class="flex">
                                     <image src="../static/free@2x.png" class="w-22px h-22px" alt="" />
                                     <div class="ml-10px flex flex-col">
@@ -222,7 +227,7 @@
                 <div class="flex">
                     <div class="text-red flex items-center">
                         <span class="text-12 ml-3px relative top-2px">¥</span>
-                        <span class="text-18px font-semibold">{{ total }}</span>
+                        <span class="text-18px font-semibold">{{ money }}</span>
                     </div>
                     <div class="text-333 text-12 flex items-center ml-5px" @click="showPopup = true">
                         <span>价格明细</span>
@@ -263,10 +268,12 @@
                                 <div class="flex mb-10px justify-between bg-red p-2px rounded border border-red border-solid  overflow-hidden"
                                     v-for="(item, index) in couponList" :key="index">
                                     <div class="flex flex-col text-white justify-center items-center bg-red p-15px">
-                                        <div class="font-semibold special-text"><span class="text-14px">¥</span><span
-                                                class="text-28px">{{ item.deduct === '0.00' || item.deduct == 0 ? '免费券'
-                                                        : item.deduct
-                                                }}</span></div>
+                                        <div class="font-semibold special-text">
+                                            <span class="text-14px">¥</span>
+                                            <span class="text-28px">
+                                                {{ item.deduct === '0.00' || item.deduct == 0 ? '免费券' : item.deduct }}
+                                            </span>
+                                        </div>
                                         <div class="text-10px font-normal mt-5px -mb-5px">
                                             {{ item.condition }}
                                         </div>
@@ -303,7 +310,6 @@
             </div>
         </u-popup>
 
-        <!-- 优惠明细 TAG - 这里都没对接 -->
         <u-popup :show="showPopup" :closeOnClickOverlay="true" :round="20" @close="showPopup = false">
             <div class="w-full">
                 <div class="text-gray-333 px-20px pt-20px pb-10px flex justify-between items-center border-l-0 border-t-0 border-r-0 
@@ -315,17 +321,63 @@
                     <div class="mb-25px">
                         <div class="text-gray-333 text-14px font-semibold flex justify-between items-center">
                             <span>票品信息</span>
-                            <span>¥188</span>
+                            <span>¥{{ money }}</span>
                         </div>
-                        <div class="mt-15px text-12px text-gray-999">setListStr</div>
-                    </div>
-                    <div class="mb-25px" v-for="item in 10" :key="item">
-                        <div class="text-gray-333 text-14px font-semibold flex justify-between items-center">
-                            <span>套票折扣</span>
-                            <span class="text-red">-¥23</span>
+                        <div class="mt-15px text-12px text-gray-999" v-if="order.seats && order.seats.length">
+                            {{ order.seats.map(el => el.row + '排' + el.col + '座').join('、') }}
                         </div>
-                        <div class="mt-15px text-12px text-gray-999">半价日1折，-0.01元</div>
                     </div>
+                    <!-- 有增值费，且打开了增值收费，且勾选了增值收费 -->
+                    <template
+                        v-if="order.charge.charge_price > 0 && order.charge.charge_open == 1 && charge_radio && charge_radio.length">
+                        <div class="text-gray-999 pb-10px text-12px flex justify-center items-center">
+                            <div class="h-0 w-1/3" style="border-top: 1px solid #eee"></div>
+                            <span class='mx-10px'> 增值项 </span>
+                            <div class="h-0 w-1/3" style="border-top: 1px solid #eee"></div>
+                        </div>
+                        <!-- 增值收费 -->
+                        <div class="mb-25px">
+                            <div class="text-gray-333 text-14px font-semibold flex justify-between items-center">
+                                <span>{{ order.charge.charge_name }}</span>
+                                <span class="text-blue">+¥{{ order.charge.charge_price }}</span>
+                            </div>
+                            <div class="mt-15px text-12px text-blue" @click="showPopup = false; showChargePopup = true">
+                                增值收费说明</div>
+                        </div>
+                    </template>
+
+                    <!-- 有任意优惠项目 -->
+                    <template v-if="disInfo.is_level || disInfo.is_coupon == 1 || pay.part_discount">
+                        <div class="text-gray-999 pb-10px text-12px flex justify-center items-center">
+                            <div class="h-0 w-1/3" style="border-top: 1px solid #eee"></div>
+                            <span class='mx-10px'> 优惠项 </span>
+                            <div class="h-0 w-1/3" style="border-top: 1px solid #eee"></div>
+                        </div>
+                        <!-- 折扣信息 -->
+                        <div class="mb-25px" v-if="disInfo.is_level">
+                            <div class="text-gray-333 text-14px font-semibold flex justify-between items-center">
+                                <span>{{ disEnum[disInfo.is_level] }}</span>
+                                <span class="text-red" v-if="disInfo.is_level !== 6">-¥{{ disInfo.discount }}</span>
+                            </div>
+                            <div class="mt-15px text-12px text-gray-999">{{ Number(disInfo.level_discounts) }}折</div>
+                        </div>
+                        <!-- 优惠券信息 -->
+                        <div class="mb-25px" v-if="disInfo.is_coupon == 1">
+                            <div class="text-gray-333 text-14px font-semibold flex justify-between items-center">
+                                <span>优惠券</span>
+                                <span class="text-red">-¥{{ disInfo.coupon_price }}</span>
+                            </div>
+                            <div class="mt-15px text-12px text-gray-999">{{ disInfo.coupon_name }}</div>
+                        </div>
+                        <!-- 套票折扣 -->
+                        <div class="mb-25px" v-if="pay.part_discount">
+                            <div class="text-gray-333 text-14px font-semibold flex justify-between items-center">
+                                <span>套票折扣</span>
+                                <span class="text-red">-¥{{ pay.part_discount }}</span>
+                            </div>
+                            <div class="mt-15px text-12px text-gray-999">套票满减</div>
+                        </div>
+                    </template>
                 </scroll-view>
                 <div class="pt-10px">
                     <u-button shape="circle" size="normal" :customStyle="{ height: '44px', width: '200px' }"
@@ -419,7 +471,28 @@ export default {
             showCouponName: '',
             diyform: {},
             diyformData: {},
-            charge_radio: '' // 增值服务
+            charge_radio: '', // 增值服务
+            disInfo: {},
+            disEnum: ['', '会员价', '半价日', '特殊人群', '兑换观影优惠券', '自定义优惠', '0元购票', '影片会员折扣', '权益卡消费'],
+        }
+    },
+    watch: {
+        curCoupon() {
+            if (this.curCoupon && this.curCoupon !== 'none') {
+                this.showCouponName = this.couponList.find(el => el.id === this.curCoupon).name;
+            } else {
+                this.showCouponName = '';
+            }
+            this.getCalculate();
+        },
+        payType() {
+            this.getCalculate();
+        },
+        charge_radio: {
+            handler() {
+                this.getCalculate();
+            },
+            deep: true
         }
     },
     onUnload() {
@@ -449,30 +522,25 @@ export default {
         // 选择优惠券
         onSelectCoupon() {
             this.showCouponPopup = false;
-            if (this.curCoupon && this.curCoupon !== 'none') {
-                this.showCouponName = this.couponList.find(el => el.id === this.curCoupon).name;
-            } else {
-                this.showCouponName = '';
-            }
-
         },
-        getData() {
-            this.getOrderPayment();
-            this.getCouponList();
-            this.getDiyForm();
+        async getData() {
+            await this.getOrderPayment();
+            await this.getCouponList();
+            await this.getDiyForm();
+            this.getCalculate();
         },
         getOrderPayment() {
-            // TAG - 这里订单已超时取消的情况，返回的res.data.url不应该是/pages/order/detail/detail?id=99733,新的路径为/order/detail/index?id=99733
-            this.request("order.payment", {
+            return this.request("order.new_payment", {
                 order_id: this.id
             }).then(res => {
-                let money = res.pay.money;
-                // 如果有增值服务
-                if (res.order.charge.charge_open == 1) {
-                    money = parseFloat(money) + parseFloat(res.order.charge.charge_price);
-                }
+                // 改成计算接口
+                // let money = res.pay.money;
+                // // 如果有增值服务
+                // if (res.order.charge.charge_open == 1) {
+                //     money = parseFloat(money) + parseFloat(res.order.charge.charge_price);
+                // }
+                // this.money = money;
                 this.pay = res.pay;
-                this.money = money;
                 this.myCinema = res.cinema;
                 this.order = res.order;
                 this.global = res.global;
@@ -496,7 +564,7 @@ export default {
         },
         getDiyForm() {
             // 自定义表单
-            this.request("order.payDiyForm").then(res => {
+            return this.request("order.payDiyForm").then(res => {
                 if (res.fields && res.fields.length) {
                     res.fields.forEach(el => {
                         if (el.data_type == 1) {
@@ -511,22 +579,22 @@ export default {
         },
         getCouponList() {
             // 获取优惠券
-            this.request("coupon.used", {
+            return this.request("coupon.used", {
                 order_id: this.id
             }).then(res => {
-                let flag = false;
+                // let flag = false;
                 this.couponList = res.list;
                 res.list.forEach((ele, i) => {
                     // 是否有可用优惠券
                     if (ele.status == 1) {
                         this.hasEnbalCoupon = true;
                     }
-                    // 默认选中一个可用优惠券
-                    if (!flag && parseFloat(this.total) >= parseFloat(ele.enough) && ele.status == 1) {
-                        this.curCoupon = ele.id;
-                        this.showCouponName = ele.name;
-                        flag = true;
-                    }
+                    // // 默认选中一个可用优惠券
+                    // if (!flag && parseFloat(this.total) >= parseFloat(ele.enough) && ele.status == 1) {
+                    //     this.curCoupon = ele.id;
+                    //     this.showCouponName = ele.name;
+                    //     flag = true;
+                    // }
                     if (parseFloat(this.total) < parseFloat(ele.enough) || ele.status != 1) {
                         // 没到满减条件或状态为非可用状态1
                         ele.disabled = true;
@@ -551,6 +619,27 @@ export default {
                 s = '0' + s;
             }
             this.payTime = m + ':' + s;
+        },
+        getCalculate() {
+            const params = {
+                order_id: this.id,
+                type: this.payType,
+                realname: this.user.name,
+                mobile: this.user.phone,
+                form_id: this.diyform.form_id,
+                coupon_id: this.curCoupon === 'none' ? '' : this.curCoupon,
+                charge_radio: this.charge_radio && this.charge_radio.length ? 1 : '',   // 多选框有值则1，否则空
+                _showLoading: false,
+            }
+            this.request('order.calculate', params).then(res => {
+                this.money = res ? res.total || res.price : 0;
+                this.disInfo = res;
+                if (this.money === 0) {
+                    this.payType = 'offline';
+                } else {
+                    this.payType = this.payType === 'offline' ? this.pay.default : this.payType;
+                }
+            })
         },
         toPay() {
             if (!this.read) {
@@ -591,9 +680,88 @@ export default {
                 form_id: this.diyform.form_id,
                 coupon_id: this.curCoupon === 'none' ? '' : this.curCoupon,
                 charge_radio: this.charge_radio && this.charge_radio.length ? 1 : '',   // 多选框有值则1，否则空
+                _showToast: true
             }
-            console.log(params, 'toPay')
             uni.setStorageSync('payName', this.user.name);
+            this.startPay(params);
+        },
+        startPay(params) {
+            // 免费购买
+            if (this.payType === 'offline') {
+                this.request("order.pays", params).then(res => {
+                    this.toOrderDetail();
+                })
+            }
+            // 余额支付
+            if (this.payType === 'card') {
+                if (!this.pay.card.enable) {
+                    uni.showToast({ title: '不支持余额支付，请选择其他支付方式！', icon: 'none' })
+                    return;
+                }
+                if (Number(this.userInfo.credit2) < this.money) {
+                    uni.showToast({ title: '余额不足', icon: 'none' })
+                    return;
+                }
+                uni.showModal({
+                    title: '余额支付',
+                    content: '确定使用余额支付吗？',
+                    success: (res) => {
+                        if (res.confirm) {
+                            this.request("order.pays", params).then(res => {
+                                this.toOrderDetail();
+                            })
+                        } else if (res.cancel) {
+                            uni.showToast({ title: '取消支付', icon: 'none' })
+                        }
+                    }
+                });
+                return;
+            }
+
+            // 微信支付
+            if (this.payType == 'wechat') {
+                if (this.isWx) {
+                    this.request("order.pays", params).then(res => {
+                        wx.requestPayment({
+                            timeStamp: res.wechat.timeStamp,
+                            nonceStr: res.wechat.nonceStr,
+                            package: res.wechat.package,
+                            signType: res.wechat.signType,
+                            paySign: res.wechat.paySign,
+                            success: () => {
+                                uni.showToast({
+                                    title: '支付成功',
+                                    icon: 'none'
+                                })
+                                this.toOrderDetail();
+                            }
+                        });
+                    })
+                } else {
+                    // TAG - 抖音端支付未实现
+                    uni.showToast({
+                        title: '抖音端支付未实现',
+                        icon: 'none'
+                    })
+                }
+                return;
+            }
+            // 权益卡支付
+            if (this.payType == 'annual') {
+                params.price = 0;
+                params.coupon_id = '';
+                this.request("order.pays", params).then(res => {
+                    this.toOrderDetail();
+                })
+                return;
+            }
+        },
+        toOrderDetail() {
+            setTimeout(() => {
+                uni.redirectTo({
+                    url: '/order/detail/index?id=' + this.id,
+                });
+            }, 1000);
         },
         onRead(val) {
             this.read = val;

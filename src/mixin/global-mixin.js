@@ -18,8 +18,8 @@ export default {
           isWx: false, // 判断微信还是抖音
           request,
           triggered: true,
-          _currentPage: 1,
-          _finish: false,
+          myCurrentPage: 1,
+          pageFinish: false,
           // _pageSize: 20,
           // _totalCount: 0,
           pageLoad: false,

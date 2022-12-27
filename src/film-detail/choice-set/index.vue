@@ -8,7 +8,7 @@
 				<div class="text-gray-666 text-12px mt-8px">
 					{{ row.total_time || 0 }}分钟
 					{{ row.entrance_time ? ' | ' + getDetialTime(row.entrance_time) : '' }}
-					<!-- TAG-这里展示影片类型、主演，不如展示时间比较合理 -->
+					<!-- TAG - TAG-A -这里展示影片类型、主演，不如展示时间比较合理 -->
 					<!-- {{ row.type_name ? ' | ' + row.type_name : '' }} -->
 					<!-- {{ row.author ? ' | ' + row.author : '' }} -->
 				</div>
@@ -92,8 +92,9 @@
 								mode="aspectFit">
 							</image>
 						</div>
-						<span class="text-gray-333 leading-relaxed text-14px">{{ item.RowNum + '排' + item.XCoord + '座'
-						}}</span>
+						<span class="text-gray-333 leading-relaxed text-14px">
+							{{ item.RowNum + '排' + item.XCoord + '座' }}
+						</span>
 						<image @click="deleteSeat(item)" class="w-18px h-18px min-w-18px min-h-18px ml-5px"
 							src="../static/close.png" mode="aspectFit"></image>
 					</div>
@@ -145,8 +146,7 @@
 							<span>套票折扣</span>
 							<span class="text-red">-¥{{ part_discount }}</span>
 						</div>
-						<!-- TAG-待对接 -->
-						<div class="mt-15px text-12px text-gray-999">半价日1折，-0.01元</div>
+						<div class="mt-15px text-12px text-gray-999">套票满减</div>
 					</div>
 				</scroll-view>
 				<div class="pt-10px">
@@ -179,11 +179,13 @@ export default {
 			currentPart: {},
 			disPartList: [],
 			activePartDis: false,
+			activePartId: '',
 		}
 	},
 	components: { SetArea },
 	onLoad(options) {
 		this.id = options.id;
+		this.activePartId = options.activePartId;
 		// 确保已经登录完成
 		this.waitLogin().then(() => {
 			this.checkAuth();
@@ -241,12 +243,7 @@ export default {
 				this.partList = res.row.part_ext || [];
 				// 套票优惠
 				const arr = this.partList.filter(el => el.is_discount == 1);   // 有套票优惠分区
-				this.disPartList = arr.map(el => {
-					return {
-						...el,
-						isDis: true
-					}
-				})
+				this.disPartList = arr;
 			});
 		},
 		initMap(map) {
@@ -264,7 +261,7 @@ export default {
 						color: element.color,    // 座位颜色
 						links: element.links,   // 是否为情侣座
 						originData: element,   // 原始数据
-						active: true,   // 高亮展示   TAG-之后可能从剧院模式跳过来选座，如果带了分区id，则要在初始化的时候对Active做处理
+						active: this.activePartId ? this.activePartId === element.part_id : true,   // 高亮展示
 						part_id: element.part_id,   // 分区id
 					}
 					arr.push(ele)

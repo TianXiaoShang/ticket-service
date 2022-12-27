@@ -94,7 +94,7 @@
 					<div>
 						<div class="text-14">{{ neerTicket.ticket.film_title }}</div>
 						<div class="mt-5px text-12 opacity-50">{{
-								moment(order.ticket.entrance_time * 1000).format('YYYY-MM-DD HH:mm')
+								moment(neerTicket.ticket.entrance_time * 1000).format('YYYY-MM-DD HH:mm')
 						}}</div>
 					</div>
 					<div class="text-14 flex items-center">
@@ -143,7 +143,6 @@
 </template>
 
 <script>
-// TAG - 列表跳转没对接
 import NavBar from '@/components/nav-bar';
 
 export default {
@@ -155,7 +154,7 @@ export default {
 			neerTicket: {},
 			loginFlag: false,
 			authFlag: false,
-			agentUrl: '', // TAG-分销申请的不同状态跳转不同分销页面
+			agentUrl: '',
 		}
 	},
 	components: { NavBar },
@@ -185,9 +184,8 @@ export default {
 			})
 		},
 		toNeerTicket() {
-			// TAG-要对接路由跳转地址，跳转到订单详情页
 			const url = `/order/ticket/index?id=${this.neerTicket.ticket.order_id}`;
-			console.log(url, this.neerTicket, 'toNeerTicket');
+			this.toPath(url)
 		},
 		// 个人详细业务数据
 		getMemberDate() {

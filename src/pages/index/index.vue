@@ -1,48 +1,53 @@
 <template>
 	<view class="page-box p-20px">
 		<loading />
-		<div class="search-wrap bg-gray-100 flex items-center px-10px py-5px rounded" @click="toSearch">
-			<icon class="mr-5px" type="search" size="16" color="#999999" />
-			<input placeholder="请输入搜索关键词" disabled placeholder-style="font-size: 13px; color: #999" type="text"
-				confirm-type="search" />
-		</div>
-		<!-- banner -->
-		<view class="w-full mt-18px rounded overflow-hidden">
-			<swiper class="w-full rounded swiper" v-if="bannerList.length" circular :indicator-dots="true"
-				:autoplay="true" :interval="2000" :duration="500">
-				<swiper-item class="swiper-item rounded h-0px w-full" v-for="(item, index) in bannerList" :key="index"
-					@click="toDetail(item)">
-					<view class="swiper-item h-full w-full text-0px">
-						<image :src="item.img" class="w-full h-full" />
-					</view>
-				</swiper-item>
-			</swiper>
-			<u-skeleton v-else rows="0" titleWidth="100%" titleHeight="100" title :title="true" loading></u-skeleton>
-		</view>
-
-		<!-- 分类 -->
-		<div class="mt-14px">
-			<u-scroll-list v-if="kindList.length" class="scroll-list" :indicator="indicator" indicatorColor="#fff0f0"
-				indicatorActiveColor="#FF545C">
-				<view class="scroll-list-item" v-for="(item, index) in kindList" :key="index">
-					<div class="scroll-list-item flex flex-col justify-center items-center">
-						<image mode="aspectFit" :src="item.home_icon" class="w-12vw h-12vw rounded" />
-						<span class="mt-5px text-gray-999 text-12">{{ item.home_name }}</span>
-					</div>
-				</view>
-			</u-scroll-list>
-			<u-skeleton v-else rows="0" titleWidth="100%" titleHeight="67" title :title="true" loading></u-skeleton>
-		</div>
-
-		<more-title :title="'热门'"></more-title>
-
-		<more-title :title="'更多推荐'"></more-title>
-		<!-- 推荐列表 -->
-		<div class="list">
-			<div class="mt-16px" v-for="(item, index) in hotList" :key="index">
-				<film-item :detail="item" @play="onPlay"></film-item>
+		<!-- 页面滚动 -->
+		<scroll-view scroll-y="true" @scrolltolower="searchScrollLower" :style="{ height: `calc(100vh - 40px` }">
+			<div class="bg-gray-100 flex items-center px-5px rounded-5px" @click="toSearch">
+				<u-search :height="33" disabled :bgColor="'#f5f5f5'" placeholder="请输入搜索关键词"
+					:showAction="false"></u-search>
 			</div>
-		</div>
+			<!-- banner -->
+			<view class="w-full mt-18px rounded overflow-hidden">
+				<swiper class="w-full rounded swiper" v-if="bannerList.length" circular :indicator-dots="true"
+					:autoplay="true" :interval="2000" :duration="500">
+					<swiper-item class="swiper-item rounded h-0px w-full" v-for="(item, index) in bannerList"
+						:key="index" @click="toDetail(item)">
+						<view class="swiper-item h-full w-full text-0px">
+							<image :src="item.img" class="w-full h-full" />
+						</view>
+					</swiper-item>
+				</swiper>
+				<u-skeleton v-else rows="0" titleWidth="100%" titleHeight="100" title :title="true"
+					loading></u-skeleton>
+			</view>
+
+			<!-- 分类 -->
+			<div class="mt-14px">
+				<u-scroll-list v-if="kindList.length" class="scroll-list" :indicator="indicator"
+					indicatorColor="#fff0f0" indicatorActiveColor="#FF545C">
+					<view class="scroll-list-item" v-for="(item, index) in kindList" :key="index"
+						@click="toPath(item.home_route)">
+						<div class="scroll-list-item flex flex-col justify-center items-center">
+							<image mode="aspectFit" :src="item.home_icon" class="w-12vw h-12vw rounded" />
+							<span class="mt-5px text-gray-999 text-12">{{ item.home_name }}</span>
+						</div>
+					</view>
+				</u-scroll-list>
+				<u-skeleton v-else rows="0" titleWidth="100%" titleHeight="67" title :title="true" loading></u-skeleton>
+			</div>
+
+			<more-title :title="'热门'"></more-title>
+
+			<more-title :title="'更多推荐'" v-if="hotList && hotList.length"></more-title>
+			<!-- 推荐列表 -->
+			<div v-if="hotList && hotList.length">
+				<div class="mt-16px" v-for="(item, index) in hotList" :key="index">
+					<film-item :detail="item" @play="onPlay"></film-item>
+				</div>
+				<div v-if="pageFinish" class="pt-15px text-center text-12px text-gray-999">没有更多啦~</div>
+			</div>
+		</scroll-view>
 		<!-- 视频播放器 -->
 		<preview-video :src="playSrc" v-model="showPreviewVideo"></preview-video>
 	</view>
@@ -99,7 +104,6 @@ export default {
 			if (!item.route) {
 				return;
 			}
-			// TAG-跳转到页面后，可能需要解析参数，同分类
 			this.toPath(item.route)
 		},
 		// 获取首页数据，依赖基础配置也就是waitInitConfig
@@ -111,15 +115,32 @@ export default {
 					this.indicator = true;
 				}
 			})
-			// 推荐
-			// TAG-接口要更换，有添加分页， 推荐影片接口为film.recommend，全部影片接口为film.all
-			const hotListApi = this.isMovieMode ? 'recommend' : 'drama.film.recommend';
-			this.request(hotListApi).then(res => {
-				this.hotList = res.films.sort((a, b) => Number(b.sort) - Number(a.sort));
+			this.getRecommend();
+		},
+		// 获取推荐
+		getRecommend() {
+			this.request('film.recommend', { page: this.myCurrentPage }).then(res => {
+				const { total, list } = res;
+				if (!this.hotList[0] || !this.hotList[0].id) {
+					this.hotList = [];
+				}
+				const ticket = list.sort((a, b) => Number(b.sort) - Number(a.sort));
+				this.hotList = [...this.hotList, ...ticket];
+				this.myCurrentPage++;
+				this.pageFinish = this.hotList.length >= Number(total);
 			})
 		},
+		searchScrollLower() {
+			if (this.pageFinish) {
+				return;
+			}
+			this.getRecommend();
+		},
 		toSearch() {
-			console.log('toSearch')
+			uni.navigateTo({
+				url: `/search/search/index`,
+				animationType: 'none'
+			});
 		}
 	}
 };

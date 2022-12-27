@@ -43,7 +43,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="_finish" class="pb-15px text-center text-12px text-gray-999">没有更多啦~</div>
+                <div v-if="pageFinish" class="pb-15px text-center text-12px text-gray-999">没有更多啦~</div>
             </scroll-view>
             <u-empty v-else mode="order" text="暂无相关提现" icon="http://cdn.uviewui.com/uview/empty/order.png">
             </u-empty>
@@ -87,7 +87,7 @@ export default {
         getData() {
             return this.request("commission.withdraw.get_list", {
                 level: this.tabList[this.tabIndex].code,
-                page: this._currentPage,
+                page: this.myCurrentPage,
             })
                 .then((res) => {
                     const { total, list } = res;
@@ -98,12 +98,12 @@ export default {
                         }
                     })
                     this.listData = [...this.listData, ...tempList];
-                    this._currentPage++;
-                    this._finish = this.listData.length >= total;
+                    this.myCurrentPage++;
+                    this.pageFinish = this.listData.length >= Number(total);
                 })
         },
         searchScrollLower() {
-            if (this._finish) {
+            if (this.pageFinish) {
                 return;
             }
             this.getData();
@@ -111,7 +111,7 @@ export default {
         changeTab(e) {
             this.listData = [];
             this.tabIndex = e.index;
-            this._currentPage = 1;
+            this.myCurrentPage = 1;
             this.getData();
         },
         getTimeStr(row) {

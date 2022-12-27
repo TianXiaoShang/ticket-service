@@ -16,10 +16,12 @@
             </div>
             <!-- 优惠券列表 -->
             <template v-else>
-                <scroll-view scroll-y="true" class="pt-10px" style="height: calc(100vh - 42px - 20px - 10px - 44px - 5px);">
+                <scroll-view scroll-y="true" class="pt-10px"
+                    style="height: calc(100vh - 42px - 20px - 10px - 44px - 5px);" @scrolltolower="searchScrollLower">
                     <div v-for="(item, index) in conpupList" :key="index" class="mb-10px">
                         <coupon-item :conpupData="item"></coupon-item>
                     </div>
+                    <div v-if="pageFinish" class="pb-15px text-center text-12px text-gray-999">没有更多啦~</div>
                 </scroll-view>
             </template>
         </div>
@@ -49,22 +51,32 @@ export default {
     onLoad() {
         // 确保已经登录完成
         this.waitLogin().then(() => {
-            this.getData(this.tabIndex + 1);
+            this.getData();
         });
     },
     methods: {
         changeTab(e) {
+            this.myCurrentPage = 1;
             this.tabIndex = e.index;
-            this.getData(this.tabIndex + 1)
+            this.conpupList = [];
+            this.getData()
         },
-        getData(status) {
-            status == 3 ? status = 11 : '';
-            // 接口要改，从三个状态变成两个状态，已过期跟已使用做合并
-            this.request("coupon.data", {
-                status: status
+        getData() {
+            this.request("coupon.newdata", {
+                page: this.myCurrentPage,
+                status: this.tabIndex + 1
             }).then(res => {
-                this.conpupList = res.list;
+                const { total, list } = res;
+                this.conpupList = [...this.conpupList, ...list];
+                this.myCurrentPage++;
+                this.pageFinish = this.conpupList.length >= Number(total);
             })
+        },
+        searchScrollLower() {
+            if (this.pageFinish) {
+                return;
+            }
+            this.getData();
         },
     },
 };
