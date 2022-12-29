@@ -38,8 +38,7 @@
             </div>
             <!-- vip卡 start -->
             <div class="mt-20px relative text-0px h-23.8vw w-full">
-                <!-- TAG - card图要更换 -->
-                <image src="@/static/self/card.png" class="w-full h-23.8vw" />
+                <image src="../static/card2.png" class="w-full h-23.8vw" />
                 <div class="absolute left-20px text-white right-20px top-0 bottom-0 px-20px box-border">
                     <div class="flex justify-between items-center mt-16px">
                         <div class="text-12px">佣金余额（{{ configData.texts.yuan }}）</div>
@@ -117,8 +116,7 @@
                     <div @click="toPath('/retail/audit-list/index')" v-if="true || agentInfo.level.is_audit == 1"
                         class="h-56px mt-10px px-20px box-border py-18px flex items-center justify-between bg-white rounded">
                         <div class="flex items-center">
-                            <!-- TAG - 图标待更换 -->
-                            <image mode="aspectFit" src="../static/code-16.png" class="w-16px h-16px" />
+                            <image mode="aspectFit" src="../static/list-16.png" class="w-16px h-16px" />
                             <span class="ml-10px text-gray-333 text-14px">申请列表</span>
                         </div>
                         <div class="ml-4px flex items-center">

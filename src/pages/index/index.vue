@@ -37,12 +37,18 @@
 				<u-skeleton v-else rows="0" titleWidth="100%" titleHeight="67" title :title="true" loading></u-skeleton>
 			</div>
 
-			<more-title :title="'热门'"></more-title>
+			<more-title :title="'热门'" v-if="recommendList && recommendList.length"></more-title>
+			<!-- 热门推荐列表 -->
+			<div v-if="recommendList && recommendList.length">
+				<div class="mt-16px" v-for="(item, index) in recommendList" :key="index">
+					<film-item :detail="item" @play="onPlay"></film-item>
+				</div>
+			</div>
 
-			<more-title :title="'更多推荐'" v-if="hotList && hotList.length"></more-title>
-			<!-- 推荐列表 -->
-			<div v-if="hotList && hotList.length">
-				<div class="mt-16px" v-for="(item, index) in hotList" :key="index">
+			<more-title :title="'更多推荐'" v-if="moreRecommendList && moreRecommendList.length"></more-title>
+			<!-- 更多推荐列表 -->
+			<div v-if="moreRecommendList && moreRecommendList.length">
+				<div class="mt-16px" v-for="(item, index) in moreRecommendList" :key="index">
 					<film-item :detail="item" @play="onPlay"></film-item>
 				</div>
 				<div v-if="pageFinish" class="pt-15px text-center text-12px text-gray-999">没有更多啦~</div>
@@ -63,11 +69,12 @@ export default {
 			title: 'home',
 			bannerList: [],
 			kindList: [],
-			hotList: [{}, {}, {}, {}, {}],   // 给5个控对象是为了渲染骨架图
+			recommendList: [{}, {}, {}, {}, {}],   // 给5个控对象是为了渲染骨架图
 			indicator: false,
 			getDataFlag: false,
 			playSrc: '',
-			showPreviewVideo: false
+			showPreviewVideo: false,
+			moreRecommendList: [{}, {}, {}, {}, {}]
 		}
 	},
 	components: { MoreTitle, FilmItem, PreviewVideo },
@@ -107,7 +114,7 @@ export default {
 			this.toPath(item.route)
 		},
 		// 获取首页数据，依赖基础配置也就是waitInitConfig
-		getData() {
+		async getData() {
 			// 分类
 			this.request('set.home').then(res => {
 				this.kindList = res.homes;
@@ -115,26 +122,36 @@ export default {
 					this.indicator = true;
 				}
 			})
-			this.getRecommend();
+			await this.getRecommend();
+			await this.getMoreRecommend();
+		},
+		getRecommend() {
+			return this.request('film.recommend').then(res => {
+				const { list } = res;
+				const ticket = list.sort((a, b) => Number(b.sort) - Number(a.sort));
+				this.recommendList = ticket;
+			})
 		},
 		// 获取推荐
-		getRecommend() {
-			this.request('film.recommend', { page: this.myCurrentPage }).then(res => {
+		getMoreRecommend() {
+			return this.request('film.all', { page: this.myCurrentPage }).then(res => {
 				const { total, list } = res;
-				if (!this.hotList[0] || !this.hotList[0].id) {
-					this.hotList = [];
+				if (!this.moreRecommendList[0] || !this.moreRecommendList[0].id) {
+					this.moreRecommendList = [];
 				}
-				const ticket = list.sort((a, b) => Number(b.sort) - Number(a.sort));
-				this.hotList = [...this.hotList, ...ticket];
+				let ticket = list.sort((a, b) => Number(b.sort) - Number(a.sort));
+				// 过滤掉已经推荐的
+				ticket = ticket.filter(el => !this.recommendList.find(e => e.id === el.id));
+				this.moreRecommendList = [...this.moreRecommendList, ...ticket]
 				this.myCurrentPage++;
-				this.pageFinish = this.hotList.length >= Number(total);
+				this.pageFinish = this.moreRecommendList.length >= Number(total);
 			})
 		},
 		searchScrollLower() {
 			if (this.pageFinish) {
 				return;
 			}
-			this.getRecommend();
+			this.getMoreRecommend();
 		},
 		toSearch() {
 			uni.navigateTo({

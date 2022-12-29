@@ -10,7 +10,8 @@
         <!-- 地址栏 -->
         <div v-if="load" class="px-20px flex justify-between mt-20px pb-20px">
             <div class="flex-1">
-                <div class="text-gray-333 text-14 font-semibold">{{ filmData.title || '-' }}</div>
+                <!-- TAG - 独立 -->
+                <div class="text-gray-333 text-14 font-semibold">{{ filmData.store_name || '-' }}</div>
                 <div class="text-gray-999 text-14 mt-10px">{{ filmData.address || '-' }}</div>
             </div>
             <div class="ml-10px">
@@ -52,7 +53,7 @@
                 </div>
                 <!-- 图片 -->
                 <div class="inline-block h-78px ml-15px" v-for="(item, index) in filmData.moments" :key="index">
-                    <image class="h-78px rounded" :class="{ 'mr-15px': index === filmData.moments.length - 1 }"
+                    <image class="h-78px rounded" @click="previewImage(index)" :class="{ 'mr-15px': index === filmData.moments.length - 1 }"
                         mode="heightFix" :src="item" />
                 </div>
             </div>
@@ -182,7 +183,7 @@ export default {
                 this.distance = res;
             })
             // 获取详情
-            this.request('film', {
+            this.request('film.detail', {
                 film_id: this.id
             }).then(res => {
                 this.filmData = res.film || {};
@@ -218,6 +219,12 @@ export default {
             }
             this.getRecommend();
         },
+        previewImage(index) {
+            uni.previewImage({
+                urls: this.filmData.moments,
+                current: index,
+            });
+        }
     }
 };
 </script>

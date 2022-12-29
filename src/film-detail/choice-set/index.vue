@@ -19,14 +19,13 @@
 		<!-- 票档分类 -->
 		<div class="bg-white relative z-998 overflow-hidden box-border w-full" v-if="partList && partList.length">
 			<!-- 票档 -->
-			<div class="text-gray-999 h-37px overflow-x-auto px-20px whitespace-nowrap">
+			<div class="text-gray-999 h-32px overflow-x-auto px-20px whitespace-nowrap">
 				<div v-for="(item, index) in partList" :key="index" @click="tapPart(item, false)"
 					:class="{ active: currentPart.id === item.id && !activePartDis, 'mr-10px': index !== partList.length - 1 }"
-					style="background-color: #F8F8F8; border-color: #ddd"
-					class="px-10px h-35px flex rounded-5px overflow-hidden border border-solid bg-bg inline-flex items-center ">
+					style="background-color: #f9faf6; border-color: #ddd"
+					class="px-10px h-30px flex rounded-5px overflow-hidden border border-solid bg-bg inline-flex items-center">
 					<div class="w-18px h-18px mr-5px" :style="{ background: item.color || '#B4CCBD' }">
-						<image class="w-18px h-18px min-w-18px min-h-18px" src="../static/seat-sel@10.png"
-							mode="aspectFit">
+						<image class="w-18px h-18px min-w-18px min-h-18px" src="../static/seat.png" mode="aspectFill">
 						</image>
 					</div>
 					<span class="text-14px text-999">¥{{ item.price }}</span>
@@ -34,24 +33,23 @@
 			</div>
 		</div>
 		<!-- 套票折扣 -->
-		<div class="bg-white relative z-998 overflow-hidden box-border w-full my-10px"
+		<div class="bg-white relative z-998 overflow-hidden box-border w-full py-10px"
 			v-if="disPartList && disPartList.length">
 			<!-- 票档 -->
-			<div class="text-gray-999 h-37px overflow-x-auto px-20px whitespace-nowrap">
+			<div class="text-gray-999 h-32px overflow-x-auto px-20px whitespace-nowrap">
 				<div v-for="(item, index) in disPartList" :key="index" @click="tapPart(item, true)"
 					:class="{ active: currentPart.id === item.id && activePartDis, 'mr-10px': index !== partList.length - 1 }"
-					style="background-color: #F8F8F8; border-color: #ddd"
-					class="pl-10px h-35px flex rounded-5px overflow-hidden border border-solid bg-bg inline-flex items-center ">
+					style="background-color: #f9faf6; border-color: #ddd"
+					class="pl-10px h-30px flex rounded-5px overflow-hidden border border-solid bg-bg inline-flex items-center ">
 					<div class="w-18px h-18px mr-3px" v-for="(el, index) in Number(item.discount_num)" :key="index"
 						:style="{ background: item.color || '#B4CCBD' }">
-						<image class="w-18px h-18px min-w-18px min-h-18px" src="../static/seat-sel@10.png"
-							mode="aspectFit">
+						<image class="w-18px h-18px min-w-18px min-h-18px" src="../static/seat.png" mode="aspectFill">
 						</image>
 					</div>
 					<span class="text-14px text-999">
 						{{ currentPart.id === item.id && activePartDis ? item.discount_num + '人套票 ' : '' }}
 						¥{{ Number(item.price) * item.discount_num - item.discount_price }}</span>
-					<div class="ml-10px h-35px text-white text-9px flex justify-end items-start">
+					<div class="ml-10px h-30px text-white text-9px flex justify-end items-start">
 						<div class="h-18px rounded-bl-5px px-5px bg-red flex items-center">
 							套票
 							<!-- 每{{ item.discount_num }}人票{{ Number(item.price) * item.discount_num - item.discount_price
@@ -63,12 +61,13 @@
 		</div>
 
 		<!-- 选座区域 -->
-		<div :style="{ height: `calc(100vh - 60px - ${partList && partList.length ? '37px -' : ''}${disPartList && disPartList.length ? '57px -' : ''} 122px)` }"
+		<div :style="{ height: `calc(100vh - ${60 + otherHeight + 122}px)` }"
 			class="bg-gray-bg box-border overflow-hidden">
 			<!-- 选座组件 -->
 			<div class="w-full h-full">
-				<set-area ref="SetArea" :hallTitle="row.hall_title + '荧幕'" :mapData="map" :maxSelect="maxSelectSet"
-					v-if="map && map.length" @seatChange="seatChange">
+				<set-area :isHeight="`calc(100vh - ${60 + otherHeight + 122}px)`" ref="SetArea"
+					:hallTitle="row.hall_title" :mapData="map" :maxSelect="maxSelectSet" v-if="map && map.length"
+					@seatChange="seatChange">
 				</set-area>
 				<div v-else>
 					<u-empty mode="coupon" :text="!pageLoad ? 'loading...' : '暂无座位安排'"
@@ -89,14 +88,14 @@
 						<div class="w-18px h-18px mr-5px"
 							:style="{ background: selectSeatDataList.color || '#2BC881' }">
 							<image class="w-18px h-18px min-w-18px min-h-18px" src="../static/seat-sel@10.png"
-								mode="aspectFit">
+								mode="aspectFill">
 							</image>
 						</div>
 						<span class="text-gray-333 leading-relaxed text-14px">
 							{{ item.RowNum + '排' + item.XCoord + '座' }}
 						</span>
 						<image @click="deleteSeat(item)" class="w-18px h-18px min-w-18px min-h-18px ml-5px"
-							src="../static/close.png" mode="aspectFit"></image>
+							src="../static/close.png" mode="aspectFill"></image>
 					</div>
 					<div class="absolute w-20px right-0 top-0 h-full"
 						style="background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);">
@@ -180,6 +179,7 @@ export default {
 			disPartList: [],
 			activePartDis: false,
 			activePartId: '',
+			isTapPart: false,
 		}
 	},
 	components: { SetArea },
@@ -196,13 +196,21 @@ export default {
 		setListStr() {
 			const arr = this.selectSeatDataList.map(item => item.RowNum + '排' + item.XCoord + '座')
 			return arr.join('、')
+		},
+		otherHeight() {
+			return ((this.partList && this.partList.length) ? 32 : 0) + ((this.disPartList && this.disPartList.length) ? 52 : 0);
 		}
 	},
 	watch: {
 		// 分区选择变化
 		currentPart: {
 			handler() {
-				this.$refs.SetArea.changeActivePart(this.currentPart);
+				this.$refs.SetArea.changeActivePart(this.currentPart, this.isTapPart);
+				// 如果是选择分区，则重置缩放倍数；
+				if (this.isTapPart) {
+					// 重置后关闭开关
+					this.isTapPart = false;
+				}
 			},
 			deep: true
 		}
@@ -221,6 +229,8 @@ export default {
 			} else {
 				this.currentPart = item;
 			}
+			// 选择分区要重置缩放倍数
+			this.isTapPart = true;
 		},
 		deleteSeat(item) {
 			this.$refs.SetArea.deleteSeat(item);
@@ -322,7 +332,8 @@ export default {
 
 <style lang="scss" scoped>
 .active {
-	background-color: rgb(251, 234, 236) !important;
+	background-color: #f9faf6 !important;
+	// background-color: rgb(251, 234, 236) !important;
 	border-color: #FF545C !important;
 	color: #FF545C !important;
 }

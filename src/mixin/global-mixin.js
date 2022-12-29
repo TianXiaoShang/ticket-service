@@ -147,13 +147,22 @@ export default {
           });
         },
         toPath(path, delay = 0) {
+          const homesPages = [
+            "/pages/index/index",
+            "/pages/ticket/index",
+            "/pages/self/index",
+          ];
           if (!path) {
             return;
           }
           setTimeout(() => {
-            uni.navigateTo({
-              url: path,
-            });
+            if (homesPages.includes(path)) {
+              this.switchToPath(path, delay);
+            } else {
+              uni.navigateTo({
+                url: path,
+              });
+            }
           }, delay);
         },
         switchToPath(path, delay = 0) {

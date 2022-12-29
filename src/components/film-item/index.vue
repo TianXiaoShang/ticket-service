@@ -60,7 +60,7 @@
                             <!-- TAG - TAG-A -待补充时间段字段 -->
                             2022.10.10-2022.12.12
                         </div>
-                        <div class="truncate" v-if="showAddress">
+                        <div class="truncate mt-2px" v-if="showAddress">
                             {{ detail.address }}
                         </div>
                     </div>

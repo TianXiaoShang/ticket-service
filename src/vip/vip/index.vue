@@ -26,7 +26,6 @@
                         <span class="text-white text-14px">余额记录</span>
                     </span>
                     <span class="flex items-center mt-8px" v-if="!member.card_no" @click="toPath('/vip/find/index')">
-                        <!-- TAG - 待换图标 -->
                         <image class="w-14px h-14px mr-6px" src="../static/balance-history@3x.png" />
                         <span class="text-white text-14px">找回会员</span>
                     </span>

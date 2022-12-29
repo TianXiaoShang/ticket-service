@@ -1,7 +1,7 @@
 <template>
 	<div class="page-box bg-gray-bg p-20px pt-0 box-border">
 		<loading />
-		<scroll-view v-if="ticketList.length" :style="{ height: 'calc(100vh - 40px)' }" scroll-y="true"
+		<scroll-view v-if="ticketList.length" :style="{ height: 'calc(100vh - 20px)' }" scroll-y="true"
 			@scrolltolower="searchScrollLower">
 			<!-- 票夹列表 -->
 			<div @click="toSelect(item)" class="bg-white rounded box-border mt-20px p-20px relative overflow-hidden"

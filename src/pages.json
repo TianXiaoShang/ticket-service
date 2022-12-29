@@ -196,7 +196,7 @@
         {
           "path": "record/index",
           "style": {
-            "navigationBarTitleText": "余额记录"
+            "navigationBarTitleText": "消费记录"
           }
         },
         {
