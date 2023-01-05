@@ -30,8 +30,12 @@
 						</div>
 					</div>
 				</div>
-				<div class="right">
-					<u-button @click="toVip" class="h-26px min-w-58px" shape="circle" size="small"
+				<div class="flex flex-col items-center">
+					<div class="text-12px text-gray-555 mb-5px" v-if="isWx && global.is_manage_inform == 1"
+						@click="onSubscribe">
+						订阅通知
+					</div>
+					<u-button @click="toVip" class="h-26px w-58px" shape="circle" size="small"
 						:color="card.id ? '#FF545C' : '#bbb'" text="VIP">
 					</u-button>
 				</div>
@@ -43,8 +47,9 @@
 					class="absolute left-20px right-20px top-0 bottom-0 flex items-center justify-between px-20px box-border">
 					<div class="flex items-center">
 						<image mode="aspectFit" src="@/static/self/vipvip.png" class="w-18px h-18px" />
-						<span class="ml-5px text-16 font-semibold" style="color: #673F0F">{{ authFlag ? cinema.title :
-								'会员未登录'
+						<span class="ml-5px text-16 font-semibold" style="color: #673F0F">{{
+							authFlag? cinema.title :
+							'会员未登录'
 						}}</span>
 					</div>
 					<div class="text-16 special-text" v-if="authFlag && card.id" style="color: #A04A07">
@@ -94,7 +99,7 @@
 					<div>
 						<div class="text-14">{{ neerTicket.ticket.film_title }}</div>
 						<div class="mt-5px text-12 opacity-50">{{
-								moment(neerTicket.ticket.entrance_time * 1000).format('YYYY-MM-DD HH:mm')
+							moment(neerTicket.ticket.entrance_time * 1000).format('YYYY-MM-DD HH:mm')
 						}}</div>
 					</div>
 					<div class="text-14 flex items-center">
@@ -150,7 +155,7 @@ export default {
 		return {
 			member: {},
 			card: {},
-			global: 0,
+			global: {},
 			neerTicket: {},
 			loginFlag: false,
 			authFlag: false,
@@ -215,6 +220,17 @@ export default {
 		toVip() {
 			this.checkAuth(false, false).then(() => {
 				this.toPath('/vip/vip/index');
+			})
+		},
+		onSubscribe() {
+			wx.requestSubscribeMessage({
+				tmplIds: [this.global.manage_buy_id],
+				success: () => {
+					this.startPay();
+				},
+				fail: () => {
+					this.startPay();
+				}
 			})
 		},
 		toAgent() {

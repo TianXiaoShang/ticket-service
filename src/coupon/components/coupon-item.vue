@@ -3,12 +3,12 @@
         :style="{ opacity: conpupData.status != 1 && conpupData.status != 0 ? '0.5' : '1' }">
         <div class="flex flex-col text-white justify-center items-center bg-red p-15px">
             <div class="font-semibold special-text min-w-84px flex justify-center items-end">
-                <span class="text-14px mb-3px" v-if="!(conpupData.deduct === '0.00' || conpupData.deduct == 0)">¥</span>
-                <span class="text-28px">{{
-        conpupData.deduct === '0.00' || conpupData.deduct == 0 ? '免费券' : conpupData.deduct
-}}</span>
+                <span class="text-14px mb-3px" v-if="conpupData.is_viewing != 1">¥</span>
+                <span class="text-27px">{{
+                    conpupData.is_viewing == 1 ? '观影券': conpupData.deduct
+                }}</span>
             </div>
-            <div class="text-10px font-normal mt-5px -mb-5px">
+            <div class="text-10px font-normal mt-6px -mb-6px">
                 {{ conpupData.condition }}
             </div>
         </div>

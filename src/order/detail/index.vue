@@ -20,18 +20,17 @@
             <!-- 待支付-订单信息 -->
             <div class="bg-white p-20px mb-20px rounded-10px" v-if="order.status == 1">
                 <div class="font-semibold text-gray-333 text-16">{{ order.order_no }}</div>
-                <div class="mt-10px font-normal text-gray-999 text-14">{{ moment(order.entrance_time *
+                <!-- <div class="mt-10px font-normal text-gray-999 text-14">{{ moment(order.entrance_time *
                         1000).format('YYYY-MM-DD HH:mm')
-                }}</div>
-                <!-- TAG-独立 没看到地址字段 -->
-                <div class="mt-10px font-normal text-gray-999 text-14">独立地址{{ order.address }}</div>
-                <u-divider></u-divider>
+                }}</div> -->
                 <!-- TAG-独立 -->
-                <div class="text-gray-333 text-14 font-semibold">{{ order.title }}</div>
+                <div class="mt-10px font-normal text-gray-999 text-14">{{ order.cinema_title }}</div>
+                <u-divider></u-divider>
+                <div class="font-semibold text-gray-333 text-16 mt-20px">{{ order.film_title }}</div>
                 <div class="mt-10px font-normal text-gray-999 text-14">
-                    {{ order.film_title }} | {{ order.hall_title }}
+                    {{ order.hall_title }} | {{ moment(order.entrance_time * 1000).format('YYYY-MM-DD HH:mm') }}
                 </div>
-                <div class="mt-10px font-normal text-gray-999 text-14">
+                <div class="mt-5px font-normal text-gray-999 text-14">
                     {{ order.seats.map(el => el.row + '排' + el.col + '座').join('、') }}
                 </div>
             </div>
@@ -44,7 +43,7 @@
 
                 <div class="font-semibold text-gray-333 text-16 mt-20px">{{ order.film_title }}</div>
                 <div class="mt-10px font-normal text-gray-999 text-14">
-                    {{ order.hall_title }} {{ moment(order.entrance_time * 1000).format('YYYY-MM-DD HH:mm') }}
+                    {{ order.hall_title }} | {{ moment(order.entrance_time * 1000).format('YYYY-MM-DD HH:mm') }}
                 </div>
                 <div class="mt-5px font-normal text-gray-999 text-14">
                     {{ order.seats.map(el => el.row + '排' + el.col + '座').join('、') }}

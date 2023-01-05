@@ -5,14 +5,13 @@
         <div class="relative z-999" v-if="order.id">
             <!-- 电影 -->
             <div class="p-15px rounded bg-white flex justify-between items-center">
-                <!-- TAG - TAG-A - 图片没有 -->
                 <div>
-                    <image class="w-92px h-126px mr-15px rounded overflow-hidden"
-                        src="http://mallsaasphoto.djlcom.com/images/1/sonCinema/id_4/aAYwJjjac4ziJijWJeAcWIjBcA1373.jpg" />
+                    <image class="w-92px h-126px mr-15px rounded overflow-hidden" :src="film.logo" />
                 </div>
                 <div class="flex-1">
                     <div class="text-16px text-gray-333 font-semibold">{{ order.film_title }}</div>
-                    <div class="text-14px text-gray-999 font-normal mt-15px">{{ moment(order.entrance_time *
+                    <div class="text-14px text-gray-999 font-normal mt-15px">{{
+                        moment(order.entrance_time *
                             1000).format('YYYY-MM-DD HH:mm')
                     }}</div>
                     <!-- TAG - 独立 -->
@@ -36,17 +35,17 @@
                     <div class="py-20px relative" style="border-top: 1px solid #eee">
                         <div class="flex justify-center items-center relative">
                             <!-- is_ticket是整体的取票状态，status是单个的扫码入场状态 -->
-                            <div :style="{ opacity: order.is_ticket != 1 && order.status <= 1 ? '1' : '0.07' }">
+                            <div :style="{ opacity: order.is_ticket == 0 ? '1' : '0.07' }">
                                 <!-- 组件地址 https://ext.dcloud.net.cn/plugin?id=39 -->
                                 <tki-qrcode ref="qrcode" :cid="order.dynamic" :val="order.dynamic" :size="150" unit="px"
                                     :background="'#fff'" :foreground="'#000'" :onval="onval" :loadMake="true"
                                     :showLoading="true" />
                             </div>
-                            <div
+                            <div v-if="order.is_ticket != 0"
                                 class="absolute flex flex-col justify-center items-center left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                                <image class="w-55px h-55px" :src="`../static/${statusOrder[order.status]}.png`" />
+                                <image class="w-55px h-55px" :src="`../static/${statusOrder[order.is_ticket]}.png`" />
                                 <div class="mt-8px text-16px font-semibold" style="color: #63c899">
-                                    {{ statusOrderText[order.status] }}</div>
+                                    {{ statusOrderText[order.is_ticket] }}</div>
                             </div>
                         </div>
                     </div>
@@ -54,7 +53,7 @@
                         <div class="text-gray-999">{{ ticket.length }}张票</div>
                         <div class="flex items-center text-gray-333 font-normal mt-10px">
                             <span :style="{ 'text-decoration': order.is_ticket == 1 ? 'line-through;' : 'none' }">票码：{{
-                                    order.dynamic
+                                order.dynamic
                             }}</span>
                             <span @click="onCopy(order.dynamic)"
                                 class="px-10px h-26px flex items-center justify-center rounded-25px ml-20px border border-solid border-color-333">复制</span>
@@ -152,6 +151,7 @@ export default {
         return {
             id: '',
             order: {},
+            film: {},
             myCinema: {},
             ticket: [],
             global: {},
@@ -208,6 +208,7 @@ export default {
                 this.myCinema = res.cinema;
                 this.ticket = res.ticket;
                 this.order = res.order;
+                this.film = res.film;
                 this.global = res.global;
 
                 if (this.global.show_ticketscode != 1) {

@@ -15,11 +15,10 @@
 		<div class="p-20px flex flex-col justify-center items-center" v-if="bigItem">
 			<div class="text-16px text-gray-333 align-center font-semibold">{{ bigItem.title }}</div>
 			<div class="text-12px text-gray-666 align-center mt-10px">
-				<!-- TAG - TAG-A -时长字段total_time不知道对不对 -->
 				{{
-		[bigItem.total_time ? bigItem.total_time + '分钟' : '', bigItem.type_name, bigItem.author].filter(el =>
-			el).join('|')
-}}
+					[bigItem.type_name, bigItem.author].filter(el =>
+						el).join('|')
+				}}
 			</div>
 		</div>
 		<!-- tabs -->
@@ -55,15 +54,14 @@
 								</div>
 								<div>
 									<!-- 语言 时长 -->
-									<div class="text-gray-333 mt-1px text-14px">{{ item.language }}{{ setting.is_pattern
-		!= 1 ?
-		item.filmtype : ''
-}} {{ item.total_time }}分钟</div>
+									<div class="text-gray-333 mt-1px text-14px">
+										{{ item.language }}{{ item.total_time }}分钟
+									</div>
 									<div class="text-gray-999 text-10px mt-6px">{{ item.ext.hall_title }}</div>
 								</div>
 							</div>
-							<!-- TAG - TAG-A -标签列表待对接,tags是随便写的 -->
-							<div v-if="(item.tags && item.tags.length) || item.is_annual == 1"
+							<!-- TAG - TAG-S -标签列表待对接,tags是随便写的（20230105补充：压根就没有标签这个概念） -->
+							<!-- <div v-if="(item.tags && item.tags.length) || item.is_annual == 1"
 								class="max-w-50vw tags mt-10px h-16px overflow-x-auto text-0px"
 								style="white-space: nowrap">
 								<div v-if="item.is_annual == 1" class="inline-block mr-4px">
@@ -72,7 +70,7 @@
 								<div class="inline-block mr-4px" v-for="(el, i) in item.tags" :key="i">
 									<u-tag :text="'标签'" plain shape="circle" size="mini" type="warning"></u-tag>
 								</div>
-							</div>
+							</div> -->
 						</div>
 						<!-- 右侧 -->
 						<div class="flex items-center">

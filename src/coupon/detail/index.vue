@@ -4,7 +4,7 @@
         <div v-if="conpupData.id"
             class="w-full bg-red px-20px py-30px box-border flex justify-center items-center flex-col text-white relative"
             style="border-radius: 10px 10px 0 0">
-            <div v-if='(conpupData.is_viewing == 1)'>免费券</div>
+            <div v-if='conpupData.is_viewing == 1' class="text-38px special-text font-semibold">观影券</div>
             <div v-else>
                 <span class="text-20px">¥</span>
                 <span class="text-42px special-text font-semibold">{{ conpupData.deduct }}</span>

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <!-- 权益卡兑换须知 -->
+        <!-- 办卡及储值需知 -->
         <u-popup :show="showReadPopup" :round="20" @close="showReadPopup = false">
             <div class="w-full">
                 <div class="text-gray-333 px-20px pt-20px pb-10px flex justify-between items-center border-l-0 border-t-0 border-r-0 
@@ -11,7 +11,7 @@
                     </span>
                 </div>
                 <scroll-view :refresher-enabled="false" @scrolltolower="onPlaceScrolltolower" scroll-y="true"
-                    class="page-container box-border" style="height: calc(75vh - 50px - 40px);"
+                    class="page-container box-border" style="height: 45vh; max-height: 350px;"
                     scroll-into-view="content-wrap">
                     <div id="content-wrap" class="p-15px text-14px text-gray-333 leading-5"
                         style="white-space: pre-line;">

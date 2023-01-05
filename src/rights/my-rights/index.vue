@@ -35,9 +35,9 @@
         <!-- 兑换码弹窗 -->
         <u-modal :show="showModal" width="580rpx" :title="'兑换权益卡'" showCancelButton :confirmColor="'#FF545C'">
             <view class="py-10px w-full flex items-center justify-between" style="border-bottom: 1px solid #eee">
-                <input class="flex-1" placeholder-style="color: #999; font-size: 14px;" placeholder="请输入激活码"
-                    type="number" v-model="code" @input="inputCode" />
-                <image class="h-20px w-20px ml-10px;" src="../static/scan.png" @click="onScan" />
+                <input class="flex-1" placeholder-style="color: #999; font-size: 14px;" placeholder="请输入激活码" type="text"
+                    v-model="code" @input="inputCode" />
+                <image class="h-24px w-24px ml-10px;" src="../static/scan.png" @click="onScan" />
             </view>
             <div slot="confirmButton" class="flex justify-between">
                 <u-button shape="circle" size="normal" plain :customStyle="{ height: '44px', width: '45%', margin: 0 }"
@@ -86,7 +86,7 @@ export default {
         },
         onScan() {
             uni.scanCode({
-                success: function (res) {
+                success: (res) => {
                     console.log('条码类型：' + res.scanType);
                     console.log('条码内容：' + res.result);
                     this.code = res.result;
@@ -141,7 +141,6 @@ export default {
             this.request("annual.buy.key", {
                 code: this.code,
                 openid: this.userInfo.openid,
-                noDirect: true,
             })
                 .then((res) => {
                     this.cardData = res.card;
@@ -157,7 +156,6 @@ export default {
                 {
                     code: this.code,
                     openid: this.userInfo.openid,
-                    noDirect: true,
                 },
                 "POST"
             )

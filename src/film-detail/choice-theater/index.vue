@@ -12,9 +12,9 @@
 		<template v-if='dateList && dateList.length && dateList[0].row && dateList[0].row.length'>
 			<!-- 选票信息 -->
 			<div class="bg-white overflow-hidden p-20px pt-10px box-border w-full" :class="{
-	'pb-130px': this.curSession.seat_random == 1,
-	'pb-70px': this.curSession.seat_random != 1
-}">
+				'pb-130px': this.curSession.seat_random == 1,
+				'pb-70px': this.curSession.seat_random != 1
+			}">
 				<!-- 日期 -->
 				<div class="text-12px mb-12px">
 					<span class="text-gray-333 font-semibold">日期</span>
@@ -24,9 +24,9 @@
 					<div v-for="(item, index) in dateList" :key="index" @click="choiseDate(item)"
 						:class="{ active: curDate.title === item.title, 'mr-10px': index !== dateList.length - 1 }"
 						style="background-color: #F8F8F8; border-color: #ddd"
-						class="w-60px mb-10px h-45px rounded-5px border border-solid bg-bg inline-flex flex-col items-center justify-center">
+						class="w-105px mb-10px h-45px rounded-5px border border-solid bg-bg inline-flex flex-col items-center justify-center">
 						<span class="text-10px text-999">{{ item.week }}</span>
-						<span class="text-14px text-999 mt-3px">{{ item.title }}</span>
+						<span class="text-14px text-999 mt-3px">{{ item.title_y }}</span>
 					</div>
 				</div>
 				<!-- 场次 -->
@@ -40,9 +40,8 @@
 							style="background-color: #F8F8F8; border-color: #ddd"
 							class="mb-10px px-25px h-40px rounded-5px relative overflow-hidden border border-solid bg-bg inline-flex  items-center ">
 							<span class="text-14px text-999">
-								{{ moment(Number(item.entrance_time) * 1000).format('HH:mm') }}
+								{{ curDate.title }} {{ moment(Number(item.entrance_time) * 1000).format('HH:mm') }}
 							</span>
-							<!-- TAG TAG-A 需要字段告诉该场次是否有折扣(is_part不知道是否正确) -->
 							<div v-if='item.is_part == 1' class="absolute right-0 top-0 text-white text-9px w-18px rounded-bl-5px
 						h-18px flex justify-center items-center bg-red">折</div>
 						</div>
@@ -74,7 +73,7 @@
 			</div>
 			<!-- 底部数量选择，按钮， 不选座模式 -->
 			<div class="fixed bottom-0 h-130px left-0 w-full box-border bg-white"
-				style="box-shadow: 0px -2px 6px 0px rgba(51,51,51,0.05);" v-if="this.curSession.seat_random == 1">
+				style="box-shadow: 0px -2px 6px 0px rgba(51,51,51,0.05);" v-if="curSession.seat_random == 1">
 				<div class="flex px-20px justify-between items-center h-60px">
 					<div class="text-12px">
 						<span class="text-gray-333">数量</span>
@@ -99,7 +98,6 @@
 								<u-icon name="arrow-up-fill" size="10px" color="#333"></u-icon>
 							</div>
 						</div>
-
 					</div>
 					<u-button shape="circle" size="normal" :customStyle="{ height: '44px', width: '160px', margin: 0 }"
 						:disabled="disabledBtn || !curDate.title || !curSession.id || !curPart.id || !number || curSession.is_sell == 1 || curSession.sell != 1"
@@ -110,14 +108,17 @@
 
 			<!-- 底部数量选择，按钮  选座模式 -->
 			<div class="fixed bottom-0 h-70px left-0 w-full box-border bg-white"
-				style="box-shadow: 0px -2px 6px 0px rgba(51,51,51,0.05);" v-if="this.curSession.seat_random != 1">
+				style="box-shadow: 0px -2px 6px 0px rgba(51,51,51,0.05);" v-if="curSession.seat_random != 1">
 				<div
 					class="h-60px px-20px border-t border-b-0 pb-9px border-l-0 border-r-0 border-gray-100 border-solid justify-between flex items-center">
 					<div class="flex">
 						<div class="text-gray-666 text-12 flex items-center ml-5px">
 							<span>
 								{{ curDate.title }} |
-								{{ moment(Number(curSession.entrance_time) * 1000).format('HH:mm') }}
+								{{
+									curSession.id ? moment(Number(curSession.entrance_time) * 1000).format('HH:mm') :
+										'未选择场次'
+								}}
 								{{ curPart.name ? ' | ' + curPart.name : '' }}
 							</span>
 						</div>
@@ -149,9 +150,10 @@
 							<span>¥{{ total }}</span>
 						</div>
 						<div class="mt-15px text-12px text-gray-999">{{ curDate.title }} |
-							{{ moment(Number(curSession.entrance_time) *
-		1000).format('HH:mm')
-}} | {{ curPart.name }} | {{ number }}张</div>
+							{{
+								curSession.id ? moment(Number(curSession.entrance_time) *
+									1000).format('HH:mm') : '未选择场次'
+							}} | {{ curPart.name }} | {{ number }}张</div>
 					</div>
 					<div class="mb-25px">
 						<div class="text-gray-333 text-14px font-semibold flex justify-between items-center">
@@ -159,8 +161,8 @@
 							<span class="text-red">-¥{{ part_discount }}</span>
 						</div>
 						<div class="mt-15px text-12px text-gray-999">每{{ curPart.discount_num }}张减{{
-		curPart.discount_price
-}}元</div>
+							curPart.discount_price
+						}}元</div>
 					</div>
 				</scroll-view>
 				<div class="pt-10px">
@@ -210,13 +212,19 @@ export default {
 					return [];
 				};
 				this.sessionList = this.dateList.find(el => el.title === this.curDate.title).row || [];
+				this.partList = [];
+				this.curPart = {};
+				this.curSession = {};
 			},
 			deep: true,
 		},
 		curSession: {
 			handler() {
+				if (!this.curSession.id) {
+					return;
+				}
 				this.partList = [];
-				this.curPart = [];
+				this.curPart = {};
 				this.maxSelectSet = 0;
 				// 根据场次获取分区数据
 				this.request("seat", { row_id: this.curSession.id }).then(res => {
@@ -239,11 +247,14 @@ export default {
 	},
 	methods: {
 		getBtnStatusText() {
+			if (!this.curSession.id) {
+				return '请选择场次';
+			}
 			return this.curSession.is_sell == 1 ? '已售空' : this.curSession.sell == 1 ? this.curSession.seat_random == 1 ? '去下单' : '去选座' : '未开售'
 		},
 		toSelectFilm() {
 			if (this.curSession.seat_random == 0) {
-				this.toPath('/film-detail/choice-set/index?id=' + this.curSession.id + '&activePartId=' + this.curPart.id);
+				this.toPath('/film-detail/choice-set/index?id=' + this.curSession.id + (this.curPart.id ? '&activePartId=' + this.curPart.id : ''));
 			} else {
 				this.request("order.un_create", {
 					row_id: this.curSession.id,

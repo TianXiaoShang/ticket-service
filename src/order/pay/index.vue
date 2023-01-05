@@ -5,13 +5,6 @@
         <div style="background: linear-gradient(180deg, #FF545C 0%, #FF545C 100%);"
             class="p-30px flex flex-col justify-center items-center text-white">
             <div class="text-16 font-semibold">剩余支付时间 {{ payTime }}</div>
-            <div class="text-12 mt-4px">
-                <!-- TAG - TAG-A -电影相关时间，类型，主演数据没有 -->
-                {{
-        [order.total_time ? order.total_time + '分钟' : '', order.type_name, order.author].filter(el =>
-            el).join('|')
-}}时间 ｜ 类型 ｜ 主演
-            </div>
         </div>
         <div class="p-20px pb-122px box-border" v-if="order.id">
             <!-- 订单信息 -->
@@ -86,7 +79,7 @@
                 <div class="font-semibold text-gray-333 flex justify-between items-center text-14">
                     <span>优惠券</span>
                     <span class="text-gray-999 font-normal flex items-center">
-                        <span class="mr-4px">{{ hasEnbalCoupon ? showCouponName : '暂无可用优惠券' }}</span>
+                        <span class="mr-4px">{{ hasEnbalCoupon? showCouponName: '暂无可用优惠券' }}</span>
                         <u-icon color="#999" name="arrow-right"></u-icon>
                     </span>
                 </div>
@@ -271,7 +264,7 @@
                                         <div class="font-semibold special-text">
                                             <span class="text-14px">¥</span>
                                             <span class="text-28px">
-                                                {{ item.deduct === '0.00' || item.deduct == 0 ? '免费券' : item.deduct }}
+                                                {{ item.is_viewing == 1 ? '观影券' : item.deduct }}
                                             </span>
                                         </div>
                                         <div class="text-10px font-normal mt-5px -mb-5px">
@@ -648,11 +641,28 @@ export default {
             }
             if (!this.user.name) {
                 uni.showToast({ title: "请填写姓名", icon: 'none' })
+                return;
             }
             if (!this.user.phone) {
                 uni.showToast({ title: '请授权手机号', icon: 'none' })
+                return;
             }
-
+            // 微信的话要做订阅消息
+            if (this.isWx && this.global.is_user_inform == 1) {
+                wx.requestSubscribeMessage({
+                    tmplIds: [this.global.user_buy_id],
+                    success: () => {
+                        this.startPay();
+                    },
+                    fail: () => {
+                        this.startPay();
+                    }
+                })
+            } else {
+                this.startPay();
+            }
+        },
+        startPay() {
             // 整理自定义表单数据
             const _diyFormData = { ...this.diyformData };
             for (const key in _diyFormData) {
@@ -683,9 +693,6 @@ export default {
                 _showToast: true
             }
             uni.setStorageSync('payName', this.user.name);
-            this.startPay(params);
-        },
-        startPay(params) {
             // 免费购买
             if (this.payType === 'offline') {
                 this.request("order.pays", params).then(res => {

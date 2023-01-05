@@ -1,10 +1,13 @@
 <template>
     <div>
-        <div v-if="rightsData.id" class="w-full box-border rounded overflow-hidden text-white bg-no-repeat bg-center"
-            :style="{ 'background-image': `url(../static/card.png)`, 'background-size': '100% 100%', opacity: cardType !== 'unUse' ? '1' : '0.5' }">
+        <div v-if="rightsData.id"
+            class="relative w-full box-border rounded overflow-hidden text-white bg-no-repeat bg-center"
+            :style="{ opacity: cardType !== 'unUse' ? '1' : '0.5' }">
+            <image src="../static/card.png" class="w-full absolute"
+                :class="{ 'h-144px': showDetailBtn, 'h-132px': !showDetailBtn }" mode="scaleToFill" />
             <!-- 可购买 -->
             <template v-if="cardType === 'canPay'">
-                <div class="px-20px py-16px">
+                <div class="px-20px py-16px z-9 relative">
                     <div class="text-14px flex justify-between items-center">
                         <span class="font-semibold">{{ rightsData.title }}</span>
                         <span class="rounded-15px flex justify-center items-center px-10px h-26px" @click="toDetail"
@@ -30,9 +33,9 @@
                 </div>
             </template>
 
-            <!-- 不可用 -->
+            <!-- 不可用/可使用 -->
             <template v-if="(cardType === 'unUse' || cardType === 'canUse')">
-                <div class="p-20px">
+                <div class="p-20px z-9 relative">
                     <div class="text-14px flex justify-between items-center">
                         <span class="font-semibold">{{ rightsData.name }}</span>
                         <span class="rounded-15px flex justify-center items-center px-10px h-26px" @click="toDetail"
@@ -57,9 +60,9 @@
                         <div class="flex items-center">
                             <span class="mt-3px mr-5px">剩余次数</span>
                             <span class="font-semibold text-18px special-text">{{ ((rightsData.num || 0) -
-                                    (rightsData.use_num
-                                        || 0))
-                                    || 0
+                                (rightsData.use_num
+                                    || 0))
+                                || 0
                             }}/{{ rightsData.num }}</span>
                         </div>
                     </div>

@@ -53,7 +53,7 @@
         {
           "path": "type/index",
           "style": {
-            "navigationBarTitleText": "分类"
+            "navigationBarTitleText": "影片分类"
           }
         }
       ]

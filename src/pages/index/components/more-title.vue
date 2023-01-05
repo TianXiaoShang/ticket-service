@@ -22,7 +22,7 @@ export default {
     },
     methods: {
         toMore() {
-            console.log('toMore')
+            this.toPath('/search/type/index')
         }
     }
 };

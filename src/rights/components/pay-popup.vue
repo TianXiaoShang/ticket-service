@@ -11,7 +11,7 @@
                     </span>
                 </div>
                 <scroll-view :refresher-enabled="false" @scrolltolower="onPlaceScrolltolower" scroll-y="true"
-                    class="page-container box-border" style="height: calc(75vh - 50px - 40px);"
+                    class="page-container box-border" style="height: 45vh; max-height: 350px;"
                     scroll-into-view="content-wrap">
                     <div id="content-wrap" class="p-15px text-14px text-gray-555 leading-5"
                         style="white-space: pre-line;">
@@ -53,7 +53,6 @@ export default {
                 {
                     card_id: this.rightsData.id,
                     openid: this.userInfo.openid,
-                    noDirect: true,
                 },
                 "POST"
             )

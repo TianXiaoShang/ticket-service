@@ -1,57 +1,69 @@
 <template>
-	<view class="page-box p-20px">
+	<view class="page-box py-20px">
 		<loading />
 		<!-- 页面滚动 -->
 		<scroll-view scroll-y="true" @scrolltolower="searchScrollLower" :style="{ height: `calc(100vh - 40px` }">
-			<div class="bg-gray-100 flex items-center px-5px rounded-5px" @click="toSearch">
-				<u-search :height="33" disabled :bgColor="'#f5f5f5'" placeholder="请输入搜索关键词"
-					:showAction="false"></u-search>
-			</div>
-			<!-- banner -->
-			<view class="w-full mt-18px rounded overflow-hidden">
-				<swiper class="w-full rounded swiper" v-if="bannerList.length" circular :indicator-dots="true"
-					:autoplay="true" :interval="2000" :duration="500">
-					<swiper-item class="swiper-item rounded h-0px w-full" v-for="(item, index) in bannerList"
-						:key="index" @click="toDetail(item)">
-						<view class="swiper-item h-full w-full text-0px">
-							<image :src="item.img" class="w-full h-full" />
+			<div class="px-20px">
+				<div class="bg-gray-100 flex items-center px-5px rounded-5px" @click="toSearch">
+					<u-search :height="33" disabled :bgColor="'#f5f5f5'" placeholder="请输入搜索关键词"
+						:showAction="false"></u-search>
+				</div>
+				<!-- banner -->
+				<view class="w-full mt-18px rounded overflow-hidden">
+					<swiper class="w-full rounded swiper" v-if="bannerList.length" circular :indicator-dots="true"
+						:autoplay="true" :interval="2000" :duration="500">
+						<swiper-item class="swiper-item rounded h-0px w-full" v-for="(item, index) in bannerList"
+							:key="index" @click="toDetail(item)">
+							<view class="swiper-item h-full w-full text-0px">
+								<image :src="item.img" class="w-full h-full" />
+							</view>
+						</swiper-item>
+					</swiper>
+					<u-skeleton v-else rows="0" titleWidth="100%" titleHeight="100" title :title="true"
+						loading></u-skeleton>
+				</view>
+
+				<!-- 分类 -->
+				<div class="mt-14px">
+					<u-scroll-list v-if="kindList.length" class="scroll-list" :indicator="indicator"
+						indicatorColor="#fff0f0" indicatorActiveColor="#FF545C">
+						<view class="scroll-list-item" v-for="(item, index) in kindList" :key="index"
+							@click="toPath(item.home_route)">
+							<div class="scroll-list-item flex flex-col justify-center items-center">
+								<image mode="aspectFit" :src="item.home_icon" class="w-12vw h-12vw rounded" />
+								<span class="mt-5px text-gray-999 text-12">{{ item.home_name }}</span>
+							</div>
 						</view>
-					</swiper-item>
-				</swiper>
-				<u-skeleton v-else rows="0" titleWidth="100%" titleHeight="100" title :title="true"
-					loading></u-skeleton>
-			</view>
-
-			<!-- 分类 -->
-			<div class="mt-14px">
-				<u-scroll-list v-if="kindList.length" class="scroll-list" :indicator="indicator"
-					indicatorColor="#fff0f0" indicatorActiveColor="#FF545C">
-					<view class="scroll-list-item" v-for="(item, index) in kindList" :key="index"
-						@click="toPath(item.home_route)">
-						<div class="scroll-list-item flex flex-col justify-center items-center">
-							<image mode="aspectFit" :src="item.home_icon" class="w-12vw h-12vw rounded" />
-							<span class="mt-5px text-gray-999 text-12">{{ item.home_name }}</span>
-						</div>
-					</view>
-				</u-scroll-list>
-				<u-skeleton v-else rows="0" titleWidth="100%" titleHeight="67" title :title="true" loading></u-skeleton>
+					</u-scroll-list>
+					<u-skeleton v-else rows="0" titleWidth="100%" titleHeight="67" title :title="true"
+						loading></u-skeleton>
+				</div>
 			</div>
-
-			<more-title :title="'热门'" v-if="recommendList && recommendList.length"></more-title>
+			<!-- 电影 -->
+			<div class="px-20px">
+				<more-title :title="'热门'" v-if="recommendList && recommendList.length"></more-title>
+			</div>
 			<!-- 热门推荐列表 -->
-			<div v-if="recommendList && recommendList.length">
-				<div class="mt-16px" v-for="(item, index) in recommendList" :key="index">
-					<film-item :detail="item" @play="onPlay"></film-item>
+			<template v-if="recommendList && recommendList.length">
+				<div class="w-100vw overflow-hidden mt-16px">
+					<scroll-view scroll-x="true">
+						<div class="inline-flex flex-nowrap pr-20px">
+							<div class="ml-20px" v-for="(item, index) in recommendList" :key="index">
+								<film-item-col :detail="item" @play="onPlay"></film-item-col>
+							</div>
+						</div>
+					</scroll-view>
 				</div>
-			</div>
-
-			<more-title :title="'更多推荐'" v-if="moreRecommendList && moreRecommendList.length"></more-title>
-			<!-- 更多推荐列表 -->
-			<div v-if="moreRecommendList && moreRecommendList.length">
-				<div class="mt-16px" v-for="(item, index) in moreRecommendList" :key="index">
-					<film-item :detail="item" @play="onPlay"></film-item>
+			</template>
+			<div class="px-20px" v-if="moreRecommendList && moreRecommendList.length">
+				<more-title :title="'更多推荐'"></more-title>
+				<!-- 更多推荐列表 -->
+				<div>
+					<div class="mt-16px" v-for="(item, index) in moreRecommendList" :key="index">
+						<film-item :detail="item" @play="onPlay"></film-item>
+					</div>
+					<div v-if="pageFinish" class="pt-15px text-center text-12px text-gray-999">没有更多啦~</div>
 				</div>
-				<div v-if="pageFinish" class="pt-15px text-center text-12px text-gray-999">没有更多啦~</div>
 			</div>
 		</scroll-view>
 		<!-- 视频播放器 -->
@@ -62,6 +74,7 @@
 <script>
 import MoreTitle from './components/more-title';
 import FilmItem from '@/components/film-item';
+import FilmItemCol from '@/components/film-item-col';
 import PreviewVideo from '@/components/preview-video';
 export default {
 	data() {
@@ -77,7 +90,7 @@ export default {
 			moreRecommendList: [{}, {}, {}, {}, {}]
 		}
 	},
-	components: { MoreTitle, FilmItem, PreviewVideo },
+	components: { MoreTitle, FilmItem, PreviewVideo, FilmItemCol },
 	onShow() {
 		// 轮播图
 		this.request('slideshow').then(res => {

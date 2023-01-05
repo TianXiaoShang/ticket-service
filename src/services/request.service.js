@@ -2,7 +2,7 @@ import { BASE_URL } from "@/services/environment.service";
 import { getToken } from "@/util";
 import store from "@/store";
 
-const request = function (path, data = {}, method = "GET", noDirect = true) {
+const request = function (path, data = {}, method = "GET", noDirect = false) {
   return new Promise((resolve, reject) => {
     const token = getToken() || "";
     data.token = token;
@@ -36,7 +36,7 @@ const request = function (path, data = {}, method = "GET", noDirect = true) {
               title: "提示",
               content: res.data.message,
               showCancel: false,
-              success: function () {
+              success: () => {
                 if (!noDirect) {
                   res.data.url
                     ? uni.redirectTo({
@@ -79,9 +79,9 @@ const request = function (path, data = {}, method = "GET", noDirect = true) {
             reject(res.data);
           } else if (res.data.errno === 1) {
             // 请求成功
-            if (_showToast) {
+            if (_showToast && (res.message || res.data.message)) {
               uni.showToast({
-                title: res.message || res.data.message || "操作成功",
+                title: res.message || res.data.message,
                 icon: "none",
               });
             }

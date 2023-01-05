@@ -8,9 +8,6 @@
 				<div class="text-gray-666 text-12px mt-8px">
 					{{ row.total_time || 0 }}分钟
 					{{ row.entrance_time ? ' | ' + getDetialTime(row.entrance_time) : '' }}
-					<!-- TAG - TAG-A -这里展示影片类型、主演，不如展示时间比较合理 -->
-					<!-- {{ row.type_name ? ' | ' + row.type_name : '' }} -->
-					<!-- {{ row.author ? ' | ' + row.author : '' }} -->
 				</div>
 			</div>
 			<span class="text-12px text-blue" @click="showPopup = true">优惠说明</span>
@@ -185,7 +182,7 @@ export default {
 	components: { SetArea },
 	onLoad(options) {
 		this.id = options.id;
-		this.activePartId = options.activePartId;
+		this.activePartId = options.activePartId || null;
 		// 确保已经登录完成
 		this.waitLogin().then(() => {
 			this.checkAuth();
@@ -217,10 +214,13 @@ export default {
 	},
 	methods: {
 		// 维护当前选中分区
-		tapPart(item, activePartDis) {
+		tapPart(item, activePartDis, isDis) {
 			// 如果是同一个分区，只是选了切换了套票和非套票。则切换activePartDis即可。无需改变currentPart；
 			if (item.id === this.currentPart.id && this.activePartDis !== activePartDis) {
 				this.activePartDis = activePartDis;
+				if (activePartDis) {
+					this.getPartSeat(item)
+				}
 				return;
 			}
 			this.activePartDis = activePartDis;
@@ -228,9 +228,33 @@ export default {
 				this.currentPart = {};
 			} else {
 				this.currentPart = item;
+				if (activePartDis) {
+					this.getPartSeat(item)
+				}
 			}
 			// 选择分区要重置缩放倍数
 			this.isTapPart = true;
+		},
+		// 选择套票，获取座位自动选中
+		getPartSeat(item) {
+			// 如果已经选了座位则不帮用户选
+			if (this.selectSeatDataList && this.selectSeatDataList.length) {
+				return;
+			}
+			this.request('order.selPart', {
+				part_id: item.id,
+				row_id: this.id,
+				number: item.discount_num,
+				openid: this.userInfo.openid
+			}).then(res => {
+				if (res && res.seats) {
+					res.seats.forEach(el => {
+						const row = el.split('_')[0];
+						const col = el.split('_')[1];
+						this.$refs.SetArea.handleChooseSeat(Number(row) - 1, Number(col))
+					})
+				}
+			})
 		},
 		deleteSeat(item) {
 			this.$refs.SetArea.deleteSeat(item);
@@ -302,6 +326,11 @@ export default {
 				openid: this.userInfo.openid,
 				_showLoading: false,
 			}).then(res => {
+				// 此时用户如果更改到0个座位，反馈的数据已经不正确，直接取0
+				if (!this.selectSeatDataList || this.selectSeatDataList.length === 0) {
+					this.totalPrice = 0;
+					return;
+				}
 				this.totalPrice = res.price;
 				this.part_discount = res.part_discount;
 			})

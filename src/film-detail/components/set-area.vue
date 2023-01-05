@@ -1,15 +1,15 @@
 <template>
-    <div class="w-full bg-gray-bg" :style="{ height: isHeight }">
+    <div class="relative w-full bg-gray-bg" :style="{ height: isHeight }">
         <!-- 高度为行数 * （每行高度 + 每行margin-top）+ 58（58是顶部厅名和荧幕中央的高度） -->
         <movable-area class="fixed left-0 t-132px w-100vw h-full" :style="{ height: isHeight }">
             <movable-view class="w-full" :style="{ height: isHeight }" :inertia="true" :scale="true" :scale-min="0.5"
-                :scale-value="scaleValue" :scale-max="6" direction="all" @change="onMove" @scale="onScale">
+                :scale-value="scaleValue" :scale-max="6" direction="all" @change="debounceMove" @scale="debounceScale">
                 <div class="Stage flex justify-center items-center text-11px text-gray-333">
                     {{ hallTitle }}
                 </div>
                 <div class="flex justify-center items-center pt-24px pb-5px">
                     <div class="b-1 rounded-5px inline-block text-10px text-gray-999 h-15px px-20px leading-15px">
-                        {{ isMovieMode ? '荧幕中央' : '舞台中央' }}
+                        {{ isMovieMode? '荧幕中央': '舞台中央' }}
                     </div>
                 </div>
                 <!-- 中心线条 -->
@@ -18,102 +18,28 @@
                 <div v-for="(item, index) in seatArray" :key="index"
                     class="flex justify-center mt-0px text-0px relative z-9 relative"
                     :style="'width:' + boxWidth + 'px;height:' + seatSize + 'px'">
-                    <template v-for="(seat, col) in item" :key="col">
-                        <!-- Status为-10，不做座位展示 -->
-                        <template v-if="seat.status !== -10">
-                            <!-- 座位当前已选中的状态 或者 被他人选中占用的状态（此时图片一样，放在一起判断，通过状态区分颜色） -->
-                            <template v-if="seat.status === 10 || seat.status === 1">
-                                <!-- 座位选中，并且是情侣座-左 -->
-                                <image @click="handleChooseSeat(index, col)" v-if="seat.links && seat.LinkDir === 'L'"
-                                    :style="{ width: seatSize + 'px', height: seatSize + 'px', opacity: seat.active ? 1 : 0.25, background: seat.status === 10 ? '#2BC881' : '#777' }"
-                                    src="../static/seat-qinglv1-sel@10.png" mode="aspectFill">
-                                </image>
-                                <!-- <div v-if="seat.links && seat.LinkDir === 'L'" @click="handleChooseSeat(index, col)"
-                                    class="item-seat" :style="{
-                                    'background-image': `url(${seatCheckedQing2})`,
-                                    width: seatSize + 'px',
-                                    height: seatSize + 'px',
-                                    opacity: seat.active ? 1 : 0.25,
-                                    'background-color': seat.status === 10 ? '#2BC881' : '#777'
-                                }"></div> -->
-                                <!-- 座位选中，并且是情侣座-右 -->
-                                <image @click="handleChooseSeat(index, col)"
-                                    v-else-if="seat.links && seat.LinkDir === 'R'"
-                                    :style="{ width: seatSize + 'px', height: seatSize + 'px', opacity: seat.active ? 1 : 0.25, background: seat.status === 10 ? '#2BC881' : '#777' }"
-                                    src="../static/seat-qinglv2-sel@10.png" mode="aspectFill">
-                                </image>
-                                <!-- <div v-else-if="seat.links && seat.LinkDir === 'R'" @click="handleChooseSeat(index, col)"
-                                    class="item-seat" :style="{
-                                    'background-image': `url(${seatCheckedQing1})`,
-                                    width: seatSize + 'px',
-                                    height: seatSize + 'px',
-                                    opacity: seat.active ? 1 : 0.25,
-                                    'background-color': seat.status === 10 ? '#2BC881' : '#777'
-                                }"></div> -->
-                                <!-- 座位选中 -->
-                                <image @click="handleChooseSeat(index, col)" v-else
-                                    :style="{ width: seatSize + 'px', height: seatSize + 'px', opacity: seat.active ? 1 : 0.25, background: seat.status === 10 ? '#2BC881' : '#777' }"
-                                    src="../static/seat-sel@10.png" mode="aspectFill">
-                                </image>
-                                <!-- <div v-else @click="handleChooseSeat(index, col)"
-                                    class="item-seat" :style="{
-                                    'background-image': `url(${seatCheckedPng})`,
-                                    width: seatSize + 'px',
-                                    height: seatSize + 'px',
-                                    opacity: seat.active ? 1 : 0.25,
-                                    'background-color': seat.status === 10 ? '#2BC881' : '#777'
-                                }"></div> -->
-                            </template>
 
-                            <!-- 除了以上情况，以下Status === 0是可选且还未选的座位 -->
-                            <template v-else-if="seat.status === 0">
-                                <!-- 座位可选，并且是情侣座-左 -->
-                                <image @click="handleChooseSeat(index, col)" v-if="seat.links && seat.LinkDir === 'L'"
-                                    :style="{ width: seatSize + 'px', height: seatSize + 'px', opacity: seat.active ? 1 : 0.25, background: '#FA6400' }"
-                                    src="../static/seat-qinglv1-nor@10.png" mode="aspectFill">
-                                </image>
-                                <!-- <div v-if="seat.links && seat.LinkDir === 'L'" @click="handleChooseSeat(index, col)"
-                                    class="item-seat" :style="{
-                                    'background-image': `url(${seatQingLv1})`,
-                                    width: seatSize + 'px',
-                                    height: seatSize + 'px',
-                                    opacity: seat.active ? 1 : 0.25,
-                                    'background-color': '#FA6400'
-                                }"></div> -->
-                                <!-- 座位可选，并且是情侣座-右 -->
-                                <image @click="handleChooseSeat(index, col)"
-                                    v-else-if="seat.links && seat.LinkDir === 'R'"
-                                    :style="{ width: seatSize + 'px', height: seatSize + 'px', opacity: seat.active ? 1 : 0.25, background: '#FA6400' }"
-                                    src="../static/seat-qinglv2-nor@10.png" mode="aspectFill">
-                                </image>
-                                <!-- <div v-else-if="seat.links && seat.LinkDir === 'R'"
-                                    @click="handleChooseSeat(index, col)" class="item-seat" :style="{
-                                        'background-image': `url(${seatQingLv2})`,
-                                        width: seatSize + 'px',
-                                        height: seatSize + 'px',
-                                        opacity: seat.active ? 1 : 0.25,
-                                        'background-color': '#FA6400'
-                                    }"></div> -->
-                                <!-- 座位可选，并且有配置颜色则用颜色座位 -->
-                                <image v-else @click="handleChooseSeat(index, col)"
-                                    :style="{ width: seatSize + 'px', height: seatSize + 'px', opacity: seat.active ? 1 : 0.25, background: seat.color || '#B4CCBD' }"
-                                    src="../static/seat.png" mode="aspectFill">
-                                </image>
-                                <!-- <div v-else @click="handleChooseSeat(index, col)" class="item-seat" :style="{
-                                    'background-image': `url(${seatPng})`,
-                                    width: seatSize + 'px',
-                                    height: seatSize + 'px',
-                                    opacity: seat.active ? 1 : 0.25,
-                                    'background-color': seat.color || '#B4CCBD'
-                                }">
-                                </div> -->
-                            </template>
-                        </template>
-                        <template v-else>
-                            <div :style="{ width: seatSize + 'px', height: seatSize + 'px' }"></div>
-                        </template>
-                    </template>
+                    <!-- 以下俩应该没啥区别，说是div比image好，但在ios没啥区别 -->
+                    <!-- <image v-for="(seat, col) in item" :key="col" @click="handleChooseSeat(index, col)" :style="{
+                        width: seatSize + 'px', height: seatSize + 'px', opacity: seat.active ? 1 : 0.25,
+                        'background-color': getBgColor(seat),
+                    }" :src="getImageData(seat)" mode="aspectFill">
+                    </image> -->
+
+                    <div v-for="(seat, col) in item" :key="col" class="text-0px box-border"
+                        @click="handleChooseSeat(index, col)" :style="{
+                            width: seatSize + 'px',
+                            height: seatSize + 'px',
+                            opacity: seat.active ? 1 : 0.25,
+                            'background-color': getBgColor(seat),
+                            'background-image': `url(${getImageData(seat)})`,
+                            'background-position': 'center',
+                            'background-size': 'cover',
+                            'background-repeat': 'no-repeat',
+                        }">
+                    </div>
                 </div>
+
                 <!-- 左侧排数提示 -->
                 <div class="fixed bg-line rounded-15px overflow-hidden top-58px px-2px pt-4px z-10"
                     :style="'left: ' + (10 - moveX / scale) + 'px;'">
@@ -126,8 +52,8 @@
         </movable-area>
     </div>
 </template>
-<script>
 
+<script>
 /*
  *特别声明：
  * 该页面的逻辑及思路来自作者[houzisbw](https://github.com/houzisbw)的vue选座项目github地址[点击](https://github.com/houzisbw/MeiTuanCinemaSmartChoose)。
@@ -157,7 +83,6 @@ export default {
             scale: 1, //放大倍数
             minRow: 0, //从第几行开始排座位
             minCol: 0, //从第几列开始排座位
-            showTis: true, //显示选座提示
             seatList: [], //接口获取的原始位置
             mArr: [], //排数提示
             optArr: [], //选中的座位数组。
@@ -169,6 +94,8 @@ export default {
             seatCheckedQing1,
             seatCheckedQing2,
             scaleValue: 1,
+            debounceScale: () => { },
+            debounceMove: () => { },
         };
     },
     props: {
@@ -187,12 +114,6 @@ export default {
         aPrice() {
             return this.SelectNum * 36
         },
-        rpxNum() {
-            return this.boxWidth / 750
-        },
-        pxNum() {
-            return 750 / this.boxWidth
-        },
     },
     created() {
         //获取宽度
@@ -202,8 +123,60 @@ export default {
                 this.initData()
             }
         })
+        this.debounceScale = this.debounce(this.onScale.bind(this));
+        this.debounceMove = this.debounce(this.onMove.bind(this));
     },
     methods: {
+        getImageData(seat) {
+            // Status为-10，不做座位展示
+            if (seat.status !== -10) {
+                // 座位当前已选中的状态 或者 被他人选中占用的状态（此时图片一样，放在一起判断，通过状态区分颜色）
+                if (seat.status === 10 || seat.status === 1) {
+                    // 情侣座
+                    if (seat.links) {
+                        if (seat.LinkDir === 'L') {  // 情侣座-左
+                            return this.seatCheckedQing1;
+                        } else if (seat.LinkDir === 'R') { // 情侣座-右
+                            return this.seatCheckedQing2;
+                        }
+                    } else {  // 普通座位选中
+                        return this.seatCheckedPng;
+                    }
+                } else if (seat.status === 0) {   // 除了以上情况，以下Status === 0是可选且还未选的座位
+                    if (seat.links) {
+                        if (seat.LinkDir === 'L') {  // 情侣座-左
+                            return this.seatQingLv1;
+                        } else if (seat.LinkDir === 'R') { // 情侣座-右
+                            return this.seatQingLv2;
+                        }
+                    } else {
+                        return this.seatPng;
+                    }
+                }
+            } else {
+                return ''
+            }
+        },
+        getBgColor(seat) {
+            // Status为-10，不做座位展示
+            if (seat.status !== -10) {
+                // 10为自己选中，1为别人选择
+                if (seat.status === 10 || seat.status === 1) {
+                    // 自己选都是绿色，别人选的则是灰色
+                    return seat.status === 10 ? '#2BC881' : '#777'
+                } else if (seat.status === 0) {   // 除了以上情况，以下Status === 0是可选且还未选的座位
+                    if (seat.links) {
+                        // 情侣座为橙色
+                        return '#FA6400';
+                    } else {
+                        // 非情侣座为配置的颜色，默认为橙色
+                        return seat.color || '#FA6400';
+                    }
+                }
+            } else {
+                return 'transparent'
+            }
+        },
         initData: function () {
             let arr = this.mapData;
             //假数据说明：SeatCode座位编号，RowNum-行号，ColumnNum-纵号，YCoord-Y坐标，XCoord-X坐标，Status-状态
@@ -299,32 +272,38 @@ export default {
             }
             this.mArr = mArr
         },
+        debounce(fn) {
+            let t = null
+            return (e) => {
+                //如果定时器存在就清除掉
+                if (t) {
+                    clearTimeout(t);
+                    t = null;
+                }
+                //不然就创建新的定时器
+                t = setTimeout(() => {
+                    fn(e)
+                }, 150)
+            }
+        },
         //放大缩小事件
         onScale: function (e) {
-            this.showTis = false
-            // this.moveX=-e.detail.x
-            let w = this.boxWidth * 0.5
-            let s = 1 - e.detail.scale
-            this.moveX = w * s
+            let w = this.boxWidth * 0.5;
+            let s = 1 - e.detail.scale;
+            this.moveX = w * s;
             this.scale = e.detail.scale;
-            if (s > 0 || s === 0) {
-                this.showTis = true
-            }
         },
         //移动事件
         onMove: function (e) {
-            this.showTis = false
             this.moveX = e.detail.x
         },
         //处理座位选择逻辑
         handleChooseSeat: function (row, col, loveFlag) {
-            if (!this.seatArray[row][col]) {
+            if (!this.seatArray[row] || !this.seatArray[row][col]) {
                 return;
             }
-            let seatValue = this.seatArray[row][col].status;
-            let newArray = this.seatArray;
-
             //如果是已购座位，直接返回(1表示座位已经被他人占用, -10表示无座位)
+            let seatValue = this.seatArray[row][col].status;
             if (seatValue == 1 || seatValue === -10) return;
 
             // 如果是选择情侣座，检查空余可选择数是否大于2
@@ -346,6 +325,7 @@ export default {
                 return;
             }
 
+            let newArray = this.seatArray;
             //如果是已选座位点击后变未选（10为已选择）
             if (seatValue === 10) {
                 newArray[row][col].status = 0; // 0为可选择
@@ -391,7 +371,6 @@ export default {
         deleteSeat(item) {
             this.handleChooseSeat(item.YCoord - 1, item.XCoord);
         },
-
 
 
 
@@ -601,13 +580,4 @@ export default {
 .bg-line {
     background-color: rgba(0, 0, 0, 0.3);
 }
-
-
-// .item-seat {
-//     background-position: center;
-//     background-size: cover;
-//     background-repeat: no-repeat;
-//     font-size: 0px;
-//     box-sizing: border-box;
-// }
 </style>
